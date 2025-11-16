@@ -28,6 +28,7 @@ import {
   Trash2,
   Zap,
   Shield,
+  CheckCircle,
 } from "lucide-react";
 import {
   LineChart,
@@ -120,6 +121,94 @@ function TypingTextFixed({ icon, text, speed = 120, pause = 1500 }) {
     </span>
   );
 }
+
+// Komponen Popup Success dengan Neumorphism
+function SuccessPopup({ message, onClose }) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm" onClick={onClose}>
+      <div 
+        className="relative max-w-md w-full p-6 rounded-2xl animate-bounce-in"
+        style={{
+          background: '#e0e5ec',
+          boxShadow: '12px 12px 24px rgba(163,177,198,0.6), -12px -12px 24px rgba(255,255,255,0.5)',
+          animation: 'slideDown 0.5s ease-out'
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center gap-4">
+          <div 
+            className="flex-shrink-0 p-3 rounded-full"
+            style={{
+              background: 'linear-gradient(145deg, #4ade80, #22c55e)',
+              boxShadow: '6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)'
+            }}
+          >
+            <CheckCircle size={32} className="text-white" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-xl font-bold text-gray-800 mb-1">Berhasil!</h3>
+            <p className="text-gray-600 font-medium">{message}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="flex-shrink-0 p-2 rounded-lg text-gray-600 hover:text-gray-800 transition"
+            style={{
+              boxShadow: '4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)'
+            }}
+          >
+            <X size={20} />
+          </button>
+        </div>
+        
+        {/* Progress bar */}
+        <div 
+          className="mt-4 h-1 rounded-full overflow-hidden"
+          style={{
+            background: '#e0e5ec',
+            boxShadow: 'inset 2px 2px 4px rgba(163,177,198,0.6)'
+          }}
+        >
+          <div 
+            className="h-full bg-gradient-to-r from-green-400 to-green-600"
+            style={{
+              animation: 'progressBar 3s linear'
+            }}
+          />
+        </div>
+      </div>
+      
+      <style>{`
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes progressBar {
+          from {
+            width: 100%;
+          }
+          to {
+            width: 0%;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -131,6 +220,8 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
   const [timer, setTimer] = useState(60);
   const [progress, setProgress] = useState(100);
   const [showDexList, setShowDexList] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [selectedTags, setSelectedTags] = useState([]);
   const [filterTag, setFilterTag] = useState("all");
@@ -200,6 +291,11 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
     try {
       setLoading(true);
       await apiService.createProject(formData);
+      
+      // Show success popup
+      setSuccessMessage(`Project "${formData.name}" berhasil ditambahkan!`);
+      setShowSuccessPopup(true);
+      
       fetchProjects();
       setFormData({
         name: "",
@@ -343,6 +439,14 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
 
   return (
     <div className="min-h-screen text-gray-800 relative overflow-hidden bg-[#e0e5ec]">
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <SuccessPopup 
+          message={successMessage} 
+          onClose={() => setShowSuccessPopup(false)} 
+        />
+      )}
+
       {/* Sidebar */}
       <div
         className={`fixed top-0 left-0 h-full bg-[#e0e5ec] z-50 transition-all duration-300 ${
@@ -961,5 +1065,3 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
 }
 
 export default TrackerPageFullScreen;
-
-
