@@ -210,6 +210,15 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         "is_admin": current_user.get("is_admin", False)
     }
 
+# NEW: Get all users (pending and approved)
+@app.get("/api/admin/users")
+async def get_all_users(current_admin: dict = Depends(get_current_admin)):
+    all_users = list(users_collection.find(
+        {},
+        {"password_hash": 0}
+    ))
+    return all_users
+
 @app.get("/api/admin/pending-users")
 async def get_pending_users(current_admin: dict = Depends(get_current_admin)):
     pending_users = list(users_collection.find(
@@ -243,6 +252,28 @@ async def reject_user(user_id: str, current_admin: dict = Depends(get_current_ad
         raise HTTPException(status_code=404, detail="User not found")
     
     return {"message": "User rejected and deleted"}
+
+# NEW: Delete approved user
+@app.delete("/api/admin/delete-user/{user_id}")
+async def delete_user(user_id: str, current_admin: dict = Depends(get_current_admin)):
+    # Don't allow deleting admin users
+    user = users_collection.find_one({"_id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if user.get("is_admin"):
+        raise HTTPException(status_code=400, detail="Cannot delete admin user")
+    
+    # Delete user's projects first
+    projects_collection.delete_many({"user_id": user_id})
+    
+    # Delete user
+    result = users_collection.delete_one({"_id": user_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"message": "User and their projects deleted successfully"}
 
 @app.get("/api/projects")
 async def get_projects(current_user: dict = Depends(get_current_user)):
