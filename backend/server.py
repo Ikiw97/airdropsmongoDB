@@ -39,8 +39,8 @@ JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", 10080))
 
-# Password Hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Password Hashing (UPGRADED TO ARGON2)
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
 # Pydantic Models
@@ -197,7 +197,7 @@ async def login(user_data: UserLogin):
             "id": user["_id"],
             "username": user["username"],
             "email": user["email"],
-            "is_admin": user.get("is_admin", False)
+                       "is_admin": user.get("is_admin", False)
         }
     }
 
