@@ -1,21 +1,15 @@
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
+from passlib.context import CryptContext
 from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
 import uuid
-
-# === ARGON2 (pengganti passlib/bcrypt) ===
-from argon2 import PasswordHasher
-from argon2.exceptions import VerifyMismatchError, VerificationError
-
-# Hashing system
-ph = PasswordHasher()
 
 load_dotenv()
 
@@ -45,9 +39,11 @@ JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", 10080))
 
+# Password Hashing (UPGRADED TO ARGON2)
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
-# === Pydantic Models ===
+# Pydantic Models
 class UserRegister(BaseModel):
     username: str
     email: EmailStr
@@ -81,20 +77,13 @@ class DailyUpdate(BaseModel):
 class UserApproval(BaseModel):
     user_id: str
 
-# === PASSWORD HELPERS (ARGON2) ===
+# Helper Functions
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
 
-def get_password_hash(password: str) -> str:
-    """Hash password menggunakan Argon2."""
-    return ph.hash(password)
+def get_password_hash(password):
+    return pwd_context.hash(password)
 
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verifikasi password dengan Argon2."""
-    try:
-        return ph.verify(hashed_password, plain_password)
-    except (VerifyMismatchError, VerificationError):
-        return False
-
-# === JWT ===
 def create_access_token(data: dict):
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -102,7 +91,6 @@ def create_access_token(data: dict):
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
     return encoded_jwt
 
-# === AUTH HELPERS ===
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -137,23 +125,25 @@ async def get_current_admin(current_user: dict = Depends(get_current_user)):
         )
     return current_user
 
-# === ROUTES ===
-
+# API Routes
 @app.get("/")
 async def root():
     return {"message": "Airdrop Tracker API", "status": "running"}
 
 @app.post("/api/auth/register")
 async def register(user_data: UserRegister):
-
+    # Check if username exists
     if users_collection.find_one({"username": user_data.username}):
         raise HTTPException(status_code=400, detail="Username already exists")
     
+    # Check if email exists
     if users_collection.find_one({"email": user_data.email}):
         raise HTTPException(status_code=400, detail="Email already registered")
     
+    # Check if this is the first user (will be admin)
     is_first_user = users_collection.count_documents({}) == 0
     
+    # Create user
     user_id = str(uuid.uuid4())
     hashed_password = get_password_hash(user_data.password)
     
@@ -162,7 +152,7 @@ async def register(user_data: UserRegister):
         "username": user_data.username,
         "email": user_data.email,
         "password_hash": hashed_password,
-        "is_approved": is_first_user,
+        "is_approved": is_first_user,  # First user auto-approved as admin
         "is_admin": is_first_user,
         "created_at": datetime.utcnow().isoformat()
     }
@@ -184,7 +174,6 @@ async def register(user_data: UserRegister):
 
 @app.post("/api/auth/login", response_model=Token)
 async def login(user_data: UserLogin):
-
     user = users_collection.find_one({"username": user_data.username})
     
     if not user or not verify_password(user_data.password, user["password_hash"]):
@@ -208,7 +197,7 @@ async def login(user_data: UserLogin):
             "id": user["_id"],
             "username": user["username"],
             "email": user["email"],
-            "is_admin": user.get("is_admin", False)
+                       "is_admin": user.get("is_admin", False)
         }
     }
 
@@ -243,7 +232,7 @@ async def approve_user(approval: UserApproval, current_admin: dict = Depends(get
 
 @app.delete("/api/admin/reject-user/{user_id}")
 async def reject_user(user_id: str, current_admin: dict = Depends(get_current_admin)):
-
+    # Don't allow deleting admin users
     user = users_collection.find_one({"_id": user_id})
     if user and user.get("is_admin"):
         raise HTTPException(status_code=400, detail="Cannot delete admin user")
@@ -265,7 +254,7 @@ async def get_projects(current_user: dict = Depends(get_current_user)):
 
 @app.post("/api/projects")
 async def create_project(project: ProjectCreate, current_user: dict = Depends(get_current_user)):
-
+    # Check if project name already exists for this user
     existing = projects_collection.find_one({
         "user_id": current_user["_id"],
         "name": project.name
@@ -326,7 +315,6 @@ async def delete_project(project_name: str, current_user: dict = Depends(get_cur
     
     return {"message": "Project deleted successfully"}
 
-# === UVICORN BOOT ===
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
