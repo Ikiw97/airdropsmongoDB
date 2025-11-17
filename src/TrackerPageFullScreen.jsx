@@ -322,6 +322,13 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
     const next = current === "CHECKED" ? "UNCHECKED" : "CHECKED";
     try {
       await apiService.updateDaily(name, next);
+      
+      // Show success popup when marking as checked
+      if (next === "CHECKED") {
+        setSuccessMessage(`Daily task "${name}" berhasil di-check! ✓`);
+        setShowSuccessPopup(true);
+      }
+      
       fetchProjects();
     } catch (err) {
       console.error("Gagal update daily:", err);
@@ -855,7 +862,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
     </div>
   )}
 
-  <div className="space-y-1.5"> {/* ← Kunci: rapatkan jarak antar elemen */}
+  <div className="space-y-1.5">
     {p.twitter && (
       <div className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white/30 transition-colors duration-150">
         <Twitter size={14} className="text-blue-600" />
@@ -912,8 +919,8 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
     style={{ background: 'radial-gradient(circle at center, rgba(147,197,253,0.25), transparent 70%)' }}
   ></div>
 </div>
-))}     {/* ✅ penutup untuk .map */}
-</div>  {/* ✅ penutup untuk flex-wrap container */}
+))}
+</div>
 
               {filteredProjects.length > 3 && (
                 <div className="text-center">
