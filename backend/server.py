@@ -197,7 +197,7 @@ async def login(user_data: UserLogin):
             "id": user["_id"],
             "username": user["username"],
             "email": user["email"],
-                       "is_admin": user.get("is_admin", False)
+            "is_admin": user.get("is_admin", False)
         }
     }
 
@@ -308,7 +308,7 @@ async def create_project(project: ProjectCreate, current_user: dict = Depends(ge
         "notes": project.notes,
         "tags": project.tags,
         "daily": "UNCHECKED",
-        "lastupdate": datetime.utcnow().isoformat()
+        "lastupdate": datetime.utcnow().isoformat()  # ✅ Set initial lastupdate
     }
     
     projects_collection.insert_one(project_data)
@@ -324,7 +324,7 @@ async def update_daily(update: DailyUpdate, current_user: dict = Depends(get_cur
         {
             "$set": {
                 "daily": update.value,
-                "lastupdate": datetime.utcnow().isoformat()
+                "lastupdate": datetime.utcnow().isoformat()  # ✅ Update lastupdate setiap kali daily di-toggle
             }
         }
     )
