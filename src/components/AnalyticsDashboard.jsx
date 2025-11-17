@@ -30,9 +30,11 @@ const AnalyticsDashboard = ({ projects, balances = [], selectedNetwork = "Ethere
   // ===== Pure Frontend Calculations =====
   const stats = useMemo(() => {
     const total = projects.length;
-    const completed = projects.filter((p) => p.daily === "CHECKED").length;
-    const pending = projects.filter((p) => p.daily !== "CHECKED").length;
-    const completionRate = total > 0 ? ((completed / total) * 100).toFixed(1) : 0;
+    // Daily Tasks = project yang sudah di-check hari ini
+    const dailyTasks = projects.filter((p) => p.daily === "CHECKED").length;
+    // Ongoing Projects = project yang masih aktif tapi belum di-check (bukan daily routine)
+    const ongoingProjects = projects.filter((p) => p.daily !== "CHECKED").length;
+    const completionRate = total > 0 ? ((dailyTasks / total) * 100).toFixed(1) : 0;
     const uniqueWallets = new Set(
       projects.filter((p) => p.wallet).map((p) => p.wallet)
     ).size;
@@ -49,22 +51,35 @@ const AnalyticsDashboard = ({ projects, balances = [], selectedNetwork = "Ethere
     const withDiscord = projects.filter((p) => p.discord).length;
     const withTelegram = projects.filter((p) => p.telegram).length;
 
+    // Dapatkan last update dari daily tasks yang terbaru
+    const dailyProjects = projects.filter((p) => p.daily === "CHECKED");
+    let lastDailyUpdate = null;
+    if (dailyProjects.length > 0) {
+      const sortedByDate = dailyProjects
+        .filter(p => p.lastupdate)
+        .sort((a, b) => new Date(b.lastupdate) - new Date(a.lastupdate));
+      if (sortedByDate.length > 0) {
+        lastDailyUpdate = sortedByDate[0].lastupdate;
+      }
+    }
+
     return {
       total,
-      completed,
-      pending,
+      dailyTasks,
+      ongoingProjects,
       completionRate,
       uniqueWallets,
       networkCount,
       withTwitter,
       withDiscord,
       withTelegram,
+      lastDailyUpdate,
     };
   }, [projects]);
 
   const pieData = [
-    { name: "Completed", value: stats.completed, color: "#22c55e" },
-    { name: "Pending", value: stats.pending, color: "#facc15" },
+    { name: "Daily Tasks", value: stats.dailyTasks, color: "#22c55e" },
+    { name: "Ongoing Projects", value: stats.ongoingProjects, color: "#facc15" },
   ];
 
   const socialData = [
@@ -146,14 +161,15 @@ const AnalyticsDashboard = ({ projects, balances = [], selectedNetwork = "Ethere
                 icon: TrendingUp,
               },
               {
-                label: "Daily Task",
-                value: stats.completed,
+                label: "Daily Tasks ✓",
+                value: stats.dailyTasks,
                 color: "text-green-500",
                 icon: CheckCircle,
+                subtitle: stats.lastDailyUpdate ? `Last: ${new Date(stats.lastDailyUpdate).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}` : null
               },
               {
-                label: "Pending Tasks",
-                value: stats.pending,
+                label: "Ongoing Projects",
+                value: stats.ongoingProjects,
                 color: "text-yellow-500",
                 icon: Clock,
               },
@@ -170,6 +186,9 @@ const AnalyticsDashboard = ({ projects, balances = [], selectedNetwork = "Ethere
                   <p className={`text-3xl font-bold ${card.color}`}>
                     {card.value}
                   </p>
+                  {card.subtitle && (
+                    <p className="text-gray-400 text-xs mt-1">{card.subtitle}</p>
+                  )}
                 </div>
                 <card.icon size={32} className={card.color} />
               </div>
@@ -334,7 +353,7 @@ const AnalyticsDashboard = ({ projects, balances = [], selectedNetwork = "Ethere
                 className="absolute top-0 left-0 h-6 rounded-full bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 flex items-center justify-end pr-3 text-xs font-semibold text-white"
                 style={{ width: `${stats.completionRate}%` }}
               >
-                {stats.completed}/{stats.total}
+                {stats.dailyTasks}/{stats.total}
               </div>
             </div>
           </div>
@@ -345,8 +364,8 @@ const AnalyticsDashboard = ({ projects, balances = [], selectedNetwork = "Ethere
               📊 Quick Insights
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
-              <div>✓ Completed {stats.completed} tasks</div>
-              <div>⏱ {stats.pending} pending projects</div>
+              <div>✓ Daily Tasks Checked: {stats.dailyTasks}</div>
+              <div>⏱ Ongoing Projects: {stats.ongoingProjects}</div>
               <div>🌐 {stats.withTwitter} Twitter linked</div>
               <div>💰 {stats.uniqueWallets} unique wallets</div>
             </div>
