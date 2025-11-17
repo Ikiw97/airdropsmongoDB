@@ -101,17 +101,17 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
         background: '#e0e5ec',
         boxShadow: '9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5)',
       }}
-      className="p-5 rounded-2xl transition-all duration-300 hover:shadow-[6px_6px_12px_rgba(163,177,198,0.4),-6px_-6px_12px_rgba(255,255,255,0.4)]"
+      className="p-3 sm:p-5 rounded-2xl transition-all duration-300 hover:shadow-[6px_6px_12px_rgba(163,177,198,0.4),-6px_-6px_12px_rgba(255,255,255,0.4)]"
       data-testid={`user-card-${userData.username}`}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <div className="flex items-center gap-4 mb-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start sm:items-center gap-3 mb-2 sm:mb-3">
             <div 
               style={{
                 boxShadow: 'inset 4px 4px 8px rgba(163, 177, 198, 0.4), inset -4px -4px 8px rgba(255, 255, 255, 0.5)',
               }}
-              className={`w-14 h-14 rounded-full flex items-center justify-center font-bold text-2xl ${
+              className={`w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center font-bold text-lg sm:text-2xl flex-shrink-0 ${
                 userData.is_admin 
                   ? 'bg-gradient-to-br from-amber-300 to-orange-400 text-white' 
                   : 'bg-gradient-to-br from-blue-400 to-purple-500 text-white'
@@ -119,16 +119,16 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
             >
               {userData.username.charAt(0).toUpperCase()}
             </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-bold text-lg text-gray-800">{userData.username}</h3>
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
+                <h3 className="font-bold text-base sm:text-lg text-gray-800 truncate">{userData.username}</h3>
                 {userData.is_admin && (
                   <span 
                     style={{
                       background: 'linear-gradient(145deg, #fbbf24, #f59e0b)',
                       boxShadow: '3px 3px 6px rgba(163, 177, 198, 0.4), -3px -3px 6px rgba(255, 255, 255, 0.5)',
                     }}
-                    className="px-3 py-1 text-xs font-bold rounded-full text-white"
+                    className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-bold rounded-full text-white"
                   >
                     Admin
                   </span>
@@ -139,7 +139,7 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
                       background: 'linear-gradient(145deg, #fb923c, #f97316)',
                       boxShadow: '3px 3px 6px rgba(163, 177, 198, 0.4), -3px -3px 6px rgba(255, 255, 255, 0.5)',
                     }}
-                    className="px-3 py-1 text-xs font-bold rounded-full text-white"
+                    className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-bold rounded-full text-white"
                   >
                     Pending
                   </span>
@@ -150,20 +150,20 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
                       background: 'linear-gradient(145deg, #4ade80, #22c55e)',
                       boxShadow: '3px 3px 6px rgba(163, 177, 198, 0.4), -3px -3px 6px rgba(255, 255, 255, 0.5)',
                     }}
-                    className="px-3 py-1 text-xs font-bold rounded-full text-white"
+                    className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-bold rounded-full text-white"
                   >
                     Approved
                   </span>
                 )}
               </div>
-              <p className="text-sm text-gray-600 font-medium">{userData.email}</p>
+              <p className="text-xs sm:text-sm text-gray-600 font-medium truncate">{userData.email}</p>
             </div>
           </div>
-          <p className="text-xs text-gray-500 ml-[4.5rem]">
+          <p className="text-xs text-gray-500 ml-0 sm:ml-[3.5rem]">
             Registered: {new Date(userData.created_at).toLocaleString()}
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-2 sm:gap-3 justify-end sm:justify-start flex-shrink-0">
           {isPending ? (
             <>
               <button
@@ -172,11 +172,11 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
                   background: 'linear-gradient(145deg, #4ade80, #22c55e)',
                   boxShadow: '6px 6px 12px rgba(163, 177, 198, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.5)',
                 }}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white transition-all hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.5)]"
+                className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-white transition-all hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.5)]"
                 data-testid={`approve-btn-${userData.username}`}
               >
-                <UserCheck size={18} />
-                Approve
+                <UserCheck size={16} className="sm:w-[18px] sm:h-[18px]" />
+                <span className="text-xs sm:text-sm">Approve</span>
               </button>
               <button
                 onClick={() => handleReject(userData._id)}
@@ -184,11 +184,11 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
                   background: 'linear-gradient(145deg, #f87171, #ef4444)',
                   boxShadow: '6px 6px 12px rgba(163, 177, 198, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.5)',
                 }}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white transition-all hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.5)]"
+                className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-white transition-all hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.5)]"
                 data-testid={`reject-btn-${userData.username}`}
               >
-                <UserX size={18} />
-                Reject
+                <UserX size={16} className="sm:w-[18px] sm:h-[18px]" />
+                <span className="text-xs sm:text-sm">Reject</span>
               </button>
             </>
           ) : (
@@ -199,11 +199,11 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
                   background: 'linear-gradient(145deg, #f87171, #ef4444)',
                   boxShadow: '6px 6px 12px rgba(163, 177, 198, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.5)',
                 }}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white transition-all hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.5)]"
+                className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-white transition-all hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.5)]"
                 data-testid={`delete-btn-${userData.username}`}
               >
-                <Trash2 size={18} />
-                Delete
+                <Trash2 size={16} className="sm:w-[18px] sm:h-[18px]" />
+                <span className="text-xs sm:text-sm">Delete</span>
               </button>
             )
           )}
@@ -219,33 +219,34 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
         style={{
           boxShadow: '0 8px 16px rgba(163, 177, 198, 0.4)',
         }}
-        className="p-6 bg-[#e0e5ec]"
+        className="p-3 sm:p-6 bg-[#e0e5ec]"
       >
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 max-w-7xl mx-auto">
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={onBack}
               style={{
                 background: '#e0e5ec',
                 boxShadow: '6px 6px 12px rgba(163, 177, 198, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.5)',
               }}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-gray-700 transition-all hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.5)]"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-gray-700 transition-all hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.5)]"
               data-testid="back-btn"
             >
-              <ChevronLeft size={20} />
-              Back
+              <ChevronLeft size={18} className="sm:w-5 sm:h-5" />
+              <span className="text-xs sm:text-base">Back</span>
             </button>
-            <h1 className="flex items-center gap-3 text-2xl font-bold text-gray-800">
+            <h1 className="flex items-center gap-2 text-base sm:text-2xl font-bold text-gray-800">
               <div 
                 style={{
                   background: '#e0e5ec',
                   boxShadow: '4px 4px 8px rgba(163, 177, 198, 0.6), -4px -4px 8px rgba(255, 255, 255, 0.5)',
                 }}
-                className="p-2 rounded-xl"
+                className="p-1.5 sm:p-2 rounded-xl"
               >
-                <Shield size={28} className="text-blue-600" />
+                <Shield size={20} className="sm:w-7 sm:h-7 text-blue-600" />
               </div>
-              Admin Panel - User Management
+              <span className="hidden lg:inline">Admin Panel - User Management</span>
+              <span className="lg:hidden">Admin Panel</span>
             </h1>
           </div>
           <div 
@@ -253,35 +254,35 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
               background: '#e0e5ec',
               boxShadow: '6px 6px 12px rgba(163, 177, 198, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.5)',
             }}
-            className="px-5 py-2.5 rounded-xl"
+            className="px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl"
           >
-            <span className="text-sm text-gray-600">Logged in as: </span>
-            <span className="text-sm font-bold text-blue-600">{user?.username}</span>
+            <span className="text-xs sm:text-sm text-gray-600">Logged in: </span>
+            <span className="text-xs sm:text-sm font-bold text-blue-600">{user?.username}</span>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="p-3 sm:p-6 max-w-7xl mx-auto">
         <div 
           style={{
             background: '#e0e5ec',
             boxShadow: '12px 12px 24px rgba(163, 177, 198, 0.6), -12px -12px 24px rgba(255, 255, 255, 0.5)',
           }}
-          className="p-8 rounded-3xl"
+          className="p-4 sm:p-8 rounded-3xl"
         >
           {/* Search and Filter Section */}
-          <div className="mb-8 space-y-5">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
+          <div className="mb-6 sm:mb-8 space-y-4 sm:space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <h2 className="text-lg sm:text-2xl font-bold text-gray-800 flex items-center gap-2 sm:gap-3">
                 <div 
                   style={{
                     background: '#e0e5ec',
                     boxShadow: '4px 4px 8px rgba(163, 177, 198, 0.6), -4px -4px 8px rgba(255, 255, 255, 0.5)',
                   }}
-                  className="p-2 rounded-xl"
+                  className="p-1.5 sm:p-2 rounded-xl"
                 >
-                  <Users size={28} className="text-blue-600" />
+                  <Users size={20} className="sm:w-7 sm:h-7 text-blue-600" />
                 </div>
                 All Users ({filteredUsers.length})
               </h2>
@@ -292,19 +293,19 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
                   background: 'linear-gradient(145deg, #60a5fa, #3b82f6)',
                   boxShadow: '6px 6px 12px rgba(163, 177, 198, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.5)',
                 }}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white transition-all hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.5)] disabled:opacity-50"
+                className="flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-white transition-all hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.5)] disabled:opacity-50"
                 data-testid="refresh-btn"
               >
-                <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
-                Refresh
+                <RefreshCw size={16} className={`sm:w-[18px] sm:h-[18px] ${loading ? "animate-spin" : ""}`} />
+                <span className="text-xs sm:text-sm">Refresh</span>
               </button>
             </div>
 
             {/* Search Bar */}
-            <div className="flex gap-4 flex-wrap">
-              <div className="flex-1 min-w-[300px]">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <div className="flex-1 w-full">
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                   <input
                     type="text"
                     placeholder="Search by username or email..."
@@ -314,14 +315,14 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
                       background: '#e0e5ec',
                       boxShadow: 'inset 6px 6px 12px rgba(163, 177, 198, 0.4), inset -6px -6px 12px rgba(255, 255, 255, 0.5)',
                     }}
-                    className="w-full pl-12 pr-4 py-3 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.4)] transition-all"
+                    className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.4)] transition-all"
                     data-testid="search-input"
                   />
                 </div>
               </div>
 
               {/* Status Filter */}
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <button
                   onClick={() => setStatusFilter("all")}
                   style={{
@@ -332,7 +333,7 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
                       ? 'inset 4px 4px 8px rgba(163, 177, 198, 0.4), inset -4px -4px 8px rgba(255, 255, 255, 0.5)'
                       : '6px 6px 12px rgba(163, 177, 198, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.5)',
                   }}
-                  className={`px-5 py-3 rounded-xl font-semibold transition-all ${
+                  className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-semibold text-xs sm:text-base transition-all ${
                     statusFilter === "all" ? "text-white" : "text-gray-700 hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)]"
                   }`}
                   data-testid="filter-all"
@@ -349,7 +350,7 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
                       ? 'inset 4px 4px 8px rgba(163, 177, 198, 0.4), inset -4px -4px 8px rgba(255, 255, 255, 0.5)'
                       : '6px 6px 12px rgba(163, 177, 198, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.5)',
                   }}
-                  className={`px-5 py-3 rounded-xl font-semibold transition-all ${
+                  className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-semibold text-xs sm:text-base transition-all ${
                     statusFilter === "pending" ? "text-white" : "text-gray-700 hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)]"
                   }`}
                   data-testid="filter-pending"
@@ -366,7 +367,7 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
                       ? 'inset 4px 4px 8px rgba(163, 177, 198, 0.4), inset -4px -4px 8px rgba(255, 255, 255, 0.5)'
                       : '6px 6px 12px rgba(163, 177, 198, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.5)',
                   }}
-                  className={`px-5 py-3 rounded-xl font-semibold transition-all ${
+                  className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-semibold text-xs sm:text-base transition-all ${
                     statusFilter === "approved" ? "text-white" : "text-gray-700 hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)]"
                   }`}
                   data-testid="filter-approved"
@@ -383,58 +384,58 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
                 background: 'linear-gradient(145deg, #fca5a5, #f87171)',
                 boxShadow: '6px 6px 12px rgba(163, 177, 198, 0.4), -6px -6px 12px rgba(255, 255, 255, 0.3)',
               }}
-              className="mb-6 p-4 rounded-xl text-white font-medium"
+              className="mb-4 sm:mb-6 p-3 sm:p-4 rounded-xl text-white font-medium text-sm sm:text-base"
             >
               {error}
             </div>
           )}
 
           {loading ? (
-            <div className="text-center py-16 text-gray-500">
+            <div className="text-center py-12 sm:py-16 text-gray-500">
               <div 
                 style={{
                   background: '#e0e5ec',
                   boxShadow: '8px 8px 16px rgba(163, 177, 198, 0.6), -8px -8px 16px rgba(255, 255, 255, 0.5)',
                 }}
-                className="inline-block p-4 rounded-2xl mb-4"
+                className="inline-block p-3 sm:p-4 rounded-2xl mb-3 sm:mb-4"
               >
-                <RefreshCw size={40} className="animate-spin text-blue-600" />
+                <RefreshCw size={32} className="sm:w-10 sm:h-10 animate-spin text-blue-600" />
               </div>
-              <p className="text-lg font-semibold">Loading...</p>
+              <p className="text-base sm:text-lg font-semibold">Loading...</p>
             </div>
           ) : filteredUsers.length === 0 ? (
-            <div className="text-center py-16 text-gray-400">
+            <div className="text-center py-12 sm:py-16 text-gray-400">
               <div 
                 style={{
                   background: '#e0e5ec',
                   boxShadow: '8px 8px 16px rgba(163, 177, 198, 0.6), -8px -8px 16px rgba(255, 255, 255, 0.5)',
                 }}
-                className="inline-block p-4 rounded-2xl mb-4"
+                className="inline-block p-3 sm:p-4 rounded-2xl mb-3 sm:mb-4"
               >
-                <Users size={50} className="opacity-30" />
+                <Users size={40} className="sm:w-[50px] sm:h-[50px] opacity-30" />
               </div>
-              <p className="text-lg font-semibold">No users found</p>
+              <p className="text-base sm:text-lg font-semibold">No users found</p>
             </div>
           ) : (
-            <div className="space-y-8">
+            <div className="space-y-6 sm:space-y-8">
               {/* Pending Users Section */}
               {pendingUsers.length > 0 && (
                 <div>
-                  <div className="flex items-center gap-3 mb-4">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                     <div 
                       style={{
                         background: '#e0e5ec',
                         boxShadow: '4px 4px 8px rgba(163, 177, 198, 0.6), -4px -4px 8px rgba(255, 255, 255, 0.5)',
                       }}
-                      className="p-2 rounded-xl"
+                      className="p-1.5 sm:p-2 rounded-xl"
                     >
-                      <UserCog size={22} className="text-orange-500" />
+                      <UserCog size={18} className="sm:w-[22px] sm:h-[22px] text-orange-500" />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-800">
+                    <h3 className="text-base sm:text-xl font-bold text-gray-800">
                       Pending Approvals ({pendingUsers.length})
                     </h3>
                   </div>
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {pendingUsers.map((u) => renderUserCard(u, true))}
                   </div>
                 </div>
@@ -443,21 +444,21 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
               {/* Approved Users Section */}
               {approvedUsers.length > 0 && (
                 <div>
-                  <div className="flex items-center gap-3 mb-4">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                     <div 
                       style={{
                         background: '#e0e5ec',
                         boxShadow: '4px 4px 8px rgba(163, 177, 198, 0.6), -4px -4px 8px rgba(255, 255, 255, 0.5)',
                       }}
-                      className="p-2 rounded-xl"
+                      className="p-1.5 sm:p-2 rounded-xl"
                     >
-                      <UserCheck size={22} className="text-green-600" />
+                      <UserCheck size={18} className="sm:w-[22px] sm:h-[22px] text-green-600" />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-800">
+                    <h3 className="text-base sm:text-xl font-bold text-gray-800">
                       Approved Users ({approvedUsers.length})
                     </h3>
                   </div>
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {approvedUsers.map((u) => renderUserCard(u, false))}
                   </div>
                 </div>
