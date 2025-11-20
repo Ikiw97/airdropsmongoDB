@@ -294,7 +294,7 @@ function MultisendTool() {
   const invalidCount = Math.max(0, totalLines - validCount);
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: "#E3E8EF" }}>
+    <div className="min-h-screen flex items-center justify-center px-4 md:px-0" style={{ background: "#E3E8EF" }}>
       {/* small internal CSS for hover transitions while keeping neumorphic style */}
       <style>{`
         .neumo-btn { transition: box-shadow 0.15s ease, transform 0.08s ease; }
@@ -304,50 +304,44 @@ function MultisendTool() {
       `}</style>
 
       <div
-        className="w-full max-w-5xl p-8 rounded-3xl"
+        className="w-full max-w-5xl p-5 md:p-8 rounded-3xl"
         style={{
           background: "linear-gradient(180deg, #E9EEF4 0%, #E0E6EC 100%)",
           boxShadow: "9px 9px 22px rgba(190,190,190,0.7), -9px -9px 22px rgba(255,255,255,0.8)"
         }}
       >
         {/* Header */}
-        <div className="mb-6 flex items-start justify-between">
-          <div>
-            <div className="flex items-center gap-3 mb-3">
-              <div
-                style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 12,
-                  background: "#E3E8EF",
-                  boxShadow: "inset 6px 6px 12px rgba(190,190,190,0.6), inset -6px -6px 12px rgba(255,255,255,0.9)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-              >
-                
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M2 7C2 4.791 3.791 3 6 3H18C20.209 3 22 4.791 22 7V17C22 19.209 20.209 21 18 21H6C3.791 21 2 19.209 2 17V7Z"
-                    fill="#60A5FA"
-                  />
-                  <path
-                    d="M16 11H21V13H16C14.895 13 14 12.105 14 11C14 9.895 14.895 9 16 9Z"
-                    fill="#3B82F6"
-                  />
-                  <circle cx="17.5" cy="12" r="1.2" fill="white" />
-                </svg>
-                
-              </div>
-              <div>
-                <h1 className="text-lg font-semibold text-gray-700">Multisend Tool</h1>
-                <p className="text-xs text-gray-500 mt-1 max-w-xl">
-                  Power-user batch sender — execute multiple native or ERC20 transfers in sequence.
-                  Designed for engineers and operators: paste recipients, review totals, then execute.
-                </p>
-              </div>
+        <div className="mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 12,
+                background: "#E3E8EF",
+                boxShadow: "inset 6px 6px 12px rgba(190,190,190,0.6), inset -6px -6px 12px rgba(255,255,255,0.9)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+            >
+              {/* Solid wallet SVG */}
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M2 7C2 4.791 3.791 3 6 3H18C20.209 3 22 4.791 22 7V17C22 19.209 20.209 21 18 21H6C3.791 21 2 19.209 2 17V7Z"
+                  fill="#60A5FA"
+                />
+                <path
+                  d="M16 11H21V13H16C14.895 13 14 12.105 14 11C14 9.895 14.895 9 16 9Z"
+                  fill="#3B82F6"
+                />
+                <circle cx="17.5" cy="12" r="1.2" fill="white" />
+              </svg>
+            </div>
+
+            <div>
+              <h1 className="text-lg font-semibold text-gray-700">Multisend Tool</h1>
+              {/* header description removed as requested */}
             </div>
           </div>
 
@@ -419,7 +413,7 @@ function MultisendTool() {
         {account && (
           <div className="mb-6">
             <label className="block text-sm text-gray-600 mb-2">Send Type</label>
-            <div className="flex gap-3">
+            <div className="flex flex-col md:flex-row gap-3">
               <button
                 onClick={() => setSendType("native")}
                 className={`flex-1 py-3 rounded-2xl font-semibold text-sm neumo-btn`}
@@ -510,7 +504,7 @@ function MultisendTool() {
               Recipients (Format: address,amount — one per line)
             </label>
             <textarea
-              className="w-full p-4 rounded-2xl font-mono text-sm input-focus"
+              className="w-full p-3 md:p-4 rounded-2xl font-mono text-xs md:text-sm input-focus"
               placeholder={"0xaddress1,0.01\n0xaddress2,0.02\n0xaddress3,0.03"}
               rows="8"
               value={recipients}
@@ -524,17 +518,17 @@ function MultisendTool() {
                 outline: "none"
               }}
             ></textarea>
-            <div className="flex justify-between items-center mt-2 text-sm text-gray-600">
-              <span>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-2 text-sm text-gray-600 gap-2">
+              <div>
                 Total Recipients: <span className="text-cyan-600 font-semibold">{validCount}</span>
                 {invalidCount > 0 && <span className="text-xs text-red-500 ml-2">({invalidCount} invalid line{invalidCount>1?"s":""})</span>}
-              </span>
-              <span>
+              </div>
+              <div>
                 Total Amount:{" "}
                 <span className="text-cyan-600 font-semibold">
                   {getTotalAmount()} {sendType === "token" && tokenInfo ? tokenInfo.symbol : networkSymbol}
                 </span>
-              </span>
+              </div>
             </div>
             <p className="text-xs text-gray-500 mt-2">
               Hint: addresses must be checksummed 0x... and amounts are decimals. Invalid lines are ignored.
