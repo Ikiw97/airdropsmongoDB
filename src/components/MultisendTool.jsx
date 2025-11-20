@@ -326,9 +326,20 @@ function MultisendTool() {
                   justifyContent: "center"
                 }}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2L15 8H9L12 2Z" fill="#60A5FA"/>
+                
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M2 7C2 4.791 3.791 3 6 3H18C20.209 3 22 4.791 22 7V17C22 19.209 20.209 21 18 21H6C3.791 21 2 19.209 2 17V7Z"
+                    fill="#60A5FA"
+                  />
+                  <path
+                    d="M16 11H21V13H16C14.895 13 14 12.105 14 11C14 9.895 14.895 9 16 9Z"
+                    fill="#3B82F6"
+                  />
+                  <circle cx="17.5" cy="12" r="1.2" fill="white" />
                 </svg>
+                
               </div>
               <div>
                 <h1 className="text-lg font-semibold text-gray-700">Multisend Tool</h1>
