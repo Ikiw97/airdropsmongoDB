@@ -217,15 +217,15 @@ const DEX_LOGOS = {
  * UI constants
  */
 const BLOCKCHAIN_INFO = {
-  evm: { name: 'EVM Chains', icon: '🔷', color: 'from-blue-500 to-blue-600' },
-  solana: { name: 'Solana', icon: '⚡', color: 'from-purple-500 to-purple-600' },
-  sui: { name: 'Sui', icon: '🌊', color: 'from-cyan-500 to-cyan-600' },
-  aptos: { name: 'Aptos', icon: '🎯', color: 'from-green-500 to-green-600' },
-  ton: { name: 'TON', icon: '💎', color: 'from-indigo-500 to-indigo-600' },
-  tron: { name: 'Tron', icon: '🔴', color: 'from-red-500 to-red-600' },
-  near: { name: 'NEAR', icon: '🌈', color: 'from-teal-500 to-teal-600' },
-  cosmos: { name: 'Cosmos', icon: '⚛️', color: 'from-pink-500 to-pink-600' },
-  algorand: { name: 'Algorand', icon: '⭕', color: 'from-orange-500 to-orange-600' }
+  evm: { name: 'EVM Chains', icon: '', color: 'from-blue-500 to-blue-600' },
+  solana: { name: 'Solana', icon: '', color: 'from-purple-500 to-purple-600' },
+  sui: { name: 'Sui', icon: '', color: 'from-cyan-500 to-cyan-600' },
+  aptos: { name: 'Aptos', icon: '', color: 'from-green-500 to-green-600' },
+  ton: { name: 'TON', icon: '', color: 'from-indigo-500 to-indigo-600' },
+  tron: { name: 'Tron', icon: '', color: 'from-red-500 to-red-600' },
+  near: { name: 'NEAR', icon: '', color: 'from-teal-500 to-teal-600' },
+  cosmos: { name: 'Cosmos', icon: '', color: 'from-pink-500 to-pink-600' },
+  algorand: { name: 'Algorand', icon: '', color: 'from-orange-500 to-orange-600' }
 };
 
 const CATEGORY_NAMES = {
@@ -406,7 +406,7 @@ function DexList() {
             >
               <option value="all">All Blockchains</option>
               {Object.entries(BLOCKCHAIN_INFO).map(([key, info]) => (
-                <option key={key} value={key}>{info.icon} {info.name}</option>
+                <option key={key} value={key}>{info.name}</option>
               ))}
             </select>
           </div>
@@ -483,8 +483,19 @@ function DexList() {
                       boxShadow: '4px 4px 8px rgba(163,177,198,0.4)'
                     }}
                   >
-                    {/* keep emoji/ecosystem label */}
-                    {blockchainInfo.icon} {blockchainInfo.name}
+                    {/* show SVG logo for the blockchain if available (no emoji) */}
+                    <span className="inline-flex items-center gap-2">
+                      {CHAIN_LOGOS[blockchainInfo.name] ? (
+                        <img
+                          src={CHAIN_LOGOS[blockchainInfo.name]}
+                          alt={blockchainInfo.name}
+                          loading="lazy"
+                          className="w-5 h-5 object-contain inline-block"
+                          onError={(e) => { e.currentTarget.src = FALLBACK_LOGO; }}
+                        />
+                      ) : null}
+                      {blockchainInfo.name}
+                    </span>
                   </div>
                   <div className="text-sm text-gray-600 font-medium">
                     {Object.values(chains).flat().length} DEX
@@ -503,6 +514,7 @@ function DexList() {
                             <img
                               src={CHAIN_LOGOS[chain]}
                               alt={chain}
+                              loading="lazy"
                               className="w-5 h-5 object-contain rounded-sm"
                               onError={(e) => { e.currentTarget.src = FALLBACK_LOGO; }}
                             />
@@ -534,6 +546,7 @@ function DexList() {
                                   <img
                                     src={DEX_LOGOS[dex.dex] || CHAIN_LOGOS[dex.chain] || FALLBACK_LOGO}
                                     alt={dex.dex}
+                                    loading="lazy"
                                     className="w-5 h-5 object-contain rounded-sm"
                                     onError={(e) => { e.currentTarget.src = FALLBACK_LOGO; }}
                                   />
