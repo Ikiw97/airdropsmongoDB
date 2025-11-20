@@ -46,6 +46,7 @@ const DEX_DATA = {
       { "dex": "Orca", "url": "https://orca.so" },
       { "dex": "Saros", "url": "https://saros.finance" },
       { "dex": "Meteora", "url": "https://meteora.ag" },
+      { "dex": "Jupiter", "url": "https://jup.ag" },
       { "dex": "Aldrin", "url": "https://aldrin.com" },
       { "dex": "Step Finance Swap", "url": "https://step.finance" }
     ],
@@ -171,6 +172,7 @@ const DEX_LOGOS = {
   Orca: "https://www.orca.so/logos/orca.svg",
   Saros: "https://saros.finance/logo.svg",
   Meteora: "https://meteora.ag/favicon.svg",
+  Jupiter: "https://assets.jup.ag/logo.png",
   Aldrin: "https://aldrin.com/favicon.svg",
   "Step Finance Swap": "https://step.finance/logo.svg",
   "Serum (legacy)": "https://cryptologos.cc/logos/serum-srm-logo.svg",
@@ -181,6 +183,7 @@ const DEX_LOGOS = {
   "Mango Markets": "https://mango.markets/assets/icons/logo.svg",
   Cypher: "https://cypher.trade/favicon.svg",
   GooseFX: "https://goosefx.io/favicon.svg",
+  
 
   // Sui
   Cetus: "https://www.cetus.zone/logo.svg",
