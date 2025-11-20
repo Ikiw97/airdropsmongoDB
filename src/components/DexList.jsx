@@ -113,15 +113,51 @@ const DEX_DATA = {
 };
 
 const BLOCKCHAIN_INFO = {
-  evm: { name: 'EVM Chains', icon: '🔷', color: 'from-blue-500 to-blue-600' },
-  solana: { name: 'Solana', icon: '⚡', color: 'from-purple-500 to-purple-600' },
-  sui: { name: 'Sui', icon: '🌊', color: 'from-cyan-500 to-cyan-600' },
-  aptos: { name: 'Aptos', icon: '🎯', color: 'from-green-500 to-green-600' },
-  ton: { name: 'TON', icon: '💎', color: 'from-indigo-500 to-indigo-600' },
-  tron: { name: 'Tron', icon: '🔴', color: 'from-red-500 to-red-600' },
-  near: { name: 'NEAR', icon: '🌈', color: 'from-teal-500 to-teal-600' },
-  cosmos: { name: 'Cosmos', icon: '⚛️', color: 'from-pink-500 to-pink-600' },
-  algorand: { name: 'Algorand', icon: '⭕', color: 'from-orange-500 to-orange-600' }
+  evm: { 
+    name: 'EVM Chains', 
+    logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    color: 'from-blue-500 to-blue-600' 
+  },
+  solana: { 
+    name: 'Solana', 
+    logo: 'https://cryptologos.cc/logos/solana-sol-logo.png',
+    color: 'from-purple-500 to-purple-600' 
+  },
+  sui: { 
+    name: 'Sui', 
+    logo: 'https://cryptologos.cc/logos/sui-sui-logo.png',
+    color: 'from-cyan-500 to-cyan-600' 
+  },
+  aptos: { 
+    name: 'Aptos', 
+    logo: 'https://cryptologos.cc/logos/aptos-apt-logo.png',
+    color: 'from-green-500 to-green-600' 
+  },
+  ton: { 
+    name: 'TON', 
+    logo: 'https://cryptologos.cc/logos/toncoin-ton-logo.png',
+    color: 'from-indigo-500 to-indigo-600' 
+  },
+  tron: { 
+    name: 'Tron', 
+    logo: 'https://cryptologos.cc/logos/tron-trx-logo.png',
+    color: 'from-red-500 to-red-600' 
+  },
+  near: { 
+    name: 'NEAR', 
+    logo: 'https://cryptologos.cc/logos/near-protocol-near-logo.png',
+    color: 'from-teal-500 to-teal-600' 
+  },
+  cosmos: { 
+    name: 'Cosmos', 
+    logo: 'https://cryptologos.cc/logos/cosmos-atom-logo.png',
+    color: 'from-pink-500 to-pink-600' 
+  },
+  algorand: { 
+    name: 'Algorand', 
+    logo: 'https://cryptologos.cc/logos/algorand-algo-logo.png',
+    color: 'from-orange-500 to-orange-600' 
+  }
 };
 
 const CATEGORY_NAMES = {
