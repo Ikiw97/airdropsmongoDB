@@ -29,6 +29,7 @@ import {
   Zap,
   Shield,
   CheckCircle,
+  Repeat,
 } from "lucide-react";
 import {
   LineChart,
@@ -47,6 +48,7 @@ import NewsAggregator from "./components/NewsAggregator";
 import MultisendTool from "./components/MultisendTool";
 import TradingPlatform from "./components/TradingPlatform";
 import BalanceChecker from "./components/BalanceChecker";
+import DexList from "./components/DexList";
 import apiService from "./api/apiService";
 
 const DEX_LIST = [
@@ -441,6 +443,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
     { id: "roi", label: "ROI Calculator", icon: Calculator, color: "text-teal-600" },
     { id: "news", label: "News Feed", icon: Newspaper, color: "text-yellow-700" },
     { id: "balance", label: "Balance Checker", icon: Wallet, color: "text-indigo-600" },
+    { id: "dexlist", label: "List DEX", icon: Repeat, color: "text-cyan-600" },
     { id: "multisend", label: "Multisend", icon: Send, color: "text-pink-600" },
   ];
 
@@ -592,6 +595,9 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
   )}
   {activeView === "multisend" && (
     <TypingTextFixed key="multisend" icon="🚀" text="Multisend Native & Tokens" />
+  )}
+  {activeView === "dexlist" && (
+    <TypingTextFixed key="dexlist" icon="🔄" text="List DEX - All Chains" />
   )}
 </h1>
 
@@ -1057,6 +1063,12 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
               <MultisendTool />
             </div>
           )}
+
+          {activeView === "dexlist" && (
+            <div className="max-w-7xl mx-auto">
+              <DexList />
+            </div>
+          )}
           
         </div>
       </div>
@@ -1072,3 +1084,4 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
 }
 
 export default TrackerPageFullScreen;
+
