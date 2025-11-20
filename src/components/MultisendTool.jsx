@@ -84,6 +84,20 @@ function MultisendTool() {
     setTokenInfo(null);
   };
 
+  // Cleanup listeners on unmount
+  useEffect(() => {
+    return () => {
+      if (window.ethereum && window.ethereum.removeListener) {
+        try {
+          window.ethereum.removeListener("accountsChanged", () => {});
+          window.ethereum.removeListener("chainChanged", () => {});
+        } catch (e) {
+          /* ignore */
+        }
+      }
+    };
+  }, []);
+
   // Fetch Balance
   useEffect(() => {
     const fetchBalance = async () => {
@@ -274,11 +288,21 @@ function MultisendTool() {
   const networkSymbol = currentNetwork?.symbol || "TOKEN";
   const explorer = currentNetwork?.explorer || "";
 
-  // NEUMORPHIC COLORS
-  // main background color from screenshot: #E3E8EF
-  // use subtle gradient for soft lighting
+  // lightweight hint UI: count invalid lines (non-invasive, doesn't change algorithm)
+  const totalLines = recipients.split("\n").filter((line) => line.trim()).length;
+  const validCount = parseRecipients().length;
+  const invalidCount = Math.max(0, totalLines - validCount);
+
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: "#E3E8EF" }}>
+      {/* small internal CSS for hover transitions while keeping neumorphic style */}
+      <style>{`
+        .neumo-btn { transition: box-shadow 0.15s ease, transform 0.08s ease; }
+        .neumo-btn:hover { transform: translateY(-2px); box-shadow: 6px 6px 18px rgba(150,150,150,0.38), -6px -6px 18px rgba(255,255,255,0.95); }
+        .neumo-inset { transition: box-shadow 0.12s ease; }
+        .input-focus:focus { outline: none; box-shadow: inset 4px 4px 10px rgba(180,180,180,0.5), inset -4px -4px 10px rgba(255,255,255,0.95); }
+      `}</style>
+
       <div
         className="w-full max-w-5xl p-8 rounded-3xl"
         style={{
@@ -287,25 +311,39 @@ function MultisendTool() {
         }}
       >
         {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: 12,
-                background: "#E3E8EF",
-                boxShadow: "inset 6px 6px 12px rgba(190,190,190,0.6), inset -6px -6px 12px rgba(255,255,255,0.9)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L15 8H9L12 2Z" fill="#60A5FA"/>
-              </svg>
+        <div className="mb-6 flex items-start justify-between">
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 12,
+                  background: "#E3E8EF",
+                  boxShadow: "inset 6px 6px 12px rgba(190,190,190,0.6), inset -6px -6px 12px rgba(255,255,255,0.9)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L15 8H9L12 2Z" fill="#60A5FA"/>
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-lg font-semibold text-gray-700">Multisend Tool</h1>
+                <p className="text-xs text-gray-500 mt-1 max-w-xl">
+                  Power-user batch sender — execute multiple native or ERC20 transfers in sequence.
+                  Designed for engineers and operators: paste recipients, review totals, then execute.
+                </p>
+              </div>
             </div>
-            <h1 className="text-lg font-semibold text-gray-700">Multisend Tool</h1>
+          </div>
+
+          {/* quick status box */}
+          <div className="text-right">
+            <div style={{ fontSize: 12 }} className="text-gray-600">Network</div>
+            <div className="font-semibold text-gray-800">{currentNetwork?.name || "Not connected"}</div>
           </div>
         </div>
 
@@ -314,11 +352,10 @@ function MultisendTool() {
           {!account ? (
             <button
               onClick={connectWallet}
-              className="w-full py-3 rounded-2xl text-gray-700 font-semibold"
+              className="w-full py-3 rounded-2xl text-gray-700 font-semibold neumo-btn"
               style={{
                 background: "#E3E8EF",
-                boxShadow: "5px 5px 12px rgba(190,190,190,0.6), -5px -5px 12px rgba(255,255,255,0.9)",
-                transition: "box-shadow 0.15s ease"
+                boxShadow: "5px 5px 12px rgba(190,190,190,0.6), -5px -5px 12px rgba(255,255,255,0.9)"
               }}
               data-testid="connect-wallet-btn"
             >
@@ -328,7 +365,7 @@ function MultisendTool() {
           ) : (
             <div className="space-y-3">
               <div
-                className="flex items-center justify-between p-3 rounded-2xl"
+                className="flex items-center justify-between p-3 rounded-2xl neumo-inset"
                 style={{
                   background: "#E3E8EF",
                   boxShadow: "inset 5px 5px 10px rgba(190,190,190,0.6), inset -5px -5px 10px rgba(255,255,255,0.9)"
@@ -340,7 +377,7 @@ function MultisendTool() {
                 </div>
                 <button
                   onClick={disconnectWallet}
-                  className="text-xs bg-red-500 text-white px-3 py-1 rounded-xl"
+                  className="text-xs bg-red-500 text-white px-3 py-1 rounded-xl neumo-btn"
                   style={{ boxShadow: "3px 3px 8px rgba(180,30,30,0.25)" }}
                 >
                   Disconnect
@@ -348,7 +385,7 @@ function MultisendTool() {
               </div>
 
               <div
-                className="p-3 rounded-2xl text-left"
+                className="p-3 rounded-2xl text-left neumo-inset"
                 style={{
                   background: "#E3E8EF",
                   boxShadow: "inset 5px 5px 10px rgba(190,190,190,0.6), inset -5px -5px 10px rgba(255,255,255,0.9)"
@@ -374,7 +411,7 @@ function MultisendTool() {
             <div className="flex gap-3">
               <button
                 onClick={() => setSendType("native")}
-                className={`flex-1 py-3 rounded-2xl font-semibold text-sm`}
+                className={`flex-1 py-3 rounded-2xl font-semibold text-sm neumo-btn`}
                 data-testid="send-native-btn"
                 style={{
                   background: sendType === "native" ? "#E3E8EF" : "#E3E8EF",
@@ -389,7 +426,7 @@ function MultisendTool() {
               </button>
               <button
                 onClick={() => setSendType("token")}
-                className={`flex-1 py-3 rounded-2xl font-semibold text-sm`}
+                className={`flex-1 py-3 rounded-2xl font-semibold text-sm neumo-btn`}
                 data-testid="send-token-btn"
                 style={{
                   background: sendType === "token" ? "#E3E8EF" : "#E3E8EF",
@@ -415,7 +452,7 @@ function MultisendTool() {
               placeholder="0x..."
               value={tokenAddress}
               onChange={(e) => setTokenAddress(e.target.value)}
-              className="w-full p-3 rounded-2xl text-gray-700"
+              className="w-full p-3 rounded-2xl text-gray-700 input-focus"
               data-testid="token-address-input"
               style={{
                 background: "#E3E8EF",
@@ -424,11 +461,16 @@ function MultisendTool() {
                 outline: "none"
               }}
             />
-            {tokenInfo && (
-              <p className="text-xs text-green-600 mt-2">
-                ✅ Token: {tokenInfo.symbol} (Decimals: {tokenInfo.decimals})
+            <div className="mt-2 flex items-center justify-between">
+              <p className="text-xs text-gray-500">
+                Tip: paste the ERC20 contract address. Decimals & symbol will be auto-detected if valid.
               </p>
-            )}
+              {tokenInfo && (
+                <p className="text-xs text-green-600">
+                  ✅ {tokenInfo.symbol} · {tokenInfo.decimals} decimals
+                </p>
+              )}
+            </div>
           </div>
         )}
 
@@ -454,11 +496,11 @@ function MultisendTool() {
         {account && (
           <div className="mb-6">
             <label className="block text-sm text-gray-600 mb-2">
-              Recipients (Format: address,amount - one per line)
+              Recipients (Format: address,amount — one per line)
             </label>
             <textarea
-              className="w-full p-4 rounded-2xl font-mono text-sm"
-              placeholder="0xaddress1,0.01&#10;0xaddress2,0.02&#10;0xaddress3,0.03"
+              className="w-full p-4 rounded-2xl font-mono text-sm input-focus"
+              placeholder={"0xaddress1,0.01\n0xaddress2,0.02\n0xaddress3,0.03"}
               rows="8"
               value={recipients}
               onChange={(e) => setRecipients(e.target.value)}
@@ -473,7 +515,8 @@ function MultisendTool() {
             ></textarea>
             <div className="flex justify-between items-center mt-2 text-sm text-gray-600">
               <span>
-                Total Recipients: <span className="text-cyan-600 font-semibold">{parseRecipients().length}</span>
+                Total Recipients: <span className="text-cyan-600 font-semibold">{validCount}</span>
+                {invalidCount > 0 && <span className="text-xs text-red-500 ml-2">({invalidCount} invalid line{invalidCount>1?"s":""})</span>}
               </span>
               <span>
                 Total Amount:{" "}
@@ -482,6 +525,9 @@ function MultisendTool() {
                 </span>
               </span>
             </div>
+            <p className="text-xs text-gray-500 mt-2">
+              Hint: addresses must be checksummed 0x... and amounts are decimals. Invalid lines are ignored.
+            </p>
           </div>
         )}
 
@@ -505,7 +551,7 @@ function MultisendTool() {
           <button
             onClick={executeMultisend}
             disabled={loading || parseRecipients().length === 0}
-            className="w-full py-3 rounded-2xl font-semibold flex items-center justify-center gap-2"
+            className="w-full py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 neumo-btn"
             data-testid="send-multisend-btn"
             style={{
               background: loading || parseRecipients().length === 0 ? "#E3E8EF" : "#E3E8EF",
@@ -519,12 +565,12 @@ function MultisendTool() {
             {loading ? (
               <>
                 <Loader size={18} className="animate-spin" />
-                Sending...
+                Executing...
               </>
             ) : (
               <>
                 <Send size={18} />
-                Send to {parseRecipients().length} Recipients
+                Execute Multisend ({parseRecipients().length})
               </>
             )}
           </button>
