@@ -30,19 +30,20 @@ const GasTracker = () => {
   const [lastUpdate, setLastUpdate] = useState(null);
 
   // ========================
-  // NEUMORPHIC STYLE CLASSES
+  // NEUMORPHIC STYLE CLASSES (SOFT WHITE SHADOW)
   // ========================
+
   const neuCard =
-    "bg-[#e0e5ec] rounded-3xl p-5 shadow-[9px_9px_16px_#b8b9be,-9px_-9px_16px_#ffffff] transition";
+    "bg-[#e0e5ec] rounded-3xl p-5 shadow-[9px_9px_16px_#b8b9be,-9px_-9px_16px_rgba(255,255,255,0.55)] transition";
 
   const neuInset =
-    "shadow-[inset_4px_4px_8px_#b8b9be,inset_-4px_-4px_8px_#ffffff]";
+    "shadow-[inset_4px_4px_8px_#b8b9be,inset_-4px_-4px_8px_rgba(255,255,255,0.45)]";
 
   const neuButton =
-    "px-6 py-2 bg-[#e0e5ec] rounded-xl text-gray-700 font-semibold shadow-[3px_3px_6px_#b8b9be,-3px_-3px_6px_#ffffff] active:shadow-[inset_3px_3px_6px_#b8b9be,inset_-3px_-3px_6px_#ffffff] transition";
+    "px-6 py-2 bg-[#e0e5ec] rounded-xl text-gray-700 font-semibold shadow-[3px_3px_6px_#b8b9be,-3px_-3px_6px_rgba(255,255,255,0.5)] active:shadow-[inset_3px_3px_6px_#b8b9be,inset_-3px_-3px_6px_rgba(255,255,255,0.45)] transition";
 
   const neuHeader =
-    "bg-[#e0e5ec] rounded-3xl p-6 shadow-[9px_9px_16px_#b8b9be,-9px_-9px_16px_#ffffff] cursor-pointer";
+    "bg-[#e0e5ec] rounded-3xl p-6 shadow-[9px_9px_16px_#b8b9be,-9px_-9px_16px_rgba(255,255,255,0.55)] cursor-pointer";
 
   const accentGradient =
     "bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 text-white";
@@ -230,7 +231,10 @@ const GasTracker = () => {
     <div className="w-full mb-8">
 
       {/* HEADER CARD */}
-      <div className={`${neuHeader} flex justify-between items-center`} onClick={() => setIsExpanded(!isExpanded)}>
+      <div
+        className={`${neuHeader} flex justify-between items-center`}
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
         <h2 className="text-2xl font-bold text-gray-700 flex items-center gap-2">
           <Fuel className="text-blue-400" size={26} />
           Real-time Gas Tracker
@@ -310,7 +314,7 @@ const GasTracker = () => {
                       background: "#e0e5ec",
                       border: "none",
                       boxShadow:
-                        "inset 3px 3px 6px #b8b9be, inset -3px -3px 6px #ffffff",
+                        "inset 3px 3px 6px #b8b9be, inset -3px -3px 6px rgba(255,255,255,0.45)",
                     }}
                   />
                   <Legend />
