@@ -218,7 +218,7 @@ const GasTracker = () => {
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <h2 className="text-2xl font-bold text-gray-700 flex items-center gap-2">
-          <Fuel className="text-orange-500" size={26} /> ⛽ Real-time Gas Tracker
+          <Fuel className="text-orange-500" size={26} /> Real-time Gas Tracker
         </h2>
         <div className="flex items-center gap-3 text-gray-500">
           {loading ? "🔄 Memperbarui..." : "✅ Live Data"}
