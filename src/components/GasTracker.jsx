@@ -29,6 +29,27 @@ const GasTracker = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(null);
 
+  // ========================
+  // NEUMORPHIC STYLE CLASSES
+  // ========================
+  const neuCard =
+    "bg-[#e0e5ec] rounded-3xl p-5 shadow-[9px_9px_16px_#b8b9be,-9px_-9px_16px_#ffffff] transition";
+
+  const neuInset =
+    "shadow-[inset_4px_4px_8px_#b8b9be,inset_-4px_-4px_8px_#ffffff]";
+
+  const neuButton =
+    "px-6 py-2 bg-[#e0e5ec] rounded-xl text-gray-700 font-semibold shadow-[3px_3px_6px_#b8b9be,-3px_-3px_6px_#ffffff] active:shadow-[inset_3px_3px_6px_#b8b9be,inset_-3px_-3px_6px_#ffffff] transition";
+
+  const neuHeader =
+    "bg-[#e0e5ec] rounded-3xl p-6 shadow-[9px_9px_16px_#b8b9be,-9px_-9px_16px_#ffffff] cursor-pointer";
+
+  const accentGradient =
+    "bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 text-white";
+
+  const softText = "text-gray-600";
+
+  // == Fetch Functions (no changes) ===
   const fetchGasPrices = async () => {
     try {
       setLoading(true);
@@ -200,44 +221,38 @@ const GasTracker = () => {
   };
 
   const chains = [
-    { id: "ethereum", name: "Ethereum", color: "#627EEA" },
-    { id: "bsc", name: "BSC", color: "#F3BA2F" },
-    { id: "polygon", name: "Polygon", color: "#8247E5" },
+    { id: "ethereum", name: "Ethereum" },
+    { id: "bsc", name: "BSC" },
+    { id: "polygon", name: "Polygon" },
   ];
-
-  // ===== NEUMORPHIC STYLE CLASSES =====
-  const neuCard =
-    "bg-[#e0e5ec] rounded-3xl p-5 shadow-[9px_9px_16px_#b8b9be,-9px_-9px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#b8b9be,inset_-4px_-4px_8px_#ffffff] transition";
-  const neuButton =
-    "bg-[#e0e5ec] rounded-xl shadow-[3px_3px_6px_#b8b9be,-3px_-3px_6px_#ffffff] active:shadow-[inset_3px_3px_6px_#b8b9be,inset_-3px_-3px_6px_#ffffff] transition text-gray-700 font-semibold";
 
   return (
     <div className="w-full mb-8">
-      <div
-        className={`bg-[#e0e5ec] rounded-3xl shadow-[9px_9px_16px_#b8b9be,-9px_-9px_16px_#ffffff] p-6 mb-3 flex justify-between items-center cursor-pointer`}
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
+
+      {/* HEADER CARD */}
+      <div className={`${neuHeader} flex justify-between items-center`} onClick={() => setIsExpanded(!isExpanded)}>
         <h2 className="text-2xl font-bold text-gray-700 flex items-center gap-2">
-          <Fuel className="text-orange-500" size={26} /> Real-time Gas Tracker
+          <Fuel className="text-blue-400" size={26} />
+          Real-time Gas Tracker
         </h2>
+
         <div className="flex items-center gap-3 text-gray-500">
-          {loading ? "🔄 Memperbarui..." : "✅ Live Data"}
+          {loading ? "🔄 Updating..." : "✅ Live"}
           {isExpanded ? <ChevronUp /> : <ChevronDown />}
         </div>
       </div>
 
       {isExpanded && (
-        <div className="bg-[#e0e5ec] rounded-3xl shadow-[9px_9px_16px_#b8b9be,-9px_-9px_16px_#ffffff] p-6 space-y-6">
-          {/* Chain Selector */}
+        <div className={`${neuCard} mt-4 space-y-6`}>
+
+          {/* CHAIN BUTTONS */}
           <div className="flex flex-wrap justify-center gap-3">
             {chains.map((chain) => (
               <button
                 key={chain.id}
                 onClick={() => setSelectedChain(chain.id)}
-                className={`${neuButton} px-6 py-2 ${
-                  selectedChain === chain.id
-                    ? "text-white bg-gradient-to-r from-orange-400 to-pink-400"
-                    : ""
+                className={`${neuButton} ${
+                  selectedChain === chain.id ? `${accentGradient} shadow-none` : ""
                 }`}
               >
                 {chain.name}
@@ -245,39 +260,31 @@ const GasTracker = () => {
             ))}
           </div>
 
-          {/* Gas Price Cards */}
+          {/* GAS CARDS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {["slow", "average", "fast"].map((speed) => {
-              const label =
-                speed === "slow"
-                  ? "🐢 Lambat"
-                  : speed === "average"
-                  ? "⚡ Rata-rata"
-                  : "🚀 Cepat";
-              const color =
-                speed === "slow"
-                  ? "text-green-500"
-                  : speed === "average"
-                  ? "text-yellow-500"
-                  : "text-red-500";
-              return (
-                <div key={speed} className={`${neuCard}`}>
-                  <div className="text-sm text-gray-500 mb-1">{label}</div>
-                  <div className={`text-3xl font-bold ${color}`}>
-                    {gasData[selectedChain][speed]} Gwei
-                  </div>
+            {["slow", "average", "fast"].map((speed) => (
+              <div key={speed} className={`${neuCard}`}>
+                <div className="text-sm text-gray-500 mb-1">
+                  {speed === "slow"
+                    ? "🐢 Lambat"
+                    : speed === "average"
+                    ? "⚡ Rata-rata"
+                    : "🚀 Cepat"}
                 </div>
-              );
-            })}
+                <div className="text-3xl font-bold text-gray-700">
+                  {gasData[selectedChain][speed]} Gwei
+                </div>
+              </div>
+            ))}
           </div>
 
-          {/* Recommendation */}
+          {/* RECOMMENDATION CARD */}
           {(() => {
             const rec = getRecommendation(selectedChain);
             const Icon = rec.icon;
             return (
               <div className={`${neuCard} flex items-center gap-3`}>
-                <Icon className={`${rec.color}`} size={24} />
+                <Icon className={rec.color} size={24} />
                 <div>
                   <div className={`font-semibold ${rec.color}`}>{rec.text}</div>
                   <div className="text-sm text-gray-500">
@@ -288,11 +295,11 @@ const GasTracker = () => {
             );
           })()}
 
-          {/* Chart */}
+          {/* CHART */}
           {historicalData.length > 1 && (
             <div className={`${neuCard}`}>
               <h3 className="text-lg font-semibold text-gray-600 mb-4">
-                📊 Tren Harga Gas (Real-time)
+                📊 Tren Harga Gas
               </h3>
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={historicalData}>
@@ -300,23 +307,24 @@ const GasTracker = () => {
                   <YAxis stroke="#9ca3af" />
                   <Tooltip
                     contentStyle={{
-                      background: "#f5f7fa",
-                      border: "1px solid #d1d5db",
-                      borderRadius: "8px",
+                      background: "#e0e5ec",
+                      border: "none",
+                      boxShadow:
+                        "inset 3px 3px 6px #b8b9be, inset -3px -3px 6px #ffffff",
                     }}
                   />
                   <Legend />
-                  <Line dataKey="ethereum" stroke="#627EEA" strokeWidth={2} dot={false} />
-                  <Line dataKey="bsc" stroke="#F3BA2F" strokeWidth={2} dot={false} />
-                  <Line dataKey="polygon" stroke="#8247E5" strokeWidth={2} dot={false} />
+                  <Line dataKey="ethereum" stroke="#6b79ff" strokeWidth={3} dot={false} />
+                  <Line dataKey="bsc" stroke="#f2c94c" strokeWidth={3} dot={false} />
+                  <Line dataKey="polygon" stroke="#b769ff" strokeWidth={3} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           )}
 
           <div className="text-center text-xs text-gray-500">
-            ℹ️ Diperbarui otomatis setiap 15 detik
-            {lastUpdate && ` | Terakhir: ${lastUpdate.toLocaleTimeString("id-ID")}`}
+            Auto update 15 detik
+            {lastUpdate && ` • Terakhir: ${lastUpdate.toLocaleTimeString("id-ID")}`}
           </div>
         </div>
       )}
