@@ -1,3 +1,4 @@
+// FULL FILE: NewsAggregator.jsx (Neumorphism Theme Applied)
 import React, { useState, useEffect, useCallback } from "react";
 import {
   Newspaper,
@@ -11,12 +12,21 @@ import {
   ChevronDown,
   ChevronUp,
   AlertCircle,
-  Sparkles,
   RefreshCw,
   Clock,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
+
+// === NEUMORPHIC UTILITIES ===
+const neuOut =
+  "bg-[#e0e5ec] shadow-[9px_9px_16px_rgba(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)]";
+const neuInset =
+  "bg-[#e0e5ec] shadow-[inset_6px_6px_12px_rgba(163,177,198,0.6),inset_-6px_-6px_12px_rgba(255,255,255,0.5)]";
+const neuButton =
+  "bg-[#e0e5ec] rounded-full shadow-[6px_6px_12px_rgba(163,177,198,0.6),-6px_-6px_12px_rgba(255,255,255,0.5)] hover:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.6),inset_-4px_-4px_8px_rgba(255,255,255,0.5)] transition";
+const neuInput =
+  "px-4 py-2 rounded-xl bg-[#e0e5ec] text-gray-700 shadow-[inset_5px_5px_10px_rgba(163,177,198,0.6),inset_-5px_-5px_10px_rgba(255,255,255,0.5)] focus:outline-none";
 
 const NewsAggregator = () => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -49,7 +59,6 @@ const NewsAggregator = () => {
     { id: "airdrop", label: "Airdrop", color: "bg-yellow-400" },
   ];
 
-  // ==== Fetch News ====
   const fetchCryptoNews = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -89,7 +98,6 @@ const NewsAggregator = () => {
         setLastUpdate(new Date());
       }
     } catch (err) {
-      console.error("Error fetching crypto news:", err);
       setError("⚠️ Failed to fetch latest news. Showing sample data.");
       if (apiNews.length === 0) setApiNews(getSampleNews());
     } finally {
@@ -97,7 +105,6 @@ const NewsAggregator = () => {
     }
   }, [apiNews.length]);
 
-  // === Analisis kategori dan sentimen ===
   const detectCategory = (text) => {
     const lower = text.toLowerCase();
     if (lower.match(/airdrop|snapshot|reward/)) return "airdrop";
@@ -137,7 +144,6 @@ const NewsAggregator = () => {
     },
   ];
 
-  // === useEffect ===
   useEffect(() => {
     const saved = localStorage.getItem("airdrop_news_manual");
     if (saved) setNews(JSON.parse(saved));
@@ -146,16 +152,17 @@ const NewsAggregator = () => {
   useEffect(() => {
     fetchCryptoNews();
     let interval;
-    if (autoRefresh) {
-      interval = setInterval(fetchCryptoNews, 10 * 60 * 1000);
-    }
+    if (autoRefresh) interval = setInterval(fetchCryptoNews, 10 * 60 * 1000);
     return () => interval && clearInterval(interval);
   }, [autoRefresh, fetchCryptoNews]);
 
-  // === Header UI ===
   return (
-    <div className="relative z-10 w-full mb-8 fade-in bg-[#E3E8EF] rounded-3xl shadow-[9px_9px_16px_#C8D0DA,-9px_-9px_16px_#FFFFFF] transition-all duration-300">
-      <div className="p-5 flex justify-between items-center flex-wrap gap-3 rounded-t-3xl bg-[#E3E8EF] shadow-[inset_5px_5px_10px_#C8D0DA,inset_-5px_-5px_10px_#FFFFFF]">
+    <div
+      className={`relative z-10 w-full mb-8 p-0 rounded-3xl ${neuOut} transition-all duration-300`}
+    >
+      <div
+        className={`p-5 flex justify-between items-center flex-wrap gap-3 rounded-t-3xl ${neuInset}`}
+      >
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-bold text-gray-700 flex items-center gap-2">
             <Newspaper size={28} className="text-blue-500" />
@@ -168,7 +175,9 @@ const NewsAggregator = () => {
 
         <div className="flex items-center gap-3 flex-wrap">
           {lastUpdate && (
-            <div className="flex items-center gap-2 text-gray-600 text-sm px-3 py-1 rounded-full shadow-[inset_3px_3px_6px_#C8D0DA,inset_-3px_-3px_6px_#FFFFFF]">
+            <div
+              className={`flex items-center gap-2 text-gray-600 text-sm px-3 py-1 rounded-full ${neuInset}`}
+            >
               <Clock size={16} />
               <span>
                 Updated {Math.floor((new Date() - lastUpdate) / 60000)}m ago
@@ -176,34 +185,24 @@ const NewsAggregator = () => {
             </div>
           )}
 
-          <button
-            onClick={fetchCryptoNews}
-            disabled={isLoading}
-            className="px-4 py-2 rounded-full text-gray-700 bg-[#E3E8EF] shadow-[6px_6px_12px_#C8D0DA,-6px_-6px_12px_#FFFFFF] hover:shadow-[inset_4px_4px_8px_#C8D0DA,inset_-4px_-4px_8px_#FFFFFF] transition"
-          >
+          <button onClick={fetchCryptoNews} disabled={isLoading} className={neuButton + " px-4 py-2 text-gray-700"}>
             <RefreshCw
               size={16}
-              className={`inline-block mr-1 ${
-                isLoading ? "animate-spin" : ""
-              }`}
+              className={`inline-block mr-1 ${isLoading ? "animate-spin" : ""}`}
             />
             Refresh
           </button>
 
           <button
             onClick={() => setAutoRefresh(!autoRefresh)}
-            className={`px-4 py-2 rounded-full text-gray-700 transition ${
-              autoRefresh
-                ? "shadow-[6px_6px_12px_#C8D0DA,-6px_-6px_12px_#FFFFFF]"
-                : "shadow-[inset_4px_4px_8px_#C8D0DA,inset_-4px_-4px_8px_#FFFFFF]"
-            }`}
+            className={`${neuButton} px-4 py-2 text-gray-700`}
           >
             Auto: {autoRefresh ? "ON" : "OFF"}
           </button>
 
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="px-4 py-2 rounded-full text-gray-700 shadow-[6px_6px_12px_#C8D0DA,-6px_-6px_12px_#FFFFFF] hover:shadow-[inset_4px_4px_8px_#C8D0DA,inset_-4px_-4px_8px_#FFFFFF] flex items-center gap-2"
+            className={`${neuButton} px-4 py-2 text-gray-700 flex items-center gap-2`}
           >
             {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
             {isExpanded ? "Hide" : "Show"}
@@ -213,7 +212,7 @@ const NewsAggregator = () => {
 
       {error && (
         <div className="p-4">
-          <div className="p-3 text-gray-700 flex items-center gap-2 rounded-xl bg-[#E3E8EF] shadow-[inset_6px_6px_12px_#C8D0DA,inset_-6px_-6px_12px_#FFFFFF]">
+          <div className={`p-3 text-gray-700 flex items-center gap-2 rounded-xl ${neuInset}`}>
             <AlertCircle size={18} className="text-yellow-600" />
             <span>{error}</span>
           </div>
@@ -221,15 +220,14 @@ const NewsAggregator = () => {
       )}
 
       {isExpanded && (
-        <div className="p-6 rounded-b-3xl bg-[#E3E8EF] shadow-[inset_6px_6px_12px_#C8D0DA,inset_-6px_-6px_12px_#FFFFFF] space-y-6">
-          {/* === Filter & Sort === */}
+        <div className={`p-6 rounded-b-3xl space-y-6 ${neuInset}`}>
           <div className="flex flex-wrap gap-4 items-center">
             <div className="flex items-center gap-2">
               <Filter size={16} className="text-gray-600" />
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
-                className="px-3 py-2 rounded-xl bg-[#E3E8EF] text-gray-700 shadow-[inset_5px_5px_10px_#C8D0DA,inset_-5px_-5px_10px_#FFFFFF] focus:outline-none"
+                className={neuInput}
               >
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
@@ -244,7 +242,7 @@ const NewsAggregator = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-2 rounded-xl bg-[#E3E8EF] text-gray-700 shadow-[inset_5px_5px_10px_#C8D0DA,inset_-5px_-5px_10px_#FFFFFF] focus:outline-none"
+                className={neuInput}
               >
                 <option value="trending">Trending</option>
                 <option value="latest">Latest</option>
@@ -254,7 +252,7 @@ const NewsAggregator = () => {
 
             <button
               onClick={() => setShowAddForm(!showAddForm)}
-              className="ml-auto px-4 py-2 rounded-full text-gray-700 bg-[#E3E8EF] shadow-[6px_6px_12px_#C8D0DA,-6px_-6px_12px_#FFFFFF] hover:shadow-[inset_4px_4px_8px_#C8D0DA,inset_-4px_-4px_8px_#FFFFFF] flex items-center gap-2 transition"
+              className={neuButton + " px-4 py-2 text-gray-700 ml-auto flex items-center gap-2"}
             >
               {showAddForm ? (
                 <>
@@ -268,14 +266,13 @@ const NewsAggregator = () => {
             </button>
           </div>
 
-          {/* === Add Form === */}
           <AnimatePresence>
             {showAddForm && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="rounded-2xl p-5 bg-[#E3E8EF] shadow-[inset_8px_8px_16px_#C8D0DA,inset_-8px_-8px_16px_#FFFFFF]"
+                className={`rounded-2xl p-5 ${neuInset}`}
               >
                 <form
                   onSubmit={(e) => {
@@ -309,33 +306,25 @@ const NewsAggregator = () => {
                   <input
                     placeholder="Title"
                     value={formData.title}
-                    onChange={(e) =>
-                      setFormData({ ...formData, title: e.target.value })
-                    }
-                    className="px-4 py-2 rounded-xl text-gray-700 bg-[#E3E8EF] shadow-[inset_5px_5px_10px_#C8D0DA,inset_-5px_-5px_10px_#FFFFFF] focus:outline-none"
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    className={neuInput}
                   />
                   <textarea
                     placeholder="Description"
                     value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    className="px-4 py-2 rounded-xl text-gray-700 bg-[#E3E8EF] shadow-[inset_5px_5px_10px_#C8D0DA,inset_-5px_-5px_10px_#FFFFFF] focus:outline-none"
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    className={neuInput}
                   />
                   <input
                     placeholder="Source"
                     value={formData.source}
-                    onChange={(e) =>
-                      setFormData({ ...formData, source: e.target.value })
-                    }
-                    className="px-4 py-2 rounded-xl text-gray-700 bg-[#E3E8EF] shadow-[inset_5px_5px_10px_#C8D0DA,inset_-5px_-5px_10px_#FFFFFF] focus:outline-none"
+                    onChange={(e) => setFormData({ ...formData, source: e.target.value })}
+                    className={neuInput}
                   />
                   <select
                     value={formData.category}
-                    onChange={(e) =>
-                      setFormData({ ...formData, category: e.target.value })
-                    }
-                    className="px-4 py-2 rounded-xl text-gray-700 bg-[#E3E8EF] shadow-[inset_5px_5px_10px_#C8D0DA,inset_-5px_-5px_10px_#FFFFFF]"
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    className={neuInput}
                   >
                     {categories
                       .filter((c) => c.id !== "all")
@@ -348,15 +337,10 @@ const NewsAggregator = () => {
                   <input
                     placeholder="URL"
                     value={formData.url}
-                    onChange={(e) =>
-                      setFormData({ ...formData, url: e.target.value })
-                    }
-                    className="px-4 py-2 rounded-xl text-gray-700 bg-[#E3E8EF] shadow-[inset_5px_5px_10px_#C8D0DA,inset_-5px_-5px_10px_#FFFFFF] focus:outline-none"
+                    onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                    className={neuInput}
                   />
-                  <button
-                    type="submit"
-                    className="px-4 py-2 rounded-full text-gray-700 bg-[#E3E8EF] shadow-[6px_6px_12px_#C8D0DA,-6px_-6px_12px_#FFFFFF] hover:shadow-[inset_4px_4px_8px_#C8D0DA,inset_-4px_-4px_8px_#FFFFFF]"
-                  >
+                  <button type="submit" className={neuButton + " px-4 py-2 text-gray-700"}>
                     Add News
                   </button>
                 </form>
@@ -364,12 +348,10 @@ const NewsAggregator = () => {
             )}
           </AnimatePresence>
 
-          {/* === List === */}
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
             {[...news,
               ...apiNews.filter(
-                (n) =>
-                  filterCategory === "all" || n.category === filterCategory
+                (n) => filterCategory === "all" || n.category === filterCategory
               ),
             ]
               .sort((a, b) => {
@@ -386,7 +368,7 @@ const NewsAggregator = () => {
                 <motion.div
                   key={item.id}
                   whileHover={{ y: -3 }}
-                  className="rounded-3xl p-5 bg-[#E3E8EF] shadow-[9px_9px_16px_#C8D0DA,-9px_-9px_16px_#FFFFFF] transition"
+                  className={`rounded-3xl p-5 ${neuOut} transition`}
                 >
                   <div className="flex justify-between items-start mb-3">
                     <span
@@ -401,12 +383,12 @@ const NewsAggregator = () => {
                       {new Date(item.timestamp).toLocaleTimeString()}
                     </div>
                   </div>
-                  <h3 className="font-semibold text-gray-800 mb-2">
-                    {item.title}
-                  </h3>
+
+                  <h3 className="font-semibold text-gray-800 mb-2">{item.title}</h3>
                   <p className="text-sm text-gray-600 mb-3 line-clamp-3">
                     {item.description}
                   </p>
+
                   <div className="flex justify-between items-center">
                     <a
                       href={item.url}
@@ -416,14 +398,13 @@ const NewsAggregator = () => {
                     >
                       <ExternalLink size={14} /> Source
                     </a>
+
                     <div className="flex gap-2 text-gray-600">
                       <button
                         onClick={() => {
                           const all = [...news, ...apiNews];
                           const updated = all.map((n) =>
-                            n.id === item.id
-                              ? { ...n, votes: (n.votes || 0) + 1 }
-                              : n
+                            n.id === item.id ? { ...n, votes: (n.votes || 0) + 1 } : n
                           );
                           setApiNews(updated.filter((n) => n.isFromApi));
                           setNews(updated.filter((n) => !n.isFromApi));
@@ -431,13 +412,12 @@ const NewsAggregator = () => {
                       >
                         <ThumbsUp size={16} />
                       </button>
+
                       <button
                         onClick={() => {
                           const all = [...news, ...apiNews];
                           const updated = all.map((n) =>
-                            n.id === item.id
-                              ? { ...n, votes: (n.votes || 0) - 1 }
-                              : n
+                            n.id === item.id ? { ...n, votes: (n.votes || 0) - 1 } : n
                           );
                           setApiNews(updated.filter((n) => n.isFromApi));
                           setNews(updated.filter((n) => !n.isFromApi));
@@ -445,6 +425,7 @@ const NewsAggregator = () => {
                       >
                         <ThumbsDown size={16} />
                       </button>
+
                       <span className="text-sm">{item.votes}</span>
                     </div>
                   </div>
