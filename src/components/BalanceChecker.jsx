@@ -257,7 +257,7 @@ const BalanceChecker = () => {
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <h2 className="text-2xl font-bold flex items-center gap-2 text-gray-700">
-          <Wallet size={26} className="text-indigo-500" /> 💰 Balance Checker
+          <Wallet size={26} className="text-indigo-500" /> Balance Checker
         </h2>
         <button className={`${neuButton} px-4 py-2 flex items-center gap-2`}>
           {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
