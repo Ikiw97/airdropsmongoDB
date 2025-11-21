@@ -29,16 +29,14 @@ function InfoAirdrops() {
       {/* Channel Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {channels.map((ch, index) => {
-          // Jika card terakhir, letakkan di tengah di grid desktop
-          const isLast = index === channels.length - 1;
+          const isLast = index === channels.length - 1; // last card
           return (
             <div
               key={ch.name}
-              className={`p-4 rounded-2xl flex flex-col justify-between ${isLast ? "mx-auto" : ""}`}
+              className={`p-4 rounded-2xl flex flex-col justify-between ${isLast ? "lg:col-start-2 justify-self-center" : ""}`}
               style={{
                 background: "#e0e5ec",
                 boxShadow: "8px 8px 16px rgba(163,177,198,0.6), -8px -8px 16px rgba(255,255,255,0.5)",
-                width: isLast ? "100%" : "auto",
                 maxWidth: isLast ? "320px" : "auto",
               }}
             >
