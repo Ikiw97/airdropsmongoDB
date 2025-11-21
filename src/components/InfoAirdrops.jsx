@@ -33,7 +33,9 @@ function InfoAirdrops() {
           return (
             <div
               key={ch.name}
-              className={`p-4 rounded-2xl flex flex-col justify-between ${isLast ? "lg:col-start-2 justify-self-center" : ""}`}
+              className={`p-4 rounded-2xl flex flex-col justify-between w-full ${
+                isLast ? "lg:col-start-2" : ""
+              }`}
               style={{
                 background: "#e0e5ec",
                 boxShadow: "8px 8px 16px rgba(163,177,198,0.6), -8px -8px 16px rgba(255,255,255,0.5)",
