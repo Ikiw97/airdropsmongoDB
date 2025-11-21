@@ -30,6 +30,7 @@ import {
   Shield,
   CheckCircle,
   Repeat,
+  Radio,
 } from "lucide-react";
 import {
   LineChart,
@@ -49,6 +50,7 @@ import MultisendTool from "./components/MultisendTool";
 import TradingPlatform from "./components/TradingPlatform";
 import BalanceChecker from "./components/BalanceChecker";
 import DexList from "./components/DexList";
+import InfoAirdrops from "./components/InfoAirdrops";
 import apiService from "./api/apiService";
 
 const DEX_LIST = [
@@ -437,6 +439,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
 
   const sidebarMenuItems = [
     { id: "projects", label: "Projects", icon: LayoutDashboard, color: "text-blue-600" },
+    { id: "infoairdrops", label: "Info Airdrops", icon: Radio, color: "text-cyan-500" },
     { id: "trading", label: "Trading", icon: Zap, color: "text-green-600" },
     { id: "analytics", label: "Analytics", icon: Activity, color: "text-purple-600" },
     { id: "gas", label: "Gas Tracker", icon: Fuel, color: "text-orange-600" },
@@ -574,6 +577,9 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
 <h1 className="text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 min-h-[1.5em] pl-12 sm:pl-0">
   {activeView === "projects" && (
     <TypingTextFixed key="projects" icon="📦" text="My Projects" />
+  )}
+  {activeView === "infoairdrops" && (
+    <TypingTextFixed key="infoairdrops" icon="📢" text="Info Airdrops Channel" />
   )}
   {activeView === "trading" && (
     <TypingTextFixed key="trading" icon="⚡" text="DeDoo Trading Platform" />
@@ -1069,6 +1075,12 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
               <DexList />
             </div>
           )}
+
+          {activeView === "infoairdrops" && (
+            <div className="max-w-7xl mx-auto">
+              <InfoAirdrops />
+            </div>
+          )}
           
         </div>
       </div>
@@ -1084,4 +1096,5 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
 }
 
 export default TrackerPageFullScreen;
+
 
