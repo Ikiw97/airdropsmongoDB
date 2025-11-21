@@ -159,7 +159,7 @@ const NewsAggregator = () => {
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-bold text-gray-700 flex items-center gap-2">
             <Newspaper size={28} className="text-blue-500" />
-            🤖 Airdrop News Aggregator
+            Airdrop News Aggregator
           </h2>
           {isLoading && (
             <RefreshCw size={20} className="text-blue-400 animate-spin" />
