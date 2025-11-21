@@ -23,7 +23,7 @@ function InfoAirdrops() {
     <div className="max-w-7xl mx-auto space-y-8">
       {/* Header */}
       <h2 className="text-3xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-600 to-purple-600 mb-6">
-        📦 Recommended Airdrop Channels
+        📦 Recommended 10 Airdrop Channels
       </h2>
 
       {/* Channel Grid */}
