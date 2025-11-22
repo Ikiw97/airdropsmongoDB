@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { ExternalLink, Search, ChevronDown, ChevronUp, Repeat, Filter } from 'lucide-react';
+import { ExternalLink, Search, ChevronDown, ChevronUp } from 'lucide-react';
 
 /** ===========================
- *  DATA DEX (original lengkap)
+ *  DATA DEX
  *  ===========================
  */
 const DEX_DATA = {
@@ -118,7 +118,7 @@ const DEX_DATA = {
 };
 
 /** ===========================
- *  DATA BRIDGE (100+ versi super complete)
+ *  DATA BRIDGE
  *  ===========================
  */
 const BRIDGE_DATA = {
@@ -153,101 +153,50 @@ const BRIDGE_DATA = {
     { name: "Allbridge", url: "https://allbridge.io" },
     { name: "ChainHop", url: "https://chainhop.network" }
   ],
-
-  "Ethereum": [
-    { name: "Metis Bridge", url: "https://bridge.metis.io" }
-  ],
-
-  "Arbitrum": [
-    // Often same multi-chain bridges apply to Arbitrum,
-    // but we include some specific ones if desired.
+  Ethereum: [{ name: "Metis Bridge", url: "https://bridge.metis.io" }],
+  Arbitrum: [
     { name: "LayerZero", url: "https://layerzero.network" },
     { name: "Stargate Finance", url: "https://stargate.finance" }
   ],
-
-  "Solana": [
+  Solana: [
     { name: "Wormhole", url: "https://wormhole.com" },
     { name: "Allbridge", url: "https://allbridge.io" }
   ],
-
-  "Sui": [
+  Sui: [
     { name: "Wormhole", url: "https://wormhole.com" },
     { name: "Celer cBridge", url: "https://cbridge.celer.network" },
     { name: "Multichain", url: "https://multichain.org" }
   ],
-
-  "Aptos": [
+  Aptos: [
     { name: "Wormhole", url: "https://wormhole.com" },
     { name: "LayerZero", url: "https://layerzero.network" },
     { name: "Axelar", url: "https://axelar.network" }
   ],
-
-  "TON": [
+  TON: [
     { name: "TonBridge (Orbit)", url: "https://tonbridge.io" },
     { name: "Wrapped TON Bridge", url: "https://ton.org/bridge" }
   ],
-
-  "Tron": [
+  Tron: [
     { name: "JustMoney Bridge", url: "https://bridge.just.money" },
     { name: "Orbit/TRON Bridge", url: "https://bridge.orbitchain.io" }
   ],
-
-  "Cosmos": [
+  Cosmos: [
     { name: "Gravity Bridge", url: "https://wallet.gravitybridge.net" },
     { name: "IBC via Axelar", url: "https://axelar.network" },
     { name: "Osmosis IBC Transfer", url: "https://app.osmosis.zone" }
   ],
-
-  "Polkadot": [
+  Polkadot: [
     { name: "Snowbridge (DOT ↔ EVM)", url: "https://snowbridge.network" },
     { name: "XCM Teleport", url: "https://polkadot.network" },
     { name: "Interlay BTC Bridge", url: "https://interlay.io" }
   ],
-
   "Bitcoin / BTC": [
     { name: "Thorchain", url: "https://thorchain.org" },
     { name: "Interlay iBTC", url: "https://interlay.io" },
     { name: "Lightning Loop", url: "https://lightning.engineering/loop" },
     { name: "Portal BTC Bridge", url: "https://portalbridge.com" },
     { name: "Multibit (BTC↔EVM)", url: "https://multibit.exchange" }
-  ],
-
-  "Gaming / App-Chain": [
-    { name: "Ronin Bridge", url: "https://bridge.roninchain.com" },
-    { name: "Xai Bridge", url: "https://xai.games/bridge" },
-    { name: "Beam (Merit Circle) Bridge", url: "https://bridge.onbeam.com" },
-    { name: "Skale Bridge", url: "https://skale.space" }
-  ],
-
-  "ZK / ZK Protocols": [
-    { name: "ZetaChain Omnichain", url: "https://www.zetachain.com/bridge" },
-    { name: "zkBridge by Polyhedra", url: "https://zkbridge.com" },
-    { name: "Succinct Labs Bridge", url: "https://succinct.xyz" },
-    { name: "zkCross", url: "https://zkcross.org" }
-  ],
-
-  "CEX": [
-    { name: "Binance Bridge", url: "https://www.binance.org/en/bridge" },
-    { name: "OKX Cross‑Chain", url: "https://www.okx.com/bridge" },
-    { name: "Coinbase CCTP", url: "https://www.circle.com/cctp" },
-    { name: "Bybit Web3 Bridge", url: "https://web3.bybit.com" }
-  ],
-
-  "L3 / Experimental": [
-    { name: "Degen L3 Bridge", url: "https://bridge.degen.tips" },
-    { name: "AEVO L3 Bridge", url: "https://bridge.aevo.xyz" },
-    { name: "Frame L3 Bridge", url: "https://bridge.frame.xyz" },
-    { name: "Redstone OP‑Stack Bridge", url: "https://redstone.xyz" }
-  ],
-
-  "Others": [
-    { name: "Hashport (Hedera ↔ EVM)", url: "https://app.hashport.network" },
-    { name: "Algorand Glitter", url: "https://glitter.finance" },
-    { name: "Kadena Kaddex Bridge", url: "https://kaddex.com/bridge" },
-    { name: "Everscale Bridge", url: "https://bridge.everscale.network" },
-    { name: "Energy Web X Bridge", url: "https://www.energywebx.com/bridge" },
-    { name: "ThorSwap", url: "https://thorswap.finance" }
-  ],
+  ]
 };
 
 /** ===========================
@@ -259,7 +208,6 @@ const CHAIN_LOGOS = {
   "BNB Chain": "https://cryptologos.cc/logos/bnb-bnb-logo.svg?v=025",
   Polygon: "https://cryptologos.cc/logos/polygon-matic-logo.svg?v=025",
   Arbitrum: "https://cryptologos.cc/logos/arbitrum-arb-logo.svg?v=025",
-  Optimism: "https://cryptologos.cc/logos/optimism-ethereum-op-logo.svg?v=025",
   Avalanche: "https://cryptologos.cc/logos/avalanche-avax-logo.svg?v=025",
   Fantom: "https://cryptologos.cc/logos/fantom-ftm-logo.svg?v=025",
   Solana: "https://cryptologos.cc/logos/solana-sol-logo.svg?v=025",
@@ -270,8 +218,7 @@ const CHAIN_LOGOS = {
   NEAR: "https://cryptologos.cc/logos/near-protocol-near-logo.svg?v=025",
   Cosmos: "https://cryptologos.cc/logos/cosmos-atom-logo.svg?v=025",
   Polkadot: "https://cryptologos.cc/logos/polkadot-new-dot-logo.svg?v=025",
-  Bitcoin: "https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=025",
-  Skale: "https://cryptologos.cc/logos/skale-logo.svg?v=025"
+  Bitcoin: "https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=025"
 };
 
 const DEX_LOGOS = {
@@ -292,15 +239,6 @@ const DEX_LOGOS = {
   Pangolin: "https://raw.githubusercontent.com/pangolindex/pangolin-token-icons/main/assets/png/PngToken.png",
   SpookySwap: "https://spooky.fi/favicon.svg",
   SpiritSwap: "https://raw.githubusercontent.com/Layer3Org/spiritswap-tokens/main/logo.svg",
-  "0x Protocol": "https://cryptologos.cc/logos/0x-zrx-logo.svg",
-  Matcha: "https://matcha.xyz/favicon.svg",
-  "dYdX v3": "https://cryptologos.cc/logos/dydx-dydx-logo.svg",
-  DexGuru: "https://dex.guru/static/logo.svg",
-  GMX: "https://cryptologos.cc/logos/gmx-gmx-logo.svg",
-  "Gains Network": "https://gainsnetwork.io/favicon.svg",
-  Kwenta: "https://cryptologos.cc/logos/kwenta-kwenta-logo.svg",
-  "Perpetual Protocol": "https://cryptologos.cc/logos/perpetual-protocol-perp-logo.svg",
-  "Hubble Exchange": "https://hubble.exchange/favicon.svg",
   Raydium: "https://raydium.io/logo.svg",
   Orca: "https://www.orca.so/logos/orca.svg",
   Saros: "https://saros.finance/logo.svg",
@@ -325,7 +263,7 @@ const DEX_LOGOS = {
 };
 
 /** ===========================
- *  COMPONENT WITH NESTED EXPAND
+ *  COMPONENT
  *  ===========================
  */
 export default function DexBridgePanel() {
@@ -333,16 +271,11 @@ export default function DexBridgePanel() {
   const [expandedCategory, setExpandedCategory] = useState({ dex: true, bridge: false });
   const [expandedSub, setExpandedSub] = useState({});
 
-  const toggleCategory = (cat) => {
-    setExpandedCategory(prev => ({ ...prev, [cat]: !prev[cat] }));
-  };
-  const toggleSub = (key) => {
-    setExpandedSub(prev => ({ ...prev, [key]: !prev[key] }));
-  };
+  const toggleCategory = (cat) => setExpandedCategory(prev => ({ ...prev, [cat]: !prev[cat] }));
+  const toggleSub = (key) => setExpandedSub(prev => ({ ...prev, [key]: !prev[key] }));
 
   const FALLBACK_LOGO = "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=025";
 
-  /** FILTER DEX **/
   const filteredDex = useMemo(() => {
     const res = [];
     Object.entries(DEX_DATA).forEach(([blockchain, categories]) => {
@@ -369,7 +302,6 @@ export default function DexBridgePanel() {
     return g;
   }, [filteredDex]);
 
-  /** FILTER BRIDGE **/
   const filteredBridge = useMemo(() => {
     const out = {};
     Object.entries(BRIDGE_DATA).forEach(([chain, list]) => {
@@ -380,23 +312,21 @@ export default function DexBridgePanel() {
   }, [searchTerm]);
 
   return (
-    <div className="space-y-6 p-6">
-      {/* Search Bar */}
-      <div className="flex items-center gap-2 p-2 bg-gray-100 rounded-lg">
+    <div className="space-y-6 p-6 bg-gray-100 min-h-screen">
+      <div className="flex items-center gap-2 p-2 bg-gray-200 rounded-xl shadow-inner">
         <Search size={20} />
         <input
           type="text"
           placeholder="Search DEX or Bridge..."
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
-          className="flex-1 bg-transparent outline-none px-2 py-1"
+          className="flex-1 bg-transparent outline-none px-2 py-1 text-gray-700"
         />
       </div>
 
-      {/* List DEX */}
-      <div className="border rounded-xl bg-gray-50">
+      <div className="border rounded-2xl bg-gray-100 shadow-inner">
         <button
-          className="w-full flex justify-between items-center p-4 font-bold text-lg"
+          className="w-full flex justify-between items-center p-4 font-bold text-lg text-gray-800"
           onClick={() => toggleCategory('dex')}
         >
           List DEX {expandedCategory.dex ? <ChevronUp /> : <ChevronDown />}
@@ -406,7 +336,7 @@ export default function DexBridgePanel() {
             {Object.entries(groupedDex).map(([blockchain, chains]) => (
               <div key={blockchain}>
                 <button
-                  className="w-full flex justify-between items-center p-2 bg-gray-200 rounded"
+                  className="w-full flex justify-between items-center p-2 bg-gray-200 rounded-lg shadow hover:shadow-md transition"
                   onClick={() => toggleSub(`dex-${blockchain}`)}
                 >
                   <span className="font-semibold">{blockchain}</span>
@@ -425,18 +355,18 @@ export default function DexBridgePanel() {
                               href={dex.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex justify-between items-center p-2 bg-white rounded-lg shadow hover:shadow-md transition"
+                              className="flex justify-between items-center p-2 bg-gray-100 rounded-xl shadow hover:shadow-lg transition"
                             >
                               <div className="flex items-center gap-2">
                                 <img
                                   src={DEX_LOGOS[dex.dex] || CHAIN_LOGOS[dex.chain] || FALLBACK_LOGO}
                                   alt={dex.dex}
-                                  className="w-5 h-5 object-contain"
+                                  className="w-6 h-6 object-contain"
                                   onError={(e) => { e.currentTarget.src = FALLBACK_LOGO; }}
                                 />
-                                <span>{dex.dex}</span>
+                                <span className="text-gray-800">{dex.dex}</span>
                               </div>
-                              <ExternalLink size={16} />
+                              <ExternalLink size={16} className="text-gray-600"/>
                             </a>
                           ))}
                         </div>
@@ -450,10 +380,9 @@ export default function DexBridgePanel() {
         )}
       </div>
 
-      {/* List Bridge */}
-      <div className="border rounded-xl bg-gray-50">
+      <div className="border rounded-2xl bg-gray-100 shadow-inner">
         <button
-          className="w-full flex justify-between items-center p-4 font-bold text-lg"
+          className="w-full flex justify-between items-center p-4 font-bold text-lg text-gray-800"
           onClick={() => toggleCategory('bridge')}
         >
           List Bridge {expandedCategory.bridge ? <ChevronUp /> : <ChevronDown />}
@@ -463,7 +392,7 @@ export default function DexBridgePanel() {
             {Object.entries(filteredBridge).map(([chain, bridges]) => (
               <div key={chain}>
                 <button
-                  className="w-full flex justify-between items-center p-2 bg-gray-200 rounded"
+                  className="w-full flex justify-between items-center p-2 bg-gray-200 rounded-lg shadow hover:shadow-md transition"
                   onClick={() => toggleSub(`bridge-${chain}`)}
                 >
                   <span className="font-semibold">{chain}</span>
@@ -478,10 +407,10 @@ export default function DexBridgePanel() {
                         href={bridge.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex justify-between items-center p-2 bg-white rounded-lg shadow hover:shadow-md transition"
+                        className="flex justify-between items-center p-2 bg-gray-100 rounded-xl shadow hover:shadow-lg transition"
                       >
-                        <span>{bridge.name}</span>
-                        <ExternalLink size={16} />
+                        <span className="text-gray-800">{bridge.name}</span>
+                        <ExternalLink size={16} className="text-gray-600"/>
                       </a>
                     ))}
                   </div>
