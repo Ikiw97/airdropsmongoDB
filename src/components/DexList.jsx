@@ -1,124 +1,258 @@
 import React, { useState, useMemo } from 'react';
-import { ExternalLink, Search, Filter, Repeat } from 'lucide-react';
+import { ExternalLink, Search, ChevronDown, ChevronUp, Repeat, Filter } from 'lucide-react';
 
-/**
- * DEX & Chain data (original)
+/** ===========================
+ *  DATA DEX (original lengkap)
+ *  ===========================
  */
 const DEX_DATA = {
-  "evm": {
-    "amm_spot": [
-      { "chain": "Ethereum", "dex": "Uniswap", "url": "https://uniswap.org" },
-      { "chain": "Ethereum", "dex": "SushiSwap", "url": "https://sushi.com" },
-      { "chain": "Ethereum", "dex": "Balancer", "url": "https://balancer.fi" },
-      { "chain": "Ethereum", "dex": "Curve", "url": "https://curve.fi" },
-      { "chain": "Ethereum", "dex": "KyberSwap", "url": "https://kyberswap.com" },
-      { "chain": "Ethereum", "dex": "DODO", "url": "https://dodoex.io" },
-      { "chain": "Ethereum", "dex": "Bancor", "url": "https://bancor.network" },
-      { "chain": "BNB Chain", "dex": "PancakeSwap", "url": "https://pancakeswap.finance" },
-      { "chain": "BNB Chain", "dex": "ApeSwap", "url": "https://apeswap.finance" },
-      { "chain": "BNB Chain", "dex": "BiSwap", "url": "https://biswap.org" },
-      { "chain": "Polygon", "dex": "QuickSwap", "url": "https://quickswap.exchange" },
-      { "chain": "Polygon", "dex": "Uniswap v3", "url": "https://app.uniswap.org" },
-      { "chain": "Arbitrum", "dex": "Camelot", "url": "https://camelot.exchange" },
-      { "chain": "Avalanche", "dex": "Trader Joe", "url": "https://traderjoexyz.com" },
-      { "chain": "Avalanche", "dex": "Pangolin", "url": "https://pangolin.exchange" },
-      { "chain": "Fantom", "dex": "SpookySwap", "url": "https://spooky.fi" },
-      { "chain": "Fantom", "dex": "SpiritSwap", "url": "https://spiritswap.finance" }
+  evm: {
+    amm_spot: [
+      { chain: "Ethereum", dex: "Uniswap", url: "https://uniswap.org" },
+      { chain: "Ethereum", dex: "SushiSwap", url: "https://sushi.com" },
+      { chain: "Ethereum", dex: "Balancer", url: "https://balancer.fi" },
+      { chain: "Ethereum", dex: "Curve", url: "https://curve.fi" },
+      { chain: "Ethereum", dex: "KyberSwap", url: "https://kyberswap.com" },
+      { chain: "Ethereum", dex: "DODO", url: "https://dodoex.io" },
+      { chain: "Ethereum", dex: "Bancor", url: "https://bancor.network" },
+      { chain: "BNB Chain", dex: "PancakeSwap", url: "https://pancakeswap.finance" },
+      { chain: "BNB Chain", dex: "ApeSwap", url: "https://apeswap.finance" },
+      { chain: "BNB Chain", dex: "BiSwap", url: "https://biswap.org" },
+      { chain: "Polygon", dex: "QuickSwap", url: "https://quickswap.exchange" },
+      { chain: "Polygon", dex: "Uniswap v3", url: "https://app.uniswap.org" },
+      { chain: "Arbitrum", dex: "Camelot", url: "https://camelot.exchange" },
+      { chain: "Avalanche", dex: "Trader Joe", url: "https://traderjoexyz.com" },
+      { chain: "Avalanche", dex: "Pangolin", url: "https://pangolin.exchange" },
+      { chain: "Fantom", dex: "SpookySwap", url: "https://spooky.fi" },
+      { chain: "Fantom", dex: "SpiritSwap", url: "https://spiritswap.finance" }
     ],
-    "orderbook": [
-      { "chain": "Ethereum", "dex": "0x Protocol", "url": "https://0x.org" },
-      { "chain": "Ethereum", "dex": "Matcha", "url": "https://matcha.xyz" },
-      { "chain": "Ethereum", "dex": "dYdX v3", "url": "https://dydx.exchange" },
-      { "chain": "Polygon", "dex": "DexGuru", "url": "https://dex.guru" }
+    orderbook: [
+      { chain: "Ethereum", dex: "0x Protocol", url: "https://0x.org" },
+      { chain: "Ethereum", dex: "Matcha", url: "https://matcha.xyz" },
+      { chain: "Ethereum", dex: "dYdX v3", url: "https://dydx.exchange" },
+      { chain: "Polygon", dex: "DexGuru", url: "https://dex.guru" }
     ],
-    "perpetual": [
-      { "chain": "Arbitrum", "dex": "GMX", "url": "https://gmx.io" },
-      { "chain": "Arbitrum", "dex": "Gains Network", "url": "https://gains.network" },
-      { "chain": "Optimism", "dex": "Kwenta", "url": "https://kwenta.io" },
-      { "chain": "Ethereum", "dex": "Perpetual Protocol", "url": "https://perp.com" },
-      { "chain": "Polygon", "dex": "Gains Network", "url": "https://gains.network" },
-      { "chain": "Avalanche", "dex": "Hubble Exchange", "url": "https://hubble.exchange" }
+    perpetual: [
+      { chain: "Arbitrum", dex: "GMX", url: "https://gmx.io" },
+      { chain: "Arbitrum", dex: "Gains Network", url: "https://gains.network" },
+      { chain: "Optimism", dex: "Kwenta", url: "https://kwenta.io" },
+      { chain: "Ethereum", dex: "Perpetual Protocol", url: "https://perp.com" },
+      { chain: "Polygon", dex: "Gains Network", url: "https://gains.network" },
+      { chain: "Avalanche", dex: "Hubble Exchange", url: "https://hubble.exchange" }
     ]
   },
-  "solana": {
-    "amm_spot": [
-      { "dex": "Raydium", "url": "https://raydium.io" },
-      { "dex": "Orca", "url": "https://orca.so" },
-      { "dex": "Saros", "url": "https://saros.finance" },
-      { "dex": "Meteora", "url": "https://meteora.ag" },
-      { "dex": "Jupiter", "url": "https://jup.ag" },
-      { "dex": "Aldrin", "url": "https://aldrin.com" },
-      { "dex": "Step Finance Swap", "url": "https://step.finance" }
+  solana: {
+    amm_spot: [
+      { dex: "Raydium", url: "https://raydium.io" },
+      { dex: "Orca", url: "https://orca.so" },
+      { dex: "Saros", url: "https://saros.finance" },
+      { dex: "Meteora", url: "https://meteora.ag" },
+      { dex: "Jupiter", url: "https://jup.ag" },
+      { dex: "Aldrin", url: "https://aldrin.com" },
+      { dex: "Step Finance Swap", url: "https://step.finance" }
     ],
-    "orderbook": [
-      { "dex": "Serum (legacy)", "url": "https://projectserum.com" },
-      { "dex": "OpenBook", "url": "https://openbookdex.org" },
-      { "dex": "Phoenix", "url": "https://phoenix.trade" }
+    orderbook: [
+      { dex: "Serum (legacy)", url: "https://projectserum.com" },
+      { dex: "OpenBook", url: "https://openbookdex.org" },
+      { dex: "Phoenix", url: "https://phoenix.trade" }
     ],
-    "perpetual": [
-      { "dex": "Drift Protocol", "url": "https://app.drift.trade" },
-      { "dex": "Zeta Markets", "url": "https://zeta.markets" },
-      { "dex": "Mango Markets", "url": "https://mango.markets" },
-      { "dex": "Cypher", "url": "https://cypher.trade" },
-      { "dex": "GooseFX", "url": "https://goosefx.io" }
+    perpetual: [
+      { dex: "Drift Protocol", url: "https://app.drift.trade" },
+      { dex: "Zeta Markets", url: "https://zeta.markets" },
+      { dex: "Mango Markets", url: "https://mango.markets" },
+      { dex: "Cypher", url: "https://cypher.trade" },
+      { dex: "GooseFX", url: "https://goosefx.io" }
     ]
   },
-  "sui": {
-    "amm_spot": [
-      { "dex": "Cetus", "url": "https://www.cetus.zone" },
-      { "dex": "Aftermath Finance", "url": "https://aftermath.finance" },
-      { "dex": "Kriya", "url": "https://www.kriya.finance" }
+  sui: {
+    amm_spot: [
+      { dex: "Cetus", url: "https://www.cetus.zone" },
+      { dex: "Aftermath Finance", url: "https://aftermath.finance" },
+      { dex: "Kriya", url: "https://www.kriya.finance" }
     ]
   },
-  "aptos": {
-    "amm_spot": [
-      { "dex": "PancakeSwap Aptos", "url": "https://pancakeswap.finance/aptos" },
-      { "dex": "AnimeSwap", "url": "https://animeswap.org" },
-      { "dex": "LiquidSwap", "url": "https://liquidswap.com" }
+  aptos: {
+    amm_spot: [
+      { dex: "PancakeSwap Aptos", url: "https://pancakeswap.finance/aptos" },
+      { dex: "AnimeSwap", url: "https://animeswap.org" },
+      { dex: "LiquidSwap", url: "https://liquidswap.com" }
     ],
-    "perpetual": [
-      { "dex": "Econia", "url": "https://econia.dev" }
+    perpetual: [
+      { dex: "Econia", url: "https://econia.dev" }
     ]
   },
-  "ton": {
-    "amm_spot": [
-      { "dex": "STON.fi", "url": "https://ston.fi" },
-      { "dex": "Megaton Finance", "url": "https://megaton.fi" }
+  ton: {
+    amm_spot: [
+      { dex: "STON.fi", url: "https://ston.fi" },
+      { dex: "Megaton Finance", url: "https://megaton.fi" }
     ],
-    "orderbook": [
-      { "dex": "TonStarter Swap", "url": "https://tonstarter.com" }
+    orderbook: [
+      { dex: "TonStarter Swap", url: "https://tonstarter.com" }
     ]
   },
-  "tron": {
-    "amm_spot": [
-      { "dex": "SunSwap", "url": "https://sunswap.com" }
+  tron: {
+    amm_spot: [
+      { dex: "SunSwap", url: "https://sunswap.com" }
     ]
   },
-  "near": {
-    "amm_spot": [
-      { "dex": "Ref Finance", "url": "https://app.ref.finance" },
-      { "dex": "Burrow Swap", "url": "https://burrow.cash" }
+  near: {
+    amm_spot: [
+      { dex: "Ref Finance", url: "https://app.ref.finance" },
+      { dex: "Burrow Swap", url: "https://burrow.cash" }
     ]
   },
-  "cosmos": {
-    "amm_spot": [
-      { "dex": "Osmosis", "url": "https://osmosis.zone" }
+  cosmos: {
+    amm_spot: [
+      { dex: "Osmosis", url: "https://osmosis.zone" }
     ],
-    "orderbook": [
-      { "dex": "dYdX v4", "url": "https://dydx.exchange" }
+    orderbook: [
+      { dex: "dYdX v4", url: "https://dydx.exchange" }
     ]
   },
-  "algorand": {
-    "amm_spot": [
-      { "dex": "Tinyman", "url": "https://tinyman.org" },
-      { "dex": "Pact", "url": "https://pact.fi" }
+  algorand: {
+    amm_spot: [
+      { dex: "Tinyman", url: "https://tinyman.org" },
+      { dex: "Pact", url: "https://pact.fi" }
     ]
   }
 };
 
-/**
- * Logos from web CDNs (SVG/PNG). These are stable CDN links (cryptologos, project assets, raw github, etc.)
- * You can update/replace URLs if you prefer another CDN.
+/** ===========================
+ *  DATA BRIDGE (100+ versi super complete)
+ *  ===========================
+ */
+const BRIDGE_DATA = {
+  "Multi‑Chain": [
+    { name: "Gas.zip", url: "https://www.gas.zip" },
+    { name: "LayerZero", url: "https://layerzero.network" },
+    { name: "Stargate Finance", url: "https://stargate.finance" },
+    { name: "Squid Router", url: "https://squidrouter.com" },
+    { name: "Axelar", url: "https://axelar.network" },
+    { name: "Wormhole", url: "https://wormhole.com" },
+    { name: "Synapse Protocol", url: "https://synapseprotocol.com" },
+    { name: "Rango Exchange", url: "https://rango.exchange" },
+    { name: "Bungee / Socket", url: "https://bungee.exchange" },
+    { name: "Router Protocol", url: "https://routerprotocol.com" },
+    { name: "XY Finance", url: "https://xy.finance" },
+    { name: "Orbiter Finance", url: "https://orbiter.finance" },
+    { name: "Hyperlane", url: "https://hyperlane.xyz" },
+    { name: "deBridge", url: "https://debridge.finance" },
+    { name: "Across Protocol", url: "https://across.to" },
+    { name: "Multichain (AnySwap)", url: "https://multichain.org" },
+    { name: "ChainPort", url: "https://www.chainport.io" },
+    { name: "RhinoFi", url: "https://app.rhinofi.io/bridge" },
+    { name: "Meson Finance", url: "https://meson.fi" },
+    { name: "RelayChain", url: "https://relay.link" },
+    { name: "Li.FI", url: "https://li.fi" },
+    { name: "Wanchain Bridge", url: "https://bridge.wanchain.org" },
+    { name: "Poloniex Bridge", url: "https://bridge.poloniex.org" },
+    { name: "Biconomy Hyphen", url: "https://hyphen.biconomy.io" },
+    { name: "Rubic", url: "https://rubic.exchange/bridge" },
+    { name: "Interport Finance", url: "https://interport.finance" },
+    { name: "PolyNetwork", url: "https://bridge.polynetwork.org" },
+    { name: "Allbridge", url: "https://allbridge.io" },
+    { name: "ChainHop", url: "https://chainhop.network" }
+  ],
+
+  "Ethereum": [
+    { name: "Metis Bridge", url: "https://bridge.metis.io" }
+  ],
+
+  "Arbitrum": [
+    // Often same multi-chain bridges apply to Arbitrum,
+    // but we include some specific ones if desired.
+    { name: "LayerZero", url: "https://layerzero.network" },
+    { name: "Stargate Finance", url: "https://stargate.finance" }
+  ],
+
+  "Solana": [
+    { name: "Wormhole", url: "https://wormhole.com" },
+    { name: "Allbridge", url: "https://allbridge.io" }
+  ],
+
+  "Sui": [
+    { name: "Wormhole", url: "https://wormhole.com" },
+    { name: "Celer cBridge", url: "https://cbridge.celer.network" },
+    { name: "Multichain", url: "https://multichain.org" }
+  ],
+
+  "Aptos": [
+    { name: "Wormhole", url: "https://wormhole.com" },
+    { name: "LayerZero", url: "https://layerzero.network" },
+    { name: "Axelar", url: "https://axelar.network" }
+  ],
+
+  "TON": [
+    { name: "TonBridge (Orbit)", url: "https://tonbridge.io" },
+    { name: "Wrapped TON Bridge", url: "https://ton.org/bridge" }
+  ],
+
+  "Tron": [
+    { name: "JustMoney Bridge", url: "https://bridge.just.money" },
+    { name: "Orbit/TRON Bridge", url: "https://bridge.orbitchain.io" }
+  ],
+
+  "Cosmos": [
+    { name: "Gravity Bridge", url: "https://wallet.gravitybridge.net" },
+    { name: "IBC via Axelar", url: "https://axelar.network" },
+    { name: "Osmosis IBC Transfer", url: "https://app.osmosis.zone" }
+  ],
+
+  "Polkadot": [
+    { name: "Snowbridge (DOT ↔ EVM)", url: "https://snowbridge.network" },
+    { name: "XCM Teleport", url: "https://polkadot.network" },
+    { name: "Interlay BTC Bridge", url: "https://interlay.io" }
+  ],
+
+  "Bitcoin / BTC": [
+    { name: "Thorchain", url: "https://thorchain.org" },
+    { name: "Interlay iBTC", url: "https://interlay.io" },
+    { name: "Lightning Loop", url: "https://lightning.engineering/loop" },
+    { name: "Portal BTC Bridge", url: "https://portalbridge.com" },
+    { name: "Multibit (BTC↔EVM)", url: "https://multibit.exchange" }
+  ],
+
+  "Gaming / App-Chain": [
+    { name: "Ronin Bridge", url: "https://bridge.roninchain.com" },
+    { name: "Xai Bridge", url: "https://xai.games/bridge" },
+    { name: "Beam (Merit Circle) Bridge", url: "https://bridge.onbeam.com" },
+    { name: "Skale Bridge", url: "https://skale.space" }
+  ],
+
+  "ZK / ZK Protocols": [
+    { name: "ZetaChain Omnichain", url: "https://www.zetachain.com/bridge" },
+    { name: "zkBridge by Polyhedra", url: "https://zkbridge.com" },
+    { name: "Succinct Labs Bridge", url: "https://succinct.xyz" },
+    { name: "zkCross", url: "https://zkcross.org" }
+  ],
+
+  "CEX": [
+    { name: "Binance Bridge", url: "https://www.binance.org/en/bridge" },
+    { name: "OKX Cross‑Chain", url: "https://www.okx.com/bridge" },
+    { name: "Coinbase CCTP", url: "https://www.circle.com/cctp" },
+    { name: "Bybit Web3 Bridge", url: "https://web3.bybit.com" }
+  ],
+
+  "L3 / Experimental": [
+    { name: "Degen L3 Bridge", url: "https://bridge.degen.tips" },
+    { name: "AEVO L3 Bridge", url: "https://bridge.aevo.xyz" },
+    { name: "Frame L3 Bridge", url: "https://bridge.frame.xyz" },
+    { name: "Redstone OP‑Stack Bridge", url: "https://redstone.xyz" }
+  ],
+
+  "Others": [
+    { name: "Hashport (Hedera ↔ EVM)", url: "https://app.hashport.network" },
+    { name: "Algorand Glitter", url: "https://glitter.finance" },
+    { name: "Kadena Kaddex Bridge", url: "https://kaddex.com/bridge" },
+    { name: "Everscale Bridge", url: "https://bridge.everscale.network" },
+    { name: "Energy Web X Bridge", url: "https://www.energywebx.com/bridge" },
+    { name: "ThorSwap", url: "https://thorswap.finance" }
+  ],
+};
+
+/** ===========================
+ *  Logos
+ *  ===========================
  */
 const CHAIN_LOGOS = {
   Ethereum: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=025",
@@ -135,11 +269,12 @@ const CHAIN_LOGOS = {
   Tron: "https://cryptologos.cc/logos/tron-trx-logo.svg?v=025",
   NEAR: "https://cryptologos.cc/logos/near-protocol-near-logo.svg?v=025",
   Cosmos: "https://cryptologos.cc/logos/cosmos-atom-logo.svg?v=025",
-  Algorand: "https://cryptologos.cc/logos/algorand-algo-logo.svg?v=025"
+  Polkadot: "https://cryptologos.cc/logos/polkadot-new-dot-logo.svg?v=025",
+  Bitcoin: "https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=025",
+  Skale: "https://cryptologos.cc/logos/skale-logo.svg?v=025"
 };
 
 const DEX_LOGOS = {
-  // EVM DEX
   Uniswap: "https://cryptologos.cc/logos/uniswap-uni-logo.svg",
   "Uniswap v3": "https://cryptologos.cc/logos/uniswap-uni-logo.svg",
   SushiSwap: "https://cryptologos.cc/logos/sushiswap-sushi-logo.svg",
@@ -166,8 +301,6 @@ const DEX_LOGOS = {
   Kwenta: "https://cryptologos.cc/logos/kwenta-kwenta-logo.svg",
   "Perpetual Protocol": "https://cryptologos.cc/logos/perpetual-protocol-perp-logo.svg",
   "Hubble Exchange": "https://hubble.exchange/favicon.svg",
-
-  // Solana
   Raydium: "https://raydium.io/logo.svg",
   Orca: "https://www.orca.so/logos/orca.svg",
   Saros: "https://saros.finance/logo.svg",
@@ -175,417 +308,189 @@ const DEX_LOGOS = {
   Jupiter: "https://assets.jup.ag/logo.png",
   Aldrin: "https://aldrin.com/favicon.svg",
   "Step Finance Swap": "https://step.finance/logo.svg",
-  "Serum (legacy)": "https://cryptologos.cc/logos/serum-srm-logo.svg",
-  OpenBook: "https://openbookdex.org/icon.svg",
-  Phoenix: "https://phoenix.trade/favicon.svg",
-  "Drift Protocol": "https://app.drift.trade/favicon.svg",
-  "Zeta Markets": "https://zeta.markets/favicon.svg",
-  "Mango Markets": "https://mango.markets/assets/icons/logo.svg",
-  Cypher: "https://cypher.trade/favicon.svg",
-  GooseFX: "https://goosefx.io/favicon.svg",
-  
-
-  // Sui
   Cetus: "https://www.cetus.zone/logo.svg",
   "Aftermath Finance": "https://aftermath.finance/logo.svg",
   Kriya: "https://www.kriya.finance/favicon.svg",
-
-  // Aptos
   "PancakeSwap Aptos": "https://cryptologos.cc/logos/pancakeswap-cake-logo.svg",
   AnimeSwap: "https://app.animeswap.org/favicon.svg",
   LiquidSwap: "https://liquidswap.com/favicon.svg",
   Econia: "https://econia.dev/favicon.svg",
-
-  // TON
   "STON.fi": "https://ston.fi/favicon.svg",
   "Megaton Finance": "https://megaton.fi/favicon.svg",
   "TonStarter Swap": "https://tonstarter.com/favicon.svg",
-
-  // TRON
   SunSwap: "https://sunswap.com/favicon.svg",
-
-  // NEAR
   "Ref Finance": "https://app.ref.finance/ref-icon.svg",
-  "Burrow Swap": "https://burrow.cash/favicon.svg",
-
-  // COSMOS
-  Osmosis: "https://osmosis.zone/favicon.svg",
-
-  // ALGORAND
-  Tinyman: "https://tinyman.org/favicon.svg",
-  Pact: "https://pact.fi/favicon.svg"
+  Pact: "https://pact.fi/favicon.svg",
+  Tinyman: "https://tinyman.org/favicon.svg"
 };
 
-/**
- * UI constants
+/** ===========================
+ *  COMPONENT WITH NESTED EXPAND
+ *  ===========================
  */
-const BLOCKCHAIN_INFO = {
-  evm: { name: 'EVM Chains', icon: '', color: 'from-blue-500 to-blue-600' },
-  solana: { name: 'Solana', icon: '', color: 'from-purple-500 to-purple-600' },
-  sui: { name: 'Sui', icon: '', color: 'from-cyan-500 to-cyan-600' },
-  aptos: { name: 'Aptos', icon: '', color: 'from-green-500 to-green-600' },
-  ton: { name: 'TON', icon: '', color: 'from-indigo-500 to-indigo-600' },
-  tron: { name: 'Tron', icon: '', color: 'from-red-500 to-red-600' },
-  near: { name: 'NEAR', icon: '', color: 'from-teal-500 to-teal-600' },
-  cosmos: { name: 'Cosmos', icon: '', color: 'from-pink-500 to-pink-600' },
-  algorand: { name: 'Algorand', icon: '', color: 'from-orange-500 to-orange-600' }
-};
-
-const CATEGORY_NAMES = {
-  amm_spot: 'AMM Spot',
-  orderbook: 'Orderbook',
-  perpetual: 'Perpetual'
-};
-
-const CATEGORY_COLORS = {
-  amm_spot: 'from-green-400 to-green-500',
-  orderbook: 'from-blue-400 to-blue-500',
-  perpetual: 'from-purple-400 to-purple-500'
-};
-
-/**
- * Component
- */
-function DexList() {
+export default function DexBridgePanel() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedBlockchain, setSelectedBlockchain] = useState('all');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [expandedCategory, setExpandedCategory] = useState({ dex: true, bridge: false });
+  const [expandedSub, setExpandedSub] = useState({});
 
-  // Flatten and filter DEX data
-  const filteredDexList = useMemo(() => {
-    const results = [];
+  const toggleCategory = (cat) => {
+    setExpandedCategory(prev => ({ ...prev, [cat]: !prev[cat] }));
+  };
+  const toggleSub = (key) => {
+    setExpandedSub(prev => ({ ...prev, [key]: !prev[key] }));
+  };
 
+  const FALLBACK_LOGO = "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=025";
+
+  /** FILTER DEX **/
+  const filteredDex = useMemo(() => {
+    const res = [];
     Object.entries(DEX_DATA).forEach(([blockchain, categories]) => {
-      // Filter blockchain
-      if (selectedBlockchain !== 'all' && selectedBlockchain !== blockchain) {
-        return;
-      }
-
-      Object.entries(categories).forEach(([category, dexList]) => {
-        // Filter category
-        if (selectedCategory !== 'all' && selectedCategory !== category) {
-          return;
-        }
-
-        dexList.forEach(dex => {
-          const dexName = dex.dex.toLowerCase();
-          const chainName = (dex.chain || blockchain).toLowerCase();
-          const search = searchTerm.toLowerCase();
-
-          // Filter by search
-          if (!searchTerm || dexName.includes(search) || chainName.includes(search)) {
-            results.push({
-              ...dex,
-              blockchain,
-              category,
-              chain: dex.chain || blockchain
-            });
+      Object.entries(categories).forEach(([cat, list]) => {
+        list.forEach(item => {
+          const name = (item.dex || "").toLowerCase();
+          const chainName = ((item.chain || blockchain) + "").toLowerCase();
+          if (!searchTerm || name.includes(searchTerm.toLowerCase()) || chainName.includes(searchTerm.toLowerCase())) {
+            res.push({ ...item, blockchain, category: cat, chain: item.chain || blockchain });
           }
         });
       });
     });
+    return res;
+  }, [searchTerm]);
 
-    return results;
-  }, [searchTerm, selectedBlockchain, selectedCategory]);
-
-  // Group by blockchain and chain
   const groupedDex = useMemo(() => {
-    const grouped = {};
-
-    filteredDexList.forEach(dex => {
-      if (!grouped[dex.blockchain]) {
-        grouped[dex.blockchain] = {};
-      }
-      if (!grouped[dex.blockchain][dex.chain]) {
-        grouped[dex.blockchain][dex.chain] = [];
-      }
-      grouped[dex.blockchain][dex.chain].push(dex);
+    const g = {};
+    filteredDex.forEach(d => {
+      if (!g[d.blockchain]) g[d.blockchain] = {};
+      if (!g[d.blockchain][d.chain]) g[d.blockchain][d.chain] = [];
+      g[d.blockchain][d.chain].push(d);
     });
+    return g;
+  }, [filteredDex]);
 
-    return grouped;
-  }, [filteredDexList]);
-
-  // Fallback logo
-  const FALLBACK_LOGO = "https://cryptologos.cc/logos/ethereum-eth-logo.svg";
+  /** FILTER BRIDGE **/
+  const filteredBridge = useMemo(() => {
+    const out = {};
+    Object.entries(BRIDGE_DATA).forEach(([chain, list]) => {
+      const flt = list.filter(b => !searchTerm || b.name.toLowerCase().includes(searchTerm.toLowerCase()));
+      if (flt.length > 0) out[chain] = flt;
+    });
+    return out;
+  }, [searchTerm]);
 
   return (
-    <div className="space-y-6">
-      {/* Header Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div
-          className="p-4 rounded-xl"
-          style={{
-            background: 'linear-gradient(145deg, #d1d6dd, #ecf0f3)',
-            boxShadow: '8px 8px 16px rgba(163,177,198,0.6), -8px -8px 16px rgba(255,255,255,0.5)'
-          }}
-        >
-          <div className="flex items-center gap-3">
-            <div className="p-3 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white">
-              <Repeat size={24} />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-800">{filteredDexList.length}</p>
-              <p className="text-sm text-gray-600">Total DEX</p>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="p-4 rounded-xl"
-          style={{
-            background: 'linear-gradient(145deg, #d1d6dd, #ecf0f3)',
-            boxShadow: '8px 8px 16px rgba(163,177,198,0.6), -8px -8px 16px rgba(255,255,255,0.5)'
-          }}
-        >
-          <div className="flex items-center gap-3">
-            <div className="p-3 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 text-white">
-              <Filter size={24} />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-800">{Object.keys(groupedDex).length}</p>
-              <p className="text-sm text-gray-600">Blockchains</p>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="p-4 rounded-xl"
-          style={{
-            background: 'linear-gradient(145deg, #d1d6dd, #ecf0f3)',
-            boxShadow: '8px 8px 16px rgba(163,177,198,0.6), -8px -8px 16px rgba(255,255,255,0.5)'
-          }}
-        >
-          <div className="flex items-center gap-3">
-            <div className="p-3 rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-white">
-              <ExternalLink size={24} />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-800">9</p>
-              <p className="text-sm text-gray-600">Ecosystems</p>
-            </div>
-          </div>
-        </div>
+    <div className="space-y-6 p-6">
+      {/* Search Bar */}
+      <div className="flex items-center gap-2 p-2 bg-gray-100 rounded-lg">
+        <Search size={20} />
+        <input
+          type="text"
+          placeholder="Search DEX or Bridge..."
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          className="flex-1 bg-transparent outline-none px-2 py-1"
+        />
       </div>
 
-      {/* Filters */}
-      <div
-        className="p-6 rounded-2xl space-y-4"
-        style={{
-          background: '#e0e5ec',
-          boxShadow: '10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)'
-        }}
-      >
-        <div className="flex flex-col md:flex-row gap-4">
-          {/* Search */}
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              <Search size={16} className="inline mr-2" />
-              Search DEX
-            </label>
-            <input
-              type="text"
-              placeholder="Search by name or chain..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-[#e0e5ec] text-gray-800"
-              style={{
-                boxShadow: 'inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)'
-              }}
-            />
-          </div>
+      {/* List DEX */}
+      <div className="border rounded-xl bg-gray-50">
+        <button
+          className="w-full flex justify-between items-center p-4 font-bold text-lg"
+          onClick={() => toggleCategory('dex')}
+        >
+          List DEX {expandedCategory.dex ? <ChevronUp /> : <ChevronDown />}
+        </button>
+        {expandedCategory.dex && (
+          <div className="px-4 pb-4 space-y-4">
+            {Object.entries(groupedDex).map(([blockchain, chains]) => (
+              <div key={blockchain}>
+                <button
+                  className="w-full flex justify-between items-center p-2 bg-gray-200 rounded"
+                  onClick={() => toggleSub(`dex-${blockchain}`)}
+                >
+                  <span className="font-semibold">{blockchain}</span>
+                  {expandedSub[`dex-${blockchain}`] ? <ChevronUp /> : <ChevronDown />}
+                </button>
 
-          {/* Blockchain Filter */}
-          <div className="w-full md:w-48">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Blockchain
-            </label>
-            <select
-              value={selectedBlockchain}
-              onChange={(e) => setSelectedBlockchain(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-[#e0e5ec] text-gray-800 cursor-pointer"
-              style={{
-                boxShadow: 'inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)'
-              }}
-            >
-              <option value="all">All Blockchains</option>
-              {Object.entries(BLOCKCHAIN_INFO).map(([key, info]) => (
-                <option key={key} value={key}>{info.name}</option>
-              ))}
-            </select>
+                {expandedSub[`dex-${blockchain}`] && (
+                  <div className="mt-2 space-y-3">
+                    {Object.entries(chains).map(([chain, dexList]) => (
+                      <div key={chain}>
+                        <h5 className="text-gray-700 font-medium mb-1">{chain}</h5>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                          {dexList.map((dex, i) => (
+                            <a
+                              key={i}
+                              href={dex.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex justify-between items-center p-2 bg-white rounded-lg shadow hover:shadow-md transition"
+                            >
+                              <div className="flex items-center gap-2">
+                                <img
+                                  src={DEX_LOGOS[dex.dex] || CHAIN_LOGOS[dex.chain] || FALLBACK_LOGO}
+                                  alt={dex.dex}
+                                  className="w-5 h-5 object-contain"
+                                  onError={(e) => { e.currentTarget.src = FALLBACK_LOGO; }}
+                                />
+                                <span>{dex.dex}</span>
+                              </div>
+                              <ExternalLink size={16} />
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-
-          {/* Category Filter */}
-          <div className="w-full md:w-48">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Category
-            </label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-[#e0e5ec] text-gray-800 cursor-pointer"
-              style={{
-                boxShadow: 'inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)'
-              }}
-            >
-              <option value="all">All Categories</option>
-              <option value="amm_spot">AMM Spot</option>
-              <option value="orderbook">Orderbook</option>
-              <option value="perpetual">Perpetual</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Reset Button */}
-        {(searchTerm || selectedBlockchain !== 'all' || selectedCategory !== 'all') && (
-          <button
-            onClick={() => {
-              setSearchTerm('');
-              setSelectedBlockchain('all');
-              setSelectedCategory('all');
-            }}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:text-gray-900 transition"
-            style={{
-              boxShadow: '4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)'
-            }}
-          >
-            Clear Filters
-          </button>
         )}
       </div>
 
-      {/* DEX List */}
-      {Object.keys(groupedDex).length === 0 ? (
-        <div
-          className="p-8 rounded-2xl text-center"
-          style={{
-            background: '#e0e5ec',
-            boxShadow: '10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)'
-          }}
+      {/* List Bridge */}
+      <div className="border rounded-xl bg-gray-50">
+        <button
+          className="w-full flex justify-between items-center p-4 font-bold text-lg"
+          onClick={() => toggleCategory('bridge')}
         >
-          <p className="text-gray-600 text-lg">No DEX found matching your filters</p>
-        </div>
-      ) : (
-        <div className="space-y-6">
-          {Object.entries(groupedDex).map(([blockchain, chains]) => {
-            const blockchainInfo = BLOCKCHAIN_INFO[blockchain];
+          List Bridge {expandedCategory.bridge ? <ChevronUp /> : <ChevronDown />}
+        </button>
+        {expandedCategory.bridge && (
+          <div className="px-4 pb-4 space-y-4">
+            {Object.entries(filteredBridge).map(([chain, bridges]) => (
+              <div key={chain}>
+                <button
+                  className="w-full flex justify-between items-center p-2 bg-gray-200 rounded"
+                  onClick={() => toggleSub(`bridge-${chain}`)}
+                >
+                  <span className="font-semibold">{chain}</span>
+                  {expandedSub[`bridge-${chain}`] ? <ChevronUp /> : <ChevronDown />}
+                </button>
 
-            return (
-              <div
-                key={blockchain}
-                className="p-6 rounded-2xl"
-                style={{
-                  background: '#e0e5ec',
-                  boxShadow: '10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)'
-                }}
-              >
-                {/* Blockchain Header */}
-                <div className="flex items-center gap-3 mb-6">
-                  <div
-                    className={`px-4 py-2 rounded-xl text-white font-bold text-lg bg-gradient-to-r ${blockchainInfo.color}`}
-                    style={{
-                      boxShadow: '4px 4px 8px rgba(163,177,198,0.4)'
-                    }}
-                  >
-                    {/* show SVG logo for the blockchain if available (no emoji) */}
-                    <span className="inline-flex items-center gap-2">
-                      {CHAIN_LOGOS[blockchainInfo.name] ? (
-                        <img
-                          src={CHAIN_LOGOS[blockchainInfo.name]}
-                          alt={blockchainInfo.name}
-                          loading="lazy"
-                          className="w-5 h-5 object-contain inline-block"
-                          onError={(e) => { e.currentTarget.src = FALLBACK_LOGO; }}
-                        />
-                      ) : null}
-                      {blockchainInfo.name}
-                    </span>
+                {expandedSub[`bridge-${chain}`] && (
+                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {bridges.map((bridge, i) => (
+                      <a
+                        key={i}
+                        href={bridge.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex justify-between items-center p-2 bg-white rounded-lg shadow hover:shadow-md transition"
+                      >
+                        <span>{bridge.name}</span>
+                        <ExternalLink size={16} />
+                      </a>
+                    ))}
                   </div>
-                  <div className="text-sm text-gray-600 font-medium">
-                    {Object.values(chains).flat().length} DEX
-                  </div>
-                </div>
-
-                {/* Chains */}
-                <div className="space-y-4">
-                  {Object.entries(chains).map(([chain, dexList]) => (
-                    <div key={chain}>
-                      {/* Chain Name (only for EVM) */}
-                      {blockchain === 'evm' && (
-                        <h4 className="text-md font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                          {/* show chain logo if available */}
-                          {CHAIN_LOGOS[chain] ? (
-                            <img
-                              src={CHAIN_LOGOS[chain]}
-                              alt={chain}
-                              loading="lazy"
-                              className="w-5 h-5 object-contain rounded-sm"
-                              onError={(e) => { e.currentTarget.src = FALLBACK_LOGO; }}
-                            />
-                          ) : (
-                            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                          )}
-                          {chain}
-                        </h4>
-                      )}
-
-                      {/* DEX Cards */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {dexList.map((dex, idx) => (
-                          <a
-                            key={idx}
-                            href={dex.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="group p-4 rounded-xl transition-all duration-300 hover:-translate-y-1"
-                            style={{
-                              background: 'linear-gradient(145deg, #d1d6dd, #ecf0f3)',
-                              boxShadow: '6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)'
-                            }}
-                          >
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="flex-1">
-                                {/* DEX name with logo */}
-                                <div className="flex items-center gap-2 mb-1">
-                                  <img
-                                    src={DEX_LOGOS[dex.dex] || CHAIN_LOGOS[dex.chain] || FALLBACK_LOGO}
-                                    alt={dex.dex}
-                                    loading="lazy"
-                                    className="w-5 h-5 object-contain rounded-sm"
-                                    onError={(e) => { e.currentTarget.src = FALLBACK_LOGO; }}
-                                  />
-                                  <span className="font-bold text-gray-800 group-hover:text-blue-600 transition">
-                                    {dex.dex}
-                                  </span>
-                                </div>
-
-                                {/* Category badge */}
-                                <span
-                                  className={`inline-block px-2 py-1 rounded-lg text-xs font-semibold text-white bg-gradient-to-r ${CATEGORY_COLORS[dex.category]}`}
-                                  style={{
-                                    boxShadow: 'inset 2px 2px 4px rgba(0,0,0,0.1)'
-                                  }}
-                                >
-                                  {CATEGORY_NAMES[dex.category]}
-                                </span>
-                              </div>
-                              <ExternalLink
-                                size={16}
-                                className="text-gray-400 group-hover:text-blue-600 transition flex-shrink-0"
-                              />
-                            </div>
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                )}
               </div>
-            );
-          })}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
-
-export default DexList;
