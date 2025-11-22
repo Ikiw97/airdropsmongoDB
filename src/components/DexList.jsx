@@ -2,12 +2,6 @@ import React, { useState, useMemo } from 'react';
 import { ExternalLink, Search, ChevronDown, ChevronUp } from 'lucide-react';
 
 /** ===========================
- *  FALLBACK LOGO
- *  ===========================
- */
-const FALLBACK_LOGO = "https://via.placeholder.com/32?text=?";
-
-/** ===========================
  *  DATA DEX
  *  ===========================
  */
@@ -49,76 +43,76 @@ const DEX_DATA = {
   },
   solana: {
     amm_spot: [
-      { chain: "Solana", dex: "Raydium", url: "https://raydium.io" },
-      { chain: "Solana", dex: "Orca", url: "https://orca.so" },
-      { chain: "Solana", dex: "Saros", url: "https://saros.finance" },
-      { chain: "Solana", dex: "Meteora", url: "https://meteora.ag" },
-      { chain: "Solana", dex: "Jupiter", url: "https://jup.ag" },
-      { chain: "Solana", dex: "Aldrin", url: "https://aldrin.com" },
-      { chain: "Solana", dex: "Step Finance Swap", url: "https://step.finance" }
+      { dex: "Raydium", url: "https://raydium.io" },
+      { dex: "Orca", url: "https://orca.so" },
+      { dex: "Saros", url: "https://saros.finance" },
+      { dex: "Meteora", url: "https://meteora.ag" },
+      { dex: "Jupiter", url: "https://jup.ag" },
+      { dex: "Aldrin", url: "https://aldrin.com" },
+      { dex: "Step Finance Swap", url: "https://step.finance" }
     ],
     orderbook: [
-      { chain: "Solana", dex: "Serum (legacy)", url: "https://projectserum.com" },
-      { chain: "Solana", dex: "OpenBook", url: "https://openbookdex.org" },
-      { chain: "Solana", dex: "Phoenix", url: "https://phoenix.trade" }
+      { dex: "Serum (legacy)", url: "https://projectserum.com" },
+      { dex: "OpenBook", url: "https://openbookdex.org" },
+      { dex: "Phoenix", url: "https://phoenix.trade" }
     ],
     perpetual: [
-      { chain: "Solana", dex: "Drift Protocol", url: "https://app.drift.trade" },
-      { chain: "Solana", dex: "Zeta Markets", url: "https://zeta.markets" },
-      { chain: "Solana", dex: "Mango Markets", url: "https://mango.markets" },
-      { chain: "Solana", dex: "Cypher", url: "https://cypher.trade" },
-      { chain: "Solana", dex: "GooseFX", url: "https://goosefx.io" }
-    ]
-  },
-  cosmos: {
-    amm_spot: [
-      { chain: "Cosmos", dex: "Osmosis", url: "https://osmosis.zone" }
-    ],
-    orderbook: [
-      { chain: "Cosmos", dex: "dYdX v4", url: "https://dydx.exchange" }
-    ]
-  },
-  near: {
-    amm_spot: [
-      { chain: "NEAR", dex: "Ref Finance", url: "https://app.ref.finance" },
-      { chain: "NEAR", dex: "Burrow Swap", url: "https://burrow.cash" }
+      { dex: "Drift Protocol", url: "https://app.drift.trade" },
+      { dex: "Zeta Markets", url: "https://zeta.markets" },
+      { dex: "Mango Markets", url: "https://mango.markets" },
+      { dex: "Cypher", url: "https://cypher.trade" },
+      { dex: "GooseFX", url: "https://goosefx.io" }
     ]
   },
   sui: {
     amm_spot: [
-      { chain: "Sui", dex: "Cetus", url: "https://www.cetus.zone" },
-      { chain: "Sui", dex: "Aftermath Finance", url: "https://aftermath.finance" },
-      { chain: "Sui", dex: "Kriya", url: "https://www.kriya.finance" }
+      { dex: "Cetus", url: "https://www.cetus.zone" },
+      { dex: "Aftermath Finance", url: "https://aftermath.finance" },
+      { dex: "Kriya", url: "https://www.kriya.finance" }
     ]
   },
   aptos: {
     amm_spot: [
-      { chain: "Aptos", dex: "PancakeSwap Aptos", url: "https://pancakeswap.finance/aptos" },
-      { chain: "Aptos", dex: "AnimeSwap", url: "https://animeswap.org" },
-      { chain: "Aptos", dex: "LiquidSwap", url: "https://liquidswap.com" }
+      { dex: "PancakeSwap Aptos", url: "https://pancakeswap.finance/aptos" },
+      { dex: "AnimeSwap", url: "https://animeswap.org" },
+      { dex: "LiquidSwap", url: "https://liquidswap.com" }
     ],
     perpetual: [
-      { chain: "Aptos", dex: "Econia", url: "https://econia.dev" }
+      { dex: "Econia", url: "https://econia.dev" }
     ]
   },
   ton: {
     amm_spot: [
-      { chain: "TON", dex: "STON.fi", url: "https://ston.fi" },
-      { chain: "TON", dex: "Megaton Finance", url: "https://megaton.fi" }
+      { dex: "STON.fi", url: "https://ston.fi" },
+      { dex: "Megaton Finance", url: "https://megaton.fi" }
     ],
     orderbook: [
-      { chain: "TON", dex: "TonStarter Swap", url: "https://tonstarter.com" }
+      { dex: "TonStarter Swap", url: "https://tonstarter.com" }
     ]
   },
   tron: {
     amm_spot: [
-      { chain: "Tron", dex: "SunSwap", url: "https://sunswap.com" }
+      { dex: "SunSwap", url: "https://sunswap.com" }
+    ]
+  },
+  near: {
+    amm_spot: [
+      { dex: "Ref Finance", url: "https://app.ref.finance" },
+      { dex: "Burrow Swap", url: "https://burrow.cash" }
+    ]
+  },
+  cosmos: {
+    amm_spot: [
+      { dex: "Osmosis", url: "https://osmosis.zone" }
+    ],
+    orderbook: [
+      { dex: "dYdX v4", url: "https://dydx.exchange" }
     ]
   },
   algorand: {
     amm_spot: [
-      { chain: "Algorand", dex: "Tinyman", url: "https://tinyman.org" },
-      { chain: "Algorand", dex: "Pact", url: "https://pact.fi" }
+      { dex: "Tinyman", url: "https://tinyman.org" },
+      { dex: "Pact", url: "https://pact.fi" }
     ]
   }
 };
@@ -159,9 +153,7 @@ const BRIDGE_DATA = {
     { name: "Allbridge", url: "https://allbridge.io" },
     { name: "ChainHop", url: "https://chainhop.network" }
   ],
-  Ethereum: [
-    { name: "Metis Bridge", url: "https://bridge.metis.io" }
-  ],
+  Ethereum: [{ name: "Metis Bridge", url: "https://bridge.metis.io" }],
   Arbitrum: [
     { name: "LayerZero", url: "https://layerzero.network" },
     { name: "Stargate Finance", url: "https://stargate.finance" }
@@ -208,7 +200,7 @@ const BRIDGE_DATA = {
 };
 
 /** ===========================
- *  Logo Maps
+ *  Logos
  *  ===========================
  */
 const CHAIN_LOGOS = {
@@ -216,7 +208,6 @@ const CHAIN_LOGOS = {
   "BNB Chain": "https://cryptologos.cc/logos/bnb-bnb-logo.svg?v=025",
   Polygon: "https://cryptologos.cc/logos/polygon-matic-logo.svg?v=025",
   Arbitrum: "https://cryptologos.cc/logos/arbitrum-arb-logo.svg?v=025",
-  Optimism: "https://cryptologos.cc/logos/optimism-ethereum-op-logo.svg?v=025",
   Avalanche: "https://cryptologos.cc/logos/avalanche-avax-logo.svg?v=025",
   Fantom: "https://cryptologos.cc/logos/fantom-ftm-logo.svg?v=025",
   Solana: "https://cryptologos.cc/logos/solana-sol-logo.svg?v=025",
@@ -227,8 +218,7 @@ const CHAIN_LOGOS = {
   NEAR: "https://cryptologos.cc/logos/near-protocol-near-logo.svg?v=025",
   Cosmos: "https://cryptologos.cc/logos/cosmos-atom-logo.svg?v=025",
   Polkadot: "https://cryptologos.cc/logos/polkadot-new-dot-logo.svg?v=025",
-  Bitcoin: "https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=025",
-  Algorand: "https://cryptologos.cc/logos/algorand-algo-logo.svg?v=025"
+  Bitcoin: "https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=025"
 };
 
 const DEX_LOGOS = {
@@ -267,144 +257,169 @@ const DEX_LOGOS = {
   "Megaton Finance": "https://megaton.fi/favicon.svg",
   "TonStarter Swap": "https://tonstarter.com/favicon.svg",
   SunSwap: "https://sunswap.com/favicon.svg",
-  Tinyman: "https://tinyman.org/favicon.svg",
+  "Ref Finance": "https://app.ref.finance/ref-icon.svg",
   Pact: "https://pact.fi/favicon.svg",
-  "Serum (legacy)": "https://projectserum.com/favicon.svg",
-  OpenBook: "https://openbookdex.org/favicon.svg",
-  Phoenix: "https://phoenix.trade/favicon.svg",
-  "Drift Protocol": "https://app.drift.trade/favicon.svg",
-  "Zeta Markets": "https://zeta.markets/favicon.svg",
-  "Mango Markets": "https://mango.markets/favicon.svg",
-  Cypher: "https://cypher.trade/favicon.svg",
-  "GooseFX": "https://goosefx.io/favicon.svg"
+  Tinyman: "https://tinyman.org/favicon.svg"
 };
 
 /** ===========================
- *  REACT COMPONENT
+ *  COMPONENT
  *  ===========================
  */
-const DexList = () => {
-  const [search, setSearch] = useState('');
-  const [expandedChains, setExpandedChains] = useState({});
+export default function DexBridgePanel() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [expandedCategory, setExpandedCategory] = useState({ dex: true, bridge: false });
+  const [expandedSub, setExpandedSub] = useState({});
 
-  const handleToggleChain = (chain) => {
-    setExpandedChains((prev) => ({ ...prev, [chain]: !prev[chain] }));
-  };
+  const toggleCategory = (cat) => setExpandedCategory(prev => ({ ...prev, [cat]: !prev[cat] }));
+  const toggleSub = (key) => setExpandedSub(prev => ({ ...prev, [key]: !prev[key] }));
+
+  const FALLBACK_LOGO = "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=025";
 
   const filteredDex = useMemo(() => {
-    if (!search) return DEX_DATA;
-    const lower = search.toLowerCase();
-    const result = {};
-    Object.keys(DEX_DATA).forEach((chain) => {
-      result[chain] = {};
-      Object.keys(DEX_DATA[chain]).forEach((type) => {
-        result[chain][type] = DEX_DATA[chain][type].filter(
-          (dex) =>
-            dex.dex.toLowerCase().includes(lower) ||
-            dex.chain.toLowerCase().includes(lower)
-        );
+    const res = [];
+    Object.entries(DEX_DATA).forEach(([blockchain, categories]) => {
+      Object.entries(categories).forEach(([cat, list]) => {
+        list.forEach(item => {
+          const name = (item.dex || "").toLowerCase();
+          const chainName = ((item.chain || blockchain) + "").toLowerCase();
+          if (!searchTerm || name.includes(searchTerm.toLowerCase()) || chainName.includes(searchTerm.toLowerCase())) {
+            res.push({ ...item, blockchain, category: cat, chain: item.chain || blockchain });
+          }
+        });
       });
     });
-    return result;
-  }, [search]);
+    return res;
+  }, [searchTerm]);
+
+  const groupedDex = useMemo(() => {
+    const g = {};
+    filteredDex.forEach(d => {
+      if (!g[d.blockchain]) g[d.blockchain] = {};
+      if (!g[d.blockchain][d.chain]) g[d.blockchain][d.chain] = [];
+      g[d.blockchain][d.chain].push(d);
+    });
+    return g;
+  }, [filteredDex]);
+
+  const filteredBridge = useMemo(() => {
+    const out = {};
+    Object.entries(BRIDGE_DATA).forEach(([chain, list]) => {
+      const flt = list.filter(b => !searchTerm || b.name.toLowerCase().includes(searchTerm.toLowerCase()));
+      if (flt.length > 0) out[chain] = flt;
+    });
+    return out;
+  }, [searchTerm]);
 
   return (
-    <div style={{ padding: 20, fontFamily: 'sans-serif' }}>
-      <h1 style={{ marginBottom: 20 }}>DEX & Bridges</h1>
-      <div style={{
-        marginBottom: 20,
-        display: 'flex',
-        alignItems: 'center',
-        borderRadius: 12,
-        boxShadow: 'inset 4px 4px 8px #c8c8c8, inset -4px -4px 8px #ffffff',
-        padding: '8px 12px'
-      }}>
-        <Search size={18} />
+    <div className="space-y-6 p-6 bg-gray-100 min-h-screen">
+      <div className="flex items-center gap-2 p-2 bg-gray-200 rounded-xl shadow-inner">
+        <Search size={20} />
         <input
           type="text"
-          placeholder="Search DEX / Chain"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{
-            marginLeft: 8,
-            border: 'none',
-            outline: 'none',
-            background: 'transparent',
-            width: '100%'
-          }}
+          placeholder="Search DEX or Bridge..."
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          className="flex-1 bg-transparent outline-none px-2 py-1 text-gray-700"
         />
       </div>
 
-      {Object.keys(filteredDex).map((chainKey) => {
-        const chain = filteredDex[chainKey];
-        const isExpanded = expandedChains[chainKey];
-        const hasContent = Object.values(chain).some(arr => arr.length > 0);
-        if (!hasContent) return null;
+      <div className="border rounded-2xl bg-gray-100 shadow-inner">
+        <button
+          className="w-full flex justify-between items-center p-4 font-bold text-lg text-gray-800"
+          onClick={() => toggleCategory('dex')}
+        >
+          List DEX {expandedCategory.dex ? <ChevronUp /> : <ChevronDown />}
+        </button>
+        {expandedCategory.dex && (
+          <div className="px-4 pb-4 space-y-4">
+            {Object.entries(groupedDex).map(([blockchain, chains]) => (
+              <div key={blockchain}>
+                <button
+                  className="w-full flex justify-between items-center p-2 bg-gray-200 rounded-lg shadow hover:shadow-md transition"
+                  onClick={() => toggleSub(`dex-${blockchain}`)}
+                >
+                  <span className="font-semibold">{blockchain}</span>
+                  {expandedSub[`dex-${blockchain}`] ? <ChevronUp /> : <ChevronDown />}
+                </button>
 
-        return (
-          <div key={chainKey} style={{ marginBottom: 24 }}>
-            <div
-              onClick={() => handleToggleChain(chainKey)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                cursor: 'pointer',
-                marginBottom: 12
-              }}
-            >
-              <img
-                src={CHAIN_LOGOS[chainKey] || FALLBACK_LOGO}
-                alt={chainKey}
-                style={{ width: 24, height: 24, marginRight: 8 }}
-              />
-              <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>{chainKey}</h2>
-              <span style={{ marginLeft: 6 }}>
-                {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-              </span>
-            </div>
-
-            {isExpanded &&
-              Object.keys(chain).map((type) => {
-                const list = chain[type];
-                if (!list || list.length === 0) return null;
-                return (
-                  <div key={type} style={{ marginLeft: 32, marginBottom: 12 }}>
-                    <h3 style={{ fontSize: 16, marginBottom: 6 }}>{type}</h3>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-                      {list.map((dex) => (
-                        <a
-                          key={dex.dex + dex.url}
-                          href={dex.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            padding: '6px 10px',
-                            borderRadius: 12,
-                            boxShadow: '4px 4px 8px #c8c8c8, -4px -4px 8px #ffffff',
-                            textDecoration: 'none',
-                            color: '#000',
-                            minWidth: 140
-                          }}
-                        >
-                          <img
-                            src={DEX_LOGOS[dex.dex] || CHAIN_LOGOS[dex.chain] || FALLBACK_LOGO}
-                            alt={dex.dex}
-                            style={{ width: 20, height: 20, marginRight: 8 }}
-                          />
-                          <span>{dex.dex}</span>
-                        </a>
-                      ))}
-                    </div>
+                {expandedSub[`dex-${blockchain}`] && (
+                  <div className="mt-2 space-y-3">
+                    {Object.entries(chains).map(([chain, dexList]) => (
+                      <div key={chain}>
+                        <h5 className="text-gray-700 font-medium mb-1">{chain}</h5>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                          {dexList.map((dex, i) => (
+                            <a
+                              key={i}
+                              href={dex.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex justify-between items-center p-2 bg-gray-100 rounded-xl shadow hover:shadow-lg transition"
+                            >
+                              <div className="flex items-center gap-2">
+                                <img
+                                  src={DEX_LOGOS[dex.dex] || CHAIN_LOGOS[dex.chain] || FALLBACK_LOGO}
+                                  alt={dex.dex}
+                                  className="w-6 h-6 object-contain"
+                                  onError={(e) => { e.currentTarget.src = FALLBACK_LOGO; }}
+                                />
+                                <span className="text-gray-800">{dex.dex}</span>
+                              </div>
+                              <ExternalLink size={16} className="text-gray-600"/>
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                );
-              })}
+                )}
+              </div>
+            ))}
           </div>
-        );
-      })}
+        )}
+      </div>
+
+      <div className="border rounded-2xl bg-gray-100 shadow-inner">
+        <button
+          className="w-full flex justify-between items-center p-4 font-bold text-lg text-gray-800"
+          onClick={() => toggleCategory('bridge')}
+        >
+          List Bridge {expandedCategory.bridge ? <ChevronUp /> : <ChevronDown />}
+        </button>
+        {expandedCategory.bridge && (
+          <div className="px-4 pb-4 space-y-4">
+            {Object.entries(filteredBridge).map(([chain, bridges]) => (
+              <div key={chain}>
+                <button
+                  className="w-full flex justify-between items-center p-2 bg-gray-200 rounded-lg shadow hover:shadow-md transition"
+                  onClick={() => toggleSub(`bridge-${chain}`)}
+                >
+                  <span className="font-semibold">{chain}</span>
+                  {expandedSub[`bridge-${chain}`] ? <ChevronUp /> : <ChevronDown />}
+                </button>
+
+                {expandedSub[`bridge-${chain}`] && (
+                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {bridges.map((bridge, i) => (
+                      <a
+                        key={i}
+                        href={bridge.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex justify-between items-center p-2 bg-gray-100 rounded-xl shadow hover:shadow-lg transition"
+                      >
+                        <span className="text-gray-800">{bridge.name}</span>
+                        <ExternalLink size={16} className="text-gray-600"/>
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
-};
-
-export default DexList;
+}
