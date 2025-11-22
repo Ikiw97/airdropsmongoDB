@@ -446,7 +446,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
     { id: "roi", label: "ROI Calculator", icon: Calculator, color: "text-teal-600" },
     { id: "news", label: "News Feed", icon: Newspaper, color: "text-yellow-700" },
     { id: "balance", label: "Balance Checker", icon: Wallet, color: "text-indigo-600" },
-    { id: "dexlist", label: "List DEX", icon: Repeat, color: "text-cyan-600" },
+    { id: "dexlist", label: "List DEX And List Bridge", icon: Repeat, color: "text-cyan-600" },
     { id: "multisend", label: "Multisend", icon: Send, color: "text-pink-600" },
   ];
 
@@ -603,7 +603,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
     <TypingTextFixed key="multisend" icon="🚀" text="Multisend Native & Tokens" />
   )}
   {activeView === "dexlist" && (
-    <TypingTextFixed key="dexlist" icon="🔄" text="List DEX - All Chains" />
+    <TypingTextFixed key="dexlist" icon="🔄" text="List DEX List Bridge - All Chains" />
   )}
 </h1>
 
