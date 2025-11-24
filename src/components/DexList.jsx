@@ -41,6 +41,7 @@ const DEX_DATA = {
       { chain: "Avalanche", dex: "Hubble Exchange", url: "https://hubble.exchange" }
     ]
   },
+
   solana: {
     amm_spot: [
       { dex: "Raydium", url: "https://raydium.io" },
@@ -64,6 +65,7 @@ const DEX_DATA = {
       { dex: "GooseFX", url: "https://goosefx.io" }
     ]
   },
+
   sui: {
     amm_spot: [
       { dex: "Cetus", url: "https://www.cetus.zone" },
@@ -71,6 +73,7 @@ const DEX_DATA = {
       { dex: "Kriya", url: "https://www.kriya.finance" }
     ]
   },
+
   aptos: {
     amm_spot: [
       { dex: "PancakeSwap Aptos", url: "https://pancakeswap.finance/aptos" },
@@ -81,6 +84,7 @@ const DEX_DATA = {
       { dex: "Econia", url: "https://econia.dev" }
     ]
   },
+
   ton: {
     amm_spot: [
       { dex: "STON.fi", url: "https://ston.fi" },
@@ -90,17 +94,20 @@ const DEX_DATA = {
       { dex: "TonStarter Swap", url: "https://tonstarter.com" }
     ]
   },
+
   tron: {
     amm_spot: [
       { dex: "SunSwap", url: "https://sunswap.com" }
     ]
   },
+
   near: {
     amm_spot: [
       { dex: "Ref Finance", url: "https://app.ref.finance" },
       { dex: "Burrow Swap", url: "https://burrow.cash" }
     ]
   },
+
   cosmos: {
     amm_spot: [
       { dex: "Osmosis", url: "https://osmosis.zone" }
@@ -109,6 +116,7 @@ const DEX_DATA = {
       { dex: "dYdX v4", url: "https://dydx.exchange" }
     ]
   },
+
   algorand: {
     amm_spot: [
       { dex: "Tinyman", url: "https://tinyman.org" },
@@ -122,7 +130,7 @@ const DEX_DATA = {
  *  ===========================
  */
 const BRIDGE_DATA = {
-  "Multi‑Chain": [
+  "Multi-Chain": [
     { name: "Gas.zip", url: "https://www.gas.zip" },
     { name: "LayerZero", url: "https://layerzero.network" },
     { name: "Stargate Finance", url: "https://stargate.finance" },
@@ -276,6 +284,10 @@ export default function DexBridgePanel() {
 
   const FALLBACK_LOGO = "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=025";
 
+
+  /* =======================
+   * FILTERS
+   * ======================= */
   const filteredDex = useMemo(() => {
     const res = [];
     Object.entries(DEX_DATA).forEach(([blockchain, categories]) => {
@@ -311,115 +323,151 @@ export default function DexBridgePanel() {
     return out;
   }, [searchTerm]);
 
+
+  /** ===========================
+   *     STYLE PRESETS
+   *  =========================== */
+  const neuBase = "bg-[#e0e5ec] text-[#666] shadow-[9px_9px_16px_rgba(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)]";
+  const neuInset = "bg-[#e0e5ec] shadow-[inset_6px_6px_12px_rgba(163,177,198,0.6),inset_-6px_-6px_12px_rgba(255,255,255,0.5)]";
+  const neuButton = "bg-[#e0e5ec] text-[#666] rounded-xl shadow-[6px_6px_12px_rgba(163,177,198,0.6),-6px_-6px_12px_rgba(255,255,255,0.5)] hover:shadow-[3px_3px_6px_rgba(163,177,198,0.6),-3px_-3px_6px_rgba(255,255,255,0.5)] transition";
+
+
   return (
-    <div className="space-y-6 p-6 bg-gray-100 min-h-screen">
-      <div className="flex items-center gap-2 p-2 bg-gray-200 rounded-xl shadow-inner">
-        <Search size={20} />
+    <div className="min-h-screen p-6 space-y-6 bg-[#e0e5ec]">
+
+      {/* SEARCH BAR */}
+      <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl ${neuInset}`}>
+        <Search size={20} className="text-[#666]" />
         <input
           type="text"
           placeholder="Search DEX or Bridge..."
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
-          className="flex-1 bg-transparent outline-none px-2 py-1 text-gray-700"
+          className="flex-1 bg-transparent outline-none text-[#666]"
         />
       </div>
 
-      <div className="border rounded-2xl bg-gray-100 shadow-inner">
+
+      {/* ======================= DEX LIST ====================== */}
+      <div className={`rounded-3xl ${neuBase}`}>
         <button
-          className="w-full flex justify-between items-center p-4 font-bold text-lg text-gray-800"
+          className="w-full flex justify-between items-center p-5 text-lg font-semibold text-[#555]"
           onClick={() => toggleCategory('dex')}
         >
           List DEX {expandedCategory.dex ? <ChevronUp /> : <ChevronDown />}
         </button>
+
         {expandedCategory.dex && (
-          <div className="px-4 pb-4 space-y-4">
+          <div className="px-5 pb-5 space-y-5">
+
             {Object.entries(groupedDex).map(([blockchain, chains]) => (
               <div key={blockchain}>
+
+                {/* BLOCKCHAIN */}
                 <button
-                  className="w-full flex justify-between items-center p-2 bg-gray-200 rounded-lg shadow hover:shadow-md transition"
+                  className={`w-full flex justify-between items-center px-4 py-3 rounded-xl ${neuButton}`}
                   onClick={() => toggleSub(`dex-${blockchain}`)}
                 >
                   <span className="font-semibold">{blockchain}</span>
                   {expandedSub[`dex-${blockchain}`] ? <ChevronUp /> : <ChevronDown />}
                 </button>
 
+                {/* CHAINS INSIDE */}
                 {expandedSub[`dex-${blockchain}`] && (
-                  <div className="mt-2 space-y-3">
+                  <div className="mt-3 space-y-4">
                     {Object.entries(chains).map(([chain, dexList]) => (
                       <div key={chain}>
-                        <h5 className="text-gray-700 font-medium mb-1">{chain}</h5>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+
+                        <h5 className="text-[#777] font-medium mb-2">{chain}</h5>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                           {dexList.map((dex, i) => (
                             <a
                               key={i}
                               href={dex.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex justify-between items-center p-2 bg-gray-100 rounded-xl shadow hover:shadow-lg transition"
+                              className={`flex justify-between items-center px-3 py-2 rounded-xl ${neuButton}`}
                             >
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-3">
                                 <img
                                   src={DEX_LOGOS[dex.dex] || CHAIN_LOGOS[dex.chain] || FALLBACK_LOGO}
                                   alt={dex.dex}
-                                  className="w-6 h-6 object-contain"
+                                  className="w-7 h-7 object-contain"
                                   onError={(e) => { e.currentTarget.src = FALLBACK_LOGO; }}
                                 />
-                                <span className="text-gray-800">{dex.dex}</span>
+                                <span>{dex.dex}</span>
                               </div>
-                              <ExternalLink size={16} className="text-gray-600"/>
+                              <ExternalLink size={18} className="text-[#777]" />
                             </a>
                           ))}
                         </div>
+
                       </div>
                     ))}
                   </div>
                 )}
+
               </div>
             ))}
+
           </div>
         )}
       </div>
 
-      <div className="border rounded-2xl bg-gray-100 shadow-inner">
+
+
+      {/* ======================= BRIDGE LIST ====================== */}
+      <div className={`rounded-3xl ${neuBase}`}>
         <button
-          className="w-full flex justify-between items-center p-4 font-bold text-lg text-gray-800"
+          className="w-full flex justify-between items-center p-5 text-lg font-semibold text-[#555]"
           onClick={() => toggleCategory('bridge')}
         >
           List Bridge {expandedCategory.bridge ? <ChevronUp /> : <ChevronDown />}
         </button>
+
         {expandedCategory.bridge && (
-          <div className="px-4 pb-4 space-y-4">
+          <div className="px-5 pb-5 space-y-5">
+
             {Object.entries(filteredBridge).map(([chain, bridges]) => (
               <div key={chain}>
+
+                {/* CHAIN CATEGORY */}
                 <button
-                  className="w-full flex justify-between items-center p-2 bg-gray-200 rounded-lg shadow hover:shadow-md transition"
+                  className={`w-full flex justify-between items-center px-4 py-3 rounded-xl ${neuButton}`}
                   onClick={() => toggleSub(`bridge-${chain}`)}
                 >
                   <span className="font-semibold">{chain}</span>
                   {expandedSub[`bridge-${chain}`] ? <ChevronUp /> : <ChevronDown />}
                 </button>
 
+                {/* BRIDGE ITEMS */}
                 {expandedSub[`bridge-${chain}`] && (
-                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                  <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+
                     {bridges.map((bridge, i) => (
                       <a
                         key={i}
                         href={bridge.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex justify-between items-center p-2 bg-gray-100 rounded-xl shadow hover:shadow-lg transition"
+                        className={`flex justify-between items-center px-3 py-2 rounded-xl ${neuButton}`}
                       >
-                        <span className="text-gray-800">{bridge.name}</span>
-                        <ExternalLink size={16} className="text-gray-600"/>
+                        <span>{bridge.name}</span>
+                        <ExternalLink size={18} className="text-[#777]" />
                       </a>
                     ))}
+
                   </div>
                 )}
+
               </div>
             ))}
+
           </div>
         )}
       </div>
+
     </div>
   );
 }
