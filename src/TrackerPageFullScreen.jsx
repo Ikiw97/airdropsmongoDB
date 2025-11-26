@@ -713,7 +713,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                 }}
               >
                 <h2 className="text-lg md:text-xl font-semibold mb-4 text-blue-700">
-                  ➕ Tambah Project Baru
+                  ➕ Add New Project
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {["name", "twitter", "discord", "telegram", "farcaster", "wallet", "email", "github", "website"].map(
@@ -798,7 +798,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                       : '6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)'
                   }}
                 >
-                  {loading ? "Loading..." : "+ Tambah Project"}
+                  {loading ? "Loading..." : "+ Add Project"}
                 </button>
               </div>
 
