@@ -157,7 +157,7 @@ function SuccessPopup({ message, onClose }) {
             <CheckCircle size={32} className="text-white" />
           </div>
           <div className="flex-1">
-            <h3 className="text-xl font-bold text-gray-800 mb-1">Berhasil!</h3>
+            <h3 className="text-xl font-bold text-gray-800 mb-1">Sucess!</h3>
             <p className="text-gray-600 font-medium">{message}</p>
           </div>
           <button
@@ -659,7 +659,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                       >
                         <option value="all" className="bg-white text-gray-800">All Projects</option>
                         <option value="checked" className="bg-white text-gray-800">✅ Daily Checked</option>
-                        <option value="unchecked" className="bg-white text-gray-800">⬜ Daily Unchecked</option>
+                        <option value="unchecked" className="bg-white text-gray-800">⬜ Ongoing Projects</option>
                       </select>
                     </button>
                   </div>
