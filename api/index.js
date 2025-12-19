@@ -551,5 +551,13 @@ app.use((err, req, res, next) => {
   res.status(500).json({ detail: "Internal server error" });
 });
 
-// Export for Vercel
-export default app;
+// Export for Vercel - wrap app as handler
+export default async (req, res) => {
+  try {
+    await initDB();
+    return app(req, res);
+  } catch (error) {
+    console.error("Handler error:", error);
+    res.status(500).json({ detail: "Internal server error" });
+  }
+};
