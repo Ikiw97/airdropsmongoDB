@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { MongoClient } from 'mongodb';
 import jwt from 'jsonwebtoken';
+import argon2 from 'argon2';
 import bcryptjs from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
@@ -47,12 +48,33 @@ async function initDB() {
 }
 
 // Helper Functions
-function verifyPassword(plainPassword, hashedPassword) {
-  return bcryptjs.compareSync(plainPassword, hashedPassword);
+async function verifyPassword(plainPassword, hashedPassword) {
+  try {
+    // Try Argon2 first (for existing passwords from Python backend)
+    if (hashedPassword.startsWith('$argon2')) {
+      return await argon2.verify(hashedPassword, plainPassword);
+    }
+  } catch (error) {
+    console.error("Argon2 verification error:", error);
+  }
+
+  // Fallback to bcryptjs
+  try {
+    return bcryptjs.compareSync(plainPassword, hashedPassword);
+  } catch (error) {
+    console.error("Bcryptjs verification error:", error);
+    return false;
+  }
 }
 
-function getPasswordHash(password) {
-  return bcryptjs.hashSync(password, 10);
+async function getPasswordHash(password) {
+  try {
+    return await argon2.hash(password);
+  } catch (error) {
+    console.error("Password hashing error:", error);
+    // Fallback to bcryptjs if argon2 fails
+    return bcryptjs.hashSync(password, 10);
+  }
 }
 
 function createAccessToken(data) {
@@ -132,7 +154,7 @@ app.post("/api/auth/register", async (req, res) => {
     const isFirstUser = userCount === 0;
     
     const userId = uuidv4();
-    const hashedPassword = getPasswordHash(password);
+    const hashedPassword = await getPasswordHash(password);
     
     const user = {
       "_id": userId,
@@ -176,8 +198,8 @@ app.post("/api/auth/login", async (req, res) => {
     }
     
     const user = await usersCollection.findOne({ username });
-    
-    if (!user || !verifyPassword(password, user.password_hash)) {
+
+    if (!user || !(await verifyPassword(password, user.password_hash))) {
       return res.status(401).json({ detail: "Incorrect username or password" });
     }
     
