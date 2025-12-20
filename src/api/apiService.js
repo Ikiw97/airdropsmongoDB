@@ -1,31 +1,67 @@
 import axios from "axios";
+import { secureLogger, validateApiResponse, sanitizeInput } from "../utils/dataSecurityUtils";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 // Create axios instance with auth token
 const api = axios.create({
   baseURL: API_URL,
+  timeout: 10000
 });
 
-// Add auth token to requests
+// Add auth token to requests + Secure logging
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  // Log request (non-sensitive data only)
+  secureLogger.log('API_REQUEST', {
+    method: config.method.toUpperCase(),
+    url: config.url,
+    // Don't log data at all
+  }, 'info');
+
   return config;
 });
 
-// Handle token expiration
+// Handle responses with sanitization
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Validate response untuk sensitive data
+    const sanitized = validateApiResponse(response.data);
+
+    // Log successful response (sanitized)
+    secureLogger.log('API_SUCCESS', {
+      method: response.config.method.toUpperCase(),
+      url: response.config.url,
+      status: response.status
+    }, 'info');
+
+    return { ...response, data: sanitized };
+  },
   (error) => {
+    // Log error tanpa sensitive details
+    secureLogger.logError('API_ERROR', error, {
+      url: error.config?.url,
+      method: error.config?.method,
+      status: error.response?.status
+    });
+
+    // Handle specific errors
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       window.location.reload();
     }
-    return Promise.reject(error);
+
+    // Return safe error message
+    return Promise.reject({
+      message: error.response?.data?.message || "An error occurred",
+      status: error.response?.status,
+      // Don't expose raw error
+    });
   }
 );
 
