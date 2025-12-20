@@ -488,7 +488,7 @@ app.post("/api/projects", async (req, res) => {
       return res.status(401).json({ detail: "Could not validate credentials" });
     }
     
-    const { name, twitter, discord, telegram, wallet, email, github, website, notes, tags } = req.body;
+    const { name, twitter, discord, telegram, farcaster, wallet, email, github, website, notes, tags } = req.body;
     
     if (!name) {
       return res.status(400).json({ detail: "Project name is required" });
@@ -510,6 +510,7 @@ app.post("/api/projects", async (req, res) => {
       twitter: twitter || "",
       discord: discord || "",
       telegram: telegram || "",
+      farcaster: farcaster || "",
       wallet: wallet || "",
       email: email || "",
       github: github || "",
