@@ -5,6 +5,7 @@ import AdminPanel from "./AdminPanel";
 import { SecurityProvider } from "./contexts/SecurityContext";
 import { AnimatePresence, motion } from "framer-motion";
 import axios from "axios";
+import "./styles/animations.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8001";
 
