@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ethers } from "ethers";
 import { Wallet, ChevronDown, ChevronUp } from "lucide-react";
 import { Alchemy, Network } from "alchemy-sdk";
+import { secureLogger } from "../utils/dataSecurityUtils";
 
 const NETWORKS = {
   Ethereum: { rpc: "https://eth.llamarpc.com" },
@@ -73,7 +74,7 @@ const BalanceChecker = () => {
         }
       }
     } catch (err) {
-      console.error("Provider error:", err);
+      secureLogger.logError('PROVIDER_ERROR', err, { network: selectedNetwork });
       alert(`⚠️ Gagal terhubung ke ${selectedNetwork} network. Coba lagi!`);
     } finally {
       setQuickBalances(result);
@@ -118,7 +119,7 @@ const BalanceChecker = () => {
               balance: formattedBalance
             });
           } catch (err) {
-            console.error(`Error checking ${addr}:`, err);
+            secureLogger.logError('CHECK_BALANCE_ERROR', err, { address: addr.substring(0, 6) + '...' });
             result.push({
               address: addr,
               balance: "❌ Error"
@@ -164,8 +165,8 @@ const BalanceChecker = () => {
                 symbol: symbol
               });
             } catch (err) {
-              console.error(`Error checking ${addr}:`, err);
-              result.push({
+            secureLogger.logError('CHECK_BALANCE_ERROR', err, { address: addr.substring(0, 6) + '...' });
+            result.push({
                 address: addr,
                 balance: "❌ Error",
                 symbol: symbol
@@ -173,14 +174,14 @@ const BalanceChecker = () => {
             }
           }
         } catch (err) {
-          console.error("Token contract error:", err);
+          secureLogger.logError('TOKEN_CONTRACT_ERROR', err, { contractAddress: tokenContractAddress.substring(0, 6) + '...' });
           alert("⚠️ Gagal membaca token contract. Pastikan contract address benar!");
           setEvmBalanceLoading(false);
           return;
         }
       }
     } catch (err) {
-      console.error("Provider error:", err);
+      secureLogger.logError('PROVIDER_ERROR', err, { rpc: 'custom' });
       alert("⚠️ Gagal terhubung ke RPC URL. Pastikan URL benar dan mendukung jaringan EVM!");
     } finally {
       setEvmBalances(result);
@@ -238,7 +239,7 @@ const BalanceChecker = () => {
       const results = await Promise.all(metadataPromises);
       setTokens(results);
     } catch (err) {
-      console.error(err);
+      secureLogger.logError('WALLET_SCANNER_ERROR', err, { address: scannerAddress.substring(0, 6) + '...' });
       setScannerError("Gagal memuat data token. Periksa address dan API key kamu.");
     } finally {
       setScannerLoading(false);
@@ -714,4 +715,3 @@ const BalanceChecker = () => {
 };
 
 export default BalanceChecker;
-
