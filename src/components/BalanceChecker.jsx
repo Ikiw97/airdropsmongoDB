@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
 import { Wallet, ChevronDown, ChevronUp } from "lucide-react";
-import { Alchemy, Network } from "alchemy-sdk";
 import { secureLogger } from "../utils/dataSecurityUtils";
+import { alchemyProxyService } from "../utils/alchemyProxy";
 
 const NETWORKS = {
   Ethereum: { rpc: "https://eth.llamarpc.com" },
@@ -190,23 +190,6 @@ const BalanceChecker = () => {
   };
 
   // Auto Wallet Scanner Functions
-  const getAlchemy = () => {
-    const settings = {
-      apiKey: import.meta.env.VITE_ALCHEMY_API_KEY,
-      network:
-        scannerChain === "eth-mainnet"
-          ? Network.ETH_MAINNET
-          : scannerChain === "arbitrum"
-          ? Network.ARB_MAINNET
-          : scannerChain === "polygon"
-          ? Network.MATIC_MAINNET
-          : scannerChain === "base"
-          ? Network.BASE_MAINNET
-          : Network.ETH_MAINNET,
-    };
-    return new Alchemy(settings);
-  };
-
   const fetchTokens = async () => {
     if (!scannerAddress) {
       setScannerError("Masukkan wallet address terlebih dahulu.");
@@ -217,30 +200,52 @@ const BalanceChecker = () => {
     setTokens([]);
 
     try {
-      const alchemy = getAlchemy();
-      const balances = await alchemy.core.getTokenBalances(scannerAddress);
-      const nonZeroTokens = balances.tokenBalances.filter(
-        (t) => t.tokenBalance !== "0"
+      const balancesResponse = await alchemyProxyService.getTokenBalances(scannerAddress, scannerChain);
+
+      if (balancesResponse.error) {
+        throw new Error(balancesResponse.error.message || 'Failed to fetch balances');
+      }
+
+      const balances = balancesResponse.result || [];
+      const nonZeroTokens = balances.filter(
+        (t) => t.tokenBalance && t.tokenBalance !== "0"
       );
 
-      const metadataPromises = nonZeroTokens.map(async (token) => {
-        const metadata = await alchemy.core.getTokenMetadata(token.contractAddress);
-        const balance =
-          Number(token.tokenBalance) / Math.pow(10, metadata.decimals || 18);
+      if (nonZeroTokens.length === 0) {
+        setTokens([]);
+        setScannerError("Tidak ada token ditemukan di address ini.");
+        setScannerLoading(false);
+        return;
+      }
 
-        return {
-          name: metadata.name || "Unknown",
-          symbol: metadata.symbol || "???",
-          logo: metadata.logo,
-          balance: balance.toFixed(4),
-        };
+      const metadataPromises = nonZeroTokens.map(async (token) => {
+        try {
+          const metadataResponse = await alchemyProxyService.getTokenMetadata(token.contractAddress, scannerChain);
+          const metadata = metadataResponse.result || {};
+          const decimals = parseInt(metadata.decimals || '18');
+          const balance = Number(token.tokenBalance) / Math.pow(10, decimals);
+
+          return {
+            name: metadata.name || "Unknown",
+            symbol: metadata.symbol || "???",
+            logo: metadata.logo,
+            balance: balance.toFixed(4),
+          };
+        } catch (err) {
+          return {
+            name: "Unknown",
+            symbol: "???",
+            logo: null,
+            balance: "0.0000",
+          };
+        }
       });
 
       const results = await Promise.all(metadataPromises);
       setTokens(results);
     } catch (err) {
       secureLogger.logError('WALLET_SCANNER_ERROR', err, { address: scannerAddress.substring(0, 6) + '...' });
-      setScannerError("Gagal memuat data token. Periksa address dan API key kamu.");
+      setScannerError(err.message || "Gagal memuat data token. Silahkan coba lagi.");
     } finally {
       setScannerLoading(false);
     }
