@@ -51,7 +51,7 @@ import TradingPlatform from "./components/TradingPlatform";
 import BalanceChecker from "./components/BalanceChecker";
 import DexList from "./components/DexList";
 import InfoAirdrops from "./components/InfoAirdrops";
-import PrivateKeyGenerator from "./components/PrivateKeyGenerator";
+import PrivateKeyGeneratorSecure from "./components/PrivateKeyGeneratorSecure";
 import apiService from "./api/apiService";
 
 const DEX_LIST = [
@@ -1045,7 +1045,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
 
           {activeView === "keygen" && (
             <div className="max-w-7xl mx-auto">
-              <PrivateKeyGenerator />
+              <PrivateKeyGeneratorSecure />
             </div>
           )}
 
