@@ -5,6 +5,50 @@ import './index.css'
 import './App.css'
 import { secureLogger } from './utils/dataSecurityUtils'
 
+// ==================== WALLET PROVIDER SAFETY ====================
+// Prevent wallet library conflicts by wrapping ethereum property redefinition
+if (typeof window !== 'undefined' && !window.ethereum) {
+  // Create a safe proxy for ethereum if it doesn't exist
+  // This prevents "Cannot redefine property" errors when multiple wallet libraries load
+  const createEthereumProxy = () => {
+    return new Proxy({}, {
+      get(target, prop) {
+        // Forward all property access to the actual window.ethereum if it exists
+        if (window.ethereum && window.ethereum[prop]) {
+          return window.ethereum[prop];
+        }
+        return target[prop];
+      },
+      set(target, prop, value) {
+        target[prop] = value;
+        return true;
+      },
+    });
+  };
+
+  // Allow window.ethereum to be set once by the wallet library
+  let ethereumProxy = createEthereumProxy();
+  Object.defineProperty(window, 'ethereum', {
+    get() {
+      return ethereumProxy;
+    },
+    set(value) {
+      // Update the actual value when wallet library sets it
+      ethereumProxy = value || createEthereumProxy();
+    },
+    configurable: true, // Allow redefinition
+  });
+}
+
+// Handle wallet injection errors gracefully
+window.addEventListener('error', (event) => {
+  if (event.message && event.message.includes('Cannot redefine property: ethereum')) {
+    // Suppress this error - it's a wallet library issue, not our app's fault
+    console.warn('Wallet library conflict detected but handled gracefully');
+    event.preventDefault();
+  }
+}, true);
+
 // ==================== PRODUCTION SECURITY ====================
 
 // Disable console methods di production untuk security
