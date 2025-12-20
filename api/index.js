@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import argon2 from 'argon2';
 import bcryptjs from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -18,6 +19,43 @@ app.use(cors({
   methods: ["*"],
   allowedHeaders: ["*"],
 }));
+
+// ==================== SECURITY HEADERS ====================
+app.use((req, res, next) => {
+  // Prevent clickjacking - must be set via headers, not meta tags
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+
+  // Content Security Policy with frame-ancestors - must be set via headers
+  res.setHeader('Content-Security-Policy',
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://api.coingecko.com; " +
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+    "font-src 'self' https://fonts.gstatic.com; " +
+    "img-src 'self' data: https: blob:; " +
+    "connect-src 'self' https: wss:; " +
+    "frame-src 'self' https://trade.dedoo.xyz; " +
+    "frame-ancestors 'self'; " +
+    "base-uri 'self'; " +
+    "form-action 'self'; " +
+    "upgrade-insecure-requests;"
+  );
+
+  // Prevent MIME type sniffing
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+
+  // Control referrer information
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+
+  // Prevent DNS prefetching
+  res.setHeader('X-DNS-Prefetch-Control', 'off');
+
+  // Permissions Policy (modern alternative to Feature-Policy)
+  res.setHeader('Permissions-Policy',
+    'camera=(), microphone=(), geolocation=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()'
+  );
+
+  next();
+});
 
 // MongoDB Connection
 const MONGO_URL = process.env.MONGO_URL || "mongodb://localhost:27017";
@@ -567,19 +605,133 @@ app.delete("/api/projects/:project_name", async (req, res) => {
   }
 });
 
+// ==================== ALCHEMY PROXY ====================
+// This endpoint proxies Alchemy requests to keep the API key secure
+const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
+
+app.post("/api/alchemy/request", async (req, res) => {
+  try {
+    if (!ALCHEMY_API_KEY) {
+      return res.status(500).json({ error: "Alchemy API key not configured" });
+    }
+
+    const { network = "polygon-mainnet", method, params = [] } = req.body;
+
+    if (!method) {
+      return res.status(400).json({ error: "Method is required" });
+    }
+
+    // Map network to Alchemy endpoint
+    const networkMap = {
+      "polygon-mainnet": "polygon-mainnet",
+      "ethereum-mainnet": "eth-mainnet",
+      "arbitrum-mainnet": "arb-mainnet",
+      "optimism-mainnet": "opt-mainnet",
+    };
+
+    const alchemyNetwork = networkMap[network] || "polygon-mainnet";
+    const alchemyUrl = `https://${alchemyNetwork}.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
+
+    // Make request to Alchemy with rate limiting protection
+    const response = await axios.post(
+      alchemyUrl,
+      {
+        jsonrpc: "2.0",
+        id: 1,
+        method,
+        params,
+      },
+      {
+        timeout: 10000,
+      }
+    );
+
+    res.json(response.data);
+  } catch (error) {
+    // Handle rate limiting (429)
+    if (error.response?.status === 429) {
+      return res.status(429).json({
+        error: "Rate limited. Please try again later.",
+        retry_after: error.response?.headers?.["retry-after"] || 60
+      });
+    }
+
+    console.error("Alchemy proxy error:", error.message);
+    res.status(500).json({ error: "Failed to process Alchemy request" });
+  }
+});
+
+// ==================== TOKEN BALANCE PROXY ====================
+// Higher-level endpoint for getting token balances
+app.post("/api/alchemy/token-balances", async (req, res) => {
+  try {
+    if (!ALCHEMY_API_KEY) {
+      return res.status(500).json({ error: "Alchemy API key not configured" });
+    }
+
+    const { address, network = "polygon-mainnet" } = req.body;
+
+    if (!address) {
+      return res.status(400).json({ error: "Address is required" });
+    }
+
+    const networkMap = {
+      "polygon-mainnet": "polygon-mainnet",
+      "ethereum-mainnet": "eth-mainnet",
+      "arbitrum-mainnet": "arb-mainnet",
+      "optimism-mainnet": "opt-mainnet",
+    };
+
+    const alchemyNetwork = networkMap[network] || "polygon-mainnet";
+    const alchemyUrl = `https://${alchemyNetwork}.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
+
+    const response = await axios.post(
+      alchemyUrl,
+      {
+        jsonrpc: "2.0",
+        id: 1,
+        method: "alchemy_getTokenBalances",
+        params: [address],
+      },
+      {
+        timeout: 10000,
+      }
+    );
+
+    res.json(response.data);
+  } catch (error) {
+    if (error.response?.status === 429) {
+      return res.status(429).json({
+        error: "Rate limited. Please try again later.",
+        retry_after: error.response?.headers?.["retry-after"] || 60
+      });
+    }
+
+    console.error("Token balances error:", error.message);
+    res.status(500).json({ error: "Failed to fetch token balances" });
+  }
+});
+
 // Error handling
 app.use((err, req, res, next) => {
   console.error("Error:", err);
   res.status(500).json({ detail: "Internal server error" });
 });
 
-// Export for Vercel - wrap app as handler
-export default async (req, res) => {
-  try {
-    await initDB();
-    return app(req, res);
-  } catch (error) {
-    console.error("Handler error:", error);
-    res.status(500).json({ detail: "Internal server error" });
+// Initialize DB once on first request
+let dbInitialized = false;
+app.use(async (req, res, next) => {
+  if (!dbInitialized) {
+    try {
+      await initDB();
+      dbInitialized = true;
+    } catch (error) {
+      console.error("DB init error:", error);
+      return res.status(500).json({ detail: "Database connection error" });
+    }
   }
-};
+  next();
+});
+
+// Export Express app directly for Vercel
+export default app;
