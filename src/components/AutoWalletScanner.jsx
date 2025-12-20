@@ -19,14 +19,9 @@ const AutoWalletScanner = () => {
     setTokens([]);
 
     try {
-      const balancesResponse = await alchemyProxyService.getTokenBalances(address, chain);
+      const tokenBalances = await alchemyProxyService.getTokenBalances(address, chain);
 
-      if (balancesResponse.error) {
-        throw new Error(balancesResponse.error.message || 'Failed to fetch balances');
-      }
-
-      const balances = balancesResponse.result || [];
-      const nonZeroTokens = balances.filter(
+      const nonZeroTokens = tokenBalances.filter(
         (t) => t.tokenBalance && t.tokenBalance !== "0"
       );
 
@@ -39,8 +34,7 @@ const AutoWalletScanner = () => {
 
       const metadataPromises = nonZeroTokens.map(async (token) => {
         try {
-          const metadataResponse = await alchemyProxyService.getTokenMetadata(token.contractAddress, chain);
-          const metadata = metadataResponse.result || {};
+          const metadata = await alchemyProxyService.getTokenMetadata(token.contractAddress, chain);
           const decimals = parseInt(metadata.decimals || '18');
           const balance = Number(token.tokenBalance) / Math.pow(10, decimals);
 
