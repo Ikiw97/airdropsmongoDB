@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Alchemy, Network } from "alchemy-sdk";
 import { Wallet } from "lucide-react";
+import { alchemyProxyService } from "../utils/alchemyProxy";
 
 const AutoWalletScanner = () => {
   const [address, setAddress] = useState("");
@@ -8,24 +8,6 @@ const AutoWalletScanner = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [chain, setChain] = useState("eth-mainnet");
-
-  // === Alchemy Config ===
-  const getAlchemy = () => {
-    const settings = {
-      apiKey: import.meta.env.VITE_ALCHEMY_API_KEY,
-      network:
-        chain === "eth-mainnet"
-          ? Network.ETH_MAINNET
-          : chain === "arbitrum"
-          ? Network.ARB_MAINNET
-          : chain === "polygon"
-          ? Network.MATIC_MAINNET
-          : chain === "base"
-          ? Network.BASE_MAINNET
-          : Network.ETH_MAINNET,
-    };
-    return new Alchemy(settings);
-  };
 
   const fetchTokens = async () => {
     if (!address) {
@@ -37,30 +19,51 @@ const AutoWalletScanner = () => {
     setTokens([]);
 
     try {
-      const alchemy = getAlchemy();
-      const balances = await alchemy.core.getTokenBalances(address);
-      const nonZeroTokens = balances.tokenBalances.filter(
-        (t) => t.tokenBalance !== "0"
+      const balancesResponse = await alchemyProxyService.getTokenBalances(address, chain);
+
+      if (balancesResponse.error) {
+        throw new Error(balancesResponse.error.message || 'Failed to fetch balances');
+      }
+
+      const balances = balancesResponse.result || [];
+      const nonZeroTokens = balances.filter(
+        (t) => t.tokenBalance && t.tokenBalance !== "0"
       );
 
-      const metadataPromises = nonZeroTokens.map(async (token) => {
-        const metadata = await alchemy.core.getTokenMetadata(token.contractAddress);
-        const balance =
-          Number(token.tokenBalance) / Math.pow(10, metadata.decimals || 18);
+      if (nonZeroTokens.length === 0) {
+        setTokens([]);
+        setError("Tidak ada token ditemukan di address ini.");
+        setLoading(false);
+        return;
+      }
 
-        return {
-          name: metadata.name || "Unknown",
-          symbol: metadata.symbol || "???",
-          logo: metadata.logo,
-          balance: balance.toFixed(4),
-        };
+      const metadataPromises = nonZeroTokens.map(async (token) => {
+        try {
+          const metadataResponse = await alchemyProxyService.getTokenMetadata(token.contractAddress, chain);
+          const metadata = metadataResponse.result || {};
+          const decimals = parseInt(metadata.decimals || '18');
+          const balance = Number(token.tokenBalance) / Math.pow(10, decimals);
+
+          return {
+            name: metadata.name || "Unknown",
+            symbol: metadata.symbol || "???",
+            logo: metadata.logo,
+            balance: balance.toFixed(4),
+          };
+        } catch (err) {
+          return {
+            name: "Unknown",
+            symbol: "???",
+            logo: null,
+            balance: "0.0000",
+          };
+        }
       });
 
       const results = await Promise.all(metadataPromises);
       setTokens(results);
     } catch (err) {
-      console.error(err);
-      setError("Gagal memuat data token. Periksa address dan API key kamu.");
+      setError(err.message || "Gagal memuat data token. Silahkan coba lagi.");
     } finally {
       setLoading(false);
     }
