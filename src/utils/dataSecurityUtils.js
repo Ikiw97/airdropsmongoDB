@@ -16,7 +16,6 @@ const SENSITIVE_FIELDS = [
   'apiKey',
   'access_token',
   'refresh_token',
-  'wallet',
   'seed',
   'mnemonic',
   'email',
