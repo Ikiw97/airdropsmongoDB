@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { Wallet, Send, AlertCircle, CheckCircle, Loader, ExternalLink } from "lucide-react";
+import {
+  getEthereumProvider,
+  requestWalletConnection,
+  safeAddWalletListener,
+  safeRemoveWalletListener,
+  waitForWallet,
+} from "../utils/walletUtils";
 
 // ERC20 ABI - only transfer function needed
 const ERC20_ABI = [
@@ -35,18 +42,25 @@ function MultisendTool() {
   const [loading, setLoading] = useState(false);
   const [txResults, setTxResults] = useState([]);
   const [error, setError] = useState("");
+  const [walletHandlers, setWalletHandlers] = useState({ accountsChanged: null, chainChanged: null, provider: null });
 
   // Connect Wallet
   const connectWallet = async () => {
     try {
-      if (!window.ethereum) {
+      setError("");
+
+      // Wait for wallet to be available (handles async wallet injection)
+      const ethereumProvider = await waitForWallet(3000);
+      if (!ethereumProvider) {
         alert("❌ Please install MetaMask or any EVM wallet!");
         return;
       }
 
-      setError("");
-      const tempProvider = new ethers.BrowserProvider(window.ethereum);
-      const accounts = await tempProvider.send("eth_requestAccounts", []);
+      // Create provider and signer
+      const tempProvider = new ethers.BrowserProvider(ethereumProvider);
+
+      // Request accounts
+      const accounts = await requestWalletConnection();
       const tempSigner = await tempProvider.getSigner();
       const network = await tempProvider.getNetwork();
 
@@ -55,18 +69,28 @@ function MultisendTool() {
       setAccount(accounts[0]);
       setChainId(Number(network.chainId));
 
-      // Listen to account changes
-      window.ethereum.on("accountsChanged", (accounts) => {
-        if (accounts.length === 0) {
+      // Create handlers for wallet events
+      const handleAccountsChanged = (newAccounts) => {
+        if (newAccounts.length === 0) {
           disconnectWallet();
         } else {
-          setAccount(accounts[0]);
+          setAccount(newAccounts[0]);
         }
-      });
+      };
 
-      // Listen to chain changes
-      window.ethereum.on("chainChanged", () => {
+      const handleChainChanged = () => {
         window.location.reload();
+      };
+
+      // Add wallet event listeners
+      safeAddWalletListener(ethereumProvider, "accountsChanged", handleAccountsChanged);
+      safeAddWalletListener(ethereumProvider, "chainChanged", handleChainChanged);
+
+      // Store handlers and provider for cleanup
+      setWalletHandlers({
+        provider: ethereumProvider,
+        accountsChanged: handleAccountsChanged,
+        chainChanged: handleChainChanged,
       });
     } catch (err) {
       console.error("Connection error:", err);
@@ -87,16 +111,16 @@ function MultisendTool() {
   // Cleanup listeners on unmount
   useEffect(() => {
     return () => {
-      if (window.ethereum && window.ethereum.removeListener) {
-        try {
-          window.ethereum.removeListener("accountsChanged", () => {});
-          window.ethereum.removeListener("chainChanged", () => {});
-        } catch (e) {
-          /* ignore */
+      if (walletHandlers.provider) {
+        if (walletHandlers.accountsChanged) {
+          safeRemoveWalletListener(walletHandlers.provider, "accountsChanged", walletHandlers.accountsChanged);
+        }
+        if (walletHandlers.chainChanged) {
+          safeRemoveWalletListener(walletHandlers.provider, "chainChanged", walletHandlers.chainChanged);
         }
       }
     };
-  }, []);
+  }, [walletHandlers]);
 
   // Fetch Balance
   useEffect(() => {
