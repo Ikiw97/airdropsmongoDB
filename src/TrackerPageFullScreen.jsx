@@ -53,6 +53,7 @@ import DexList from "./components/DexList";
 import InfoAirdrops from "./components/InfoAirdrops";
 import PrivateKeyGeneratorSecure from "./components/PrivateKeyGeneratorSecure";
 import apiService from "./api/apiService";
+import { secureLogger } from "./utils/dataSecurityUtils";
 
 const DEX_LIST = [
   { name: "Uniswap", logo: "/dex/uniswap.png", link: "https://app.uniswap.org" },
@@ -265,7 +266,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
   const fetchProjects = async () => {
     try {
       const data = await apiService.getProjects();
-      console.log("Raw data from MongoDB:", data);
+      secureLogger.log('FETCH_PROJECTS', { count: Array.isArray(data) ? data.length : 0 }, 'info');
 
       if (Array.isArray(data)) {
         const parsedData = data.map(project => {
@@ -278,11 +279,11 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
           };
         });
 
-        console.log("Parsed data with tags:", parsedData);
+        secureLogger.log('PARSE_PROJECTS', { count: parsedData.length }, 'info');
         setProjects(parsedData);
       }
     } catch (error) {
-      console.error("Fetch error:", error);
+      secureLogger.logError('FETCH_PROJECTS_ERROR', error, {});
       alert("⚠️ Gagal memuat data dari Google Sheets");
     }
   };
@@ -336,7 +337,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
       
       fetchProjects();
     } catch (err) {
-      console.error("Gagal update daily:", err);
+      secureLogger.logError('UPDATE_DAILY_ERROR', err, { name });
       alert("❌ Gagal update daily status!");
     }
   };
@@ -351,7 +352,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
       alert("✅ Project berhasil dihapus!");
       fetchProjects();
     } catch (err) {
-      console.error("Error deleting project:", err);
+      secureLogger.logError('DELETE_PROJECT_ERROR', err, { name });
       alert(err.response?.data?.detail || "❌ Gagal menghapus project!");
     } finally {
       setLoading(false);
@@ -407,9 +408,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
         (filterDaily === "checked" && p.daily === "CHECKED") ||
         (filterDaily === "unchecked" && p.daily !== "CHECKED");
 
-      if (filterTag !== "all") {
-        console.log(`Project: ${p.name}, Tags: ${JSON.stringify(p.tags)}, FilterTag: ${filterTag}, Matches: ${matchesTags}`);
-      }
+      // Filtering logic - no need to log
 
       return matchesSearch && matchesTags && matchesDaily;
     })
