@@ -489,7 +489,9 @@ app.post("/api/projects", async (req, res) => {
     }
     
     const { name, twitter, discord, telegram, farcaster, wallet, email, github, website, notes, tags } = req.body;
-    
+
+    console.log("Creating project with data:", { name, twitter, discord, telegram, farcaster, wallet, email, github, website, notes, tags });
+
     if (!name) {
       return res.status(400).json({ detail: "Project name is required" });
     }
