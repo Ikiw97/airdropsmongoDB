@@ -51,6 +51,7 @@ import TradingPlatform from "./components/TradingPlatform";
 import BalanceChecker from "./components/BalanceChecker";
 import DexList from "./components/DexList";
 import InfoAirdrops from "./components/InfoAirdrops";
+import PrivateKeyGenerator from "./components/PrivateKeyGenerator";
 import apiService from "./api/apiService";
 
 const DEX_LIST = [
@@ -446,6 +447,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
     { id: "roi", label: "ROI Calculator", icon: Calculator, color: "text-teal-600" },
     { id: "news", label: "News Feed", icon: Newspaper, color: "text-yellow-700" },
     { id: "balance", label: "Balance Checker", icon: Wallet, color: "text-indigo-600" },
+    { id: "keygen", label: "Key Generator", icon: Shield, color: "text-red-600" },
     { id: "dexlist", label: "List DEX & Bridge", icon: Repeat, color: "text-cyan-600" },
     { id: "multisend", label: "Multisend", icon: Send, color: "text-pink-600" },
   ];
@@ -598,6 +600,9 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
   )}
   {activeView === "balance" && (
     <TypingTextFixed key="balance" icon="💰" text="Balance Checker" />
+  )}
+  {activeView === "keygen" && (
+    <TypingTextFixed key="keygen" icon="🔐" text="EVM Private Key Generator" />
   )}
   {activeView === "multisend" && (
     <TypingTextFixed key="multisend" icon="🚀" text="Multisend Native & Tokens" />
@@ -1038,6 +1043,12 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
             </div>
           )}
 
+          {activeView === "keygen" && (
+            <div className="max-w-7xl mx-auto">
+              <PrivateKeyGenerator />
+            </div>
+          )}
+
           {activeView === "analytics" && (
             <div className="max-w-7xl mx-auto">
               <AnalyticsDashboard
@@ -1096,5 +1107,3 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
 }
 
 export default TrackerPageFullScreen;
-
-
