@@ -1,5 +1,13 @@
 import React, { useState } from "react";
 import { Wallet } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  fadeInUpVariants,
+  containerVariants,
+  listItemVariants,
+  scaleInVariants,
+  buttonHoverVariants,
+} from "../utils/animationVariants";
 import { alchemyProxyService } from "../utils/alchemyProxy";
 
 const AutoWalletScanner = () => {
@@ -73,17 +81,28 @@ const AutoWalletScanner = () => {
     "rounded-xl shadow-[3px_3px_6px_#b8b9be,-3px_-3px_6px_#ffffff] active:shadow-[inset_3px_3px_6px_#b8b9be,inset_-3px_-3px_6px_#ffffff] transition text-gray-700 font-semibold";
 
   return (
-    <div className={`max-w-2xl mx-auto mt-10 space-y-6 ${baseBg}`}>
+    <motion.div
+      className={`max-w-2xl mx-auto mt-10 space-y-6 ${baseBg}`}
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       {/* Header */}
-      <div className={`${neuCard} ${baseBg} flex items-center justify-center gap-3`}>
+      <motion.div
+        className={`${neuCard} ${baseBg} flex items-center justify-center gap-3`}
+        variants={fadeInUpVariants}
+      >
         <Wallet className="text-blue-500" size={26} />
         <h2 className="text-2xl font-bold text-gray-700">🪙 Auto Wallet Scanner</h2>
-      </div>
+      </motion.div>
 
       {/* Chain Selector */}
-      <div className={`${neuCard} ${baseBg} flex flex-wrap justify-center gap-3 p-4`}>
-        {["eth-mainnet", "arbitrum", "polygon", "base"].map((c) => (
-          <button
+      <motion.div
+        className={`${neuCard} ${baseBg} flex flex-wrap justify-center gap-3 p-4`}
+        variants={fadeInUpVariants}
+      >
+        {["eth-mainnet", "arbitrum", "polygon", "base"].map((c, i) => (
+          <motion.button
             key={c}
             onClick={() => setChain(c)}
             className={`${neuButton} ${baseBg} px-6 py-2 ${
@@ -91,47 +110,70 @@ const AutoWalletScanner = () => {
                 ? "text-white bg-gradient-to-r from-orange-400 to-pink-400"
                 : ""
             }`}
+            variants={buttonHoverVariants}
+            whileHover="hover"
+            whileTap="tap"
+            custom={i}
           >
             {c === "eth-mainnet"
               ? "Ethereum"
               : c.charAt(0).toUpperCase() + c.slice(1)}
-          </button>
+          </motion.button>
         ))}
-      </div>
+      </motion.div>
 
       {/* Input Section */}
-      <div className={`${neuCard} ${baseBg} space-y-4`}>
+      <motion.div
+        className={`${neuCard} ${baseBg} space-y-4`}
+        variants={fadeInUpVariants}
+      >
         <div className="flex flex-col sm:flex-row gap-3">
-          <input
+          <motion.input
             type="text"
             placeholder="Masukkan wallet address..."
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             className={`flex-1 ${baseBg} text-gray-700 rounded-xl px-4 py-2 ${neuInset} focus:outline-none text-sm`}
+            whileFocus={{ boxShadow: "0 0 10px rgba(59, 130, 246, 0.5)" }}
           />
-          <button
+          <motion.button
             onClick={fetchTokens}
             disabled={loading}
             className={`${neuButton} px-5 py-2 bg-gradient-to-r from-blue-400 to-blue-500 text-white active:from-blue-600 active:to-blue-700`}
+            variants={buttonHoverVariants}
+            whileHover="hover"
+            whileTap="tap"
           >
             {loading ? "Scanning..." : "Scan"}
-          </button>
+          </motion.button>
         </div>
 
         {error && (
-          <p className="text-red-500 text-sm text-center font-medium">{error}</p>
+          <motion.p
+            className="text-red-500 text-sm text-center font-medium"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            {error}
+          </motion.p>
         )}
-      </div>
+      </motion.div>
 
       {/* Token List */}
       {tokens.length > 0 && (
-        <div
+        <motion.div
           className={`${neuCard} ${baseBg} space-y-3 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300`}
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
         >
           {tokens.map((t, i) => (
-            <div
+            <motion.div
               key={i}
               className={`${baseBg} flex items-center justify-between px-4 py-3 rounded-2xl ${neuInset}`}
+              variants={listItemVariants}
+              custom={i}
+              whileHover={{ x: 5 }}
             >
               <div className="flex items-center gap-3">
                 {t.logo ? (
@@ -150,17 +192,20 @@ const AutoWalletScanner = () => {
               <span className="text-gray-600 text-sm font-semibold">
                 {t.balance}
               </span>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
 
       {!loading && tokens.length === 0 && !error && (
-        <div className={`${neuCard} ${baseBg} text-center text-gray-500 text-sm`}>
+        <motion.div
+          className={`${neuCard} ${baseBg} text-center text-gray-500 text-sm`}
+          variants={fadeInUpVariants}
+        >
           Masukkan wallet dan klik <b>Scan</b> untuk melihat token yang dimiliki.
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

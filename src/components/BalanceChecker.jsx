@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
 import { Wallet, ChevronDown, ChevronUp } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  fadeInUpVariants,
+  containerVariants,
+  listItemVariants,
+  buttonHoverVariants,
+  scaleInVariants,
+} from "../utils/animationVariants";
 import { secureLogger } from "../utils/dataSecurityUtils";
 import { alchemyProxyService } from "../utils/alchemyProxy";
 
@@ -250,23 +258,40 @@ const BalanceChecker = () => {
   const neuButton = "bg-[#e0e5ec] rounded-xl shadow-[3px_3px_6px_#b8b9be,-3px_-3px_6px_#ffffff] active:shadow-[inset_3px_3px_6px_#b8b9be,inset_-3px_-3px_6px_#ffffff] transition text-gray-700 font-semibold";
 
   return (
-    <div className="w-full mb-8">
+    <motion.div
+      className="w-full mb-8"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       {/* Header */}
-      <div
+      <motion.div
         className={`${neuContainer} flex justify-between items-center bg-gradient-to-r from-[#e0e5ec] to-[#f1f4f8] cursor-pointer mb-4`}
         onClick={() => setIsExpanded(!isExpanded)}
+        variants={fadeInUpVariants}
+        whileHover={{ scale: 1.01 }}
       >
         <h2 className="text-2xl font-bold flex items-center gap-2 text-gray-700">
           <Wallet size={26} className="text-indigo-500" /> Balance Checker
         </h2>
-        <button className={`${neuButton} px-4 py-2 flex items-center gap-2`}>
+        <motion.button
+          className={`${neuButton} px-4 py-2 flex items-center gap-2`}
+          variants={buttonHoverVariants}
+          whileHover="hover"
+          whileTap="tap"
+        >
           {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           {isExpanded ? "Collapse" : "Expand"}
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
       {isExpanded && (
-        <div className="max-w-7xl mx-auto space-y-6">
+        <motion.div
+          className="max-w-7xl mx-auto space-y-6"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
           {/* EVM Native & Tokens Balance Checker */}
           <div className="p-6 rounded-2xl"
             style={{
@@ -707,9 +732,9 @@ const BalanceChecker = () => {
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

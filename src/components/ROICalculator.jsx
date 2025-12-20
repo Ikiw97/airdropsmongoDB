@@ -11,6 +11,8 @@ import {
   Save,
   Trash2,
 } from "lucide-react";
+import { motion } from "framer-motion";
+import { containerVariants, fadeInUpVariants, itemVariants, buttonHoverVariants } from "../utils/animationVariants";
 import {
   BarChart,
   Bar,

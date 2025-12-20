@@ -1,5 +1,7 @@
 import React from "react";
 import { Send, ExternalLink } from "lucide-react";
+import { motion } from "framer-motion";
+import { containerVariants, itemVariants, fadeInUpVariants } from "../utils/animationVariants";
 
 const channels = [
   { name: "@airdropfind", url: "https://t.me/airdropfind", description: "Daily latest airdrop updates", img: "/images/airdropfind.png" },
@@ -20,18 +22,31 @@ function InfoAirdrops() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <motion.div
+      className="max-w-7xl mx-auto space-y-8"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       {/* Header */}
-      <h2 className="text-3xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-600 to-purple-600 mb-6">
+      <motion.h2
+        className="text-3xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-600 to-purple-600 mb-6"
+        variants={fadeInUpVariants}
+      >
         📦 Recommended 10 Airdrop Channels
-      </h2>
+      </motion.h2>
 
       {/* Channel Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <motion.div
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
         {channels.map((ch, index) => {
-          const isLast = index === channels.length - 1; // last card
+          const isLast = index === channels.length - 1;
           return (
-            <div
+            <motion.div
               key={ch.name}
               className={`p-4 rounded-2xl flex flex-col justify-between w-full ${
                 isLast ? "lg:col-start-2" : ""
@@ -40,9 +55,12 @@ function InfoAirdrops() {
                 background: "#e0e5ec",
                 boxShadow: "8px 8px 16px rgba(163,177,198,0.6), -8px -8px 16px rgba(255,255,255,0.5)",
               }}
+              variants={itemVariants}
+              custom={index}
+              whileHover={{ y: -5 }}
             >
               {/* Icon & Info */}
-              <div className="mb-3 text-center">
+              <motion.div className="mb-3 text-center" variants={fadeInUpVariants}>
                 <img
                   src={ch.img}
                   alt={ch.name}
@@ -51,33 +69,36 @@ function InfoAirdrops() {
                 />
                 <h3 className="font-bold text-gray-800 text-lg mb-1">{ch.name}</h3>
                 <p className="text-gray-600 text-sm">{ch.description}</p>
-              </div>
+              </motion.div>
 
               {/* Telegram Button */}
-              <button
+              <motion.button
                 onClick={() => openInTelegram(ch.url)}
                 className="mt-auto px-4 py-2 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all"
                 style={{
                   background: "linear-gradient(145deg, #0088cc, #0099dd)",
                   boxShadow: "6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)",
                 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
               >
                 <Send size={16} />
                 Open in Telegram
                 <ExternalLink size={14} />
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
       {/* Footer Text */}
-      <div
+      <motion.div
         className="p-8 rounded-2xl text-center mt-8"
         style={{
           background: "linear-gradient(145deg, #667eea, #764ba2)",
           boxShadow: "10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)",
         }}
+        variants={fadeInUpVariants}
       >
         <h3 className="text-2xl font-bold text-white mb-3">
           🚀 Don't Miss the Latest Airdrops!
@@ -85,8 +106,8 @@ function InfoAirdrops() {
         <p className="text-white/90">
           Stay updated with the latest airdrops from trusted channels.
         </p>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 

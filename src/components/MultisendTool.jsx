@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { Wallet, Send, AlertCircle, CheckCircle, Loader, ExternalLink } from "lucide-react";
+import { motion } from "framer-motion";
+import { containerVariants, fadeInUpVariants, buttonHoverVariants, itemVariants } from "../utils/animationVariants";
 import {
   getEthereumProvider,
   requestWalletConnection,
@@ -318,7 +320,13 @@ function MultisendTool() {
   const invalidCount = Math.max(0, totalLines - validCount);
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 md:px-0" style={{ background: "#E3E8EF" }}>
+    <motion.div
+      className="min-h-screen flex items-center justify-center px-4 md:px-0"
+      style={{ background: "#E3E8EF" }}
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       {/* small internal CSS for hover transitions while keeping neumorphic style */}
       <style>{`
         .neumo-btn { transition: box-shadow 0.15s ease, transform 0.08s ease; }
@@ -327,15 +335,16 @@ function MultisendTool() {
         .input-focus:focus { outline: none; box-shadow: inset 4px 4px 10px rgba(180,180,180,0.5), inset -4px -4px 10px rgba(255,255,255,0.95); }
       `}</style>
 
-      <div
+      <motion.div
         className="w-full max-w-5xl p-5 md:p-8 rounded-3xl"
         style={{
           background: "linear-gradient(180deg, #E9EEF4 0%, #E0E6EC 100%)",
           boxShadow: "9px 9px 22px rgba(190,190,190,0.7), -9px -9px 22px rgba(255,255,255,0.8)"
         }}
+        variants={fadeInUpVariants}
       >
         {/* Header */}
-        <div className="mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <motion.div className="mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4" variants={fadeInUpVariants}>
           <div className="flex items-center gap-3">
             <div
               style={{
@@ -374,10 +383,10 @@ function MultisendTool() {
             <div style={{ fontSize: 12 }} className="text-gray-600">Network</div>
             <div className="font-semibold text-gray-800">{currentNetwork?.name || "Not connected"}</div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Wallet Connection */}
-        <div className="mb-6 text-center">
+        <motion.div className="mb-6 text-center" variants={fadeInUpVariants}>
           {!account ? (
             <button
               onClick={connectWallet}
@@ -431,11 +440,11 @@ function MultisendTool() {
               </div>
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Send Type Toggle */}
         {account && (
-          <div className="mb-6">
+          <motion.div className="mb-6" variants={fadeInUpVariants}>
             <label className="block text-sm text-gray-600 mb-2">Send Type</label>
             <div className="flex flex-col md:flex-row gap-3">
               <button
@@ -469,12 +478,12 @@ function MultisendTool() {
                 Send Tokens (ERC20)
               </button>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Token Address Input */}
         {account && sendType === "token" && (
-          <div className="mb-6">
+          <motion.div className="mb-6" variants={fadeInUpVariants}>
             <label className="block text-sm text-gray-600 mb-2">Token Contract Address</label>
             <input
               type="text"
@@ -500,12 +509,12 @@ function MultisendTool() {
                 </p>
               )}
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Balance Display */}
         {account && (
-          <div
+          <motion.div
             className="mb-6 rounded-2xl p-4"
             style={{
               background: "#E3E8EF",
@@ -518,12 +527,12 @@ function MultisendTool() {
                 {balance} {sendType === "token" && tokenInfo ? tokenInfo.symbol : networkSymbol}
               </span>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Recipients Input */}
         {account && (
-          <div className="mb-6">
+          <motion.div className="mb-6" variants={fadeInUpVariants}>
             <label className="block text-sm text-gray-600 mb-2">
               Recipients (Format: address,amount — one per line)
             </label>
@@ -557,12 +566,12 @@ function MultisendTool() {
             <p className="text-xs text-gray-500 mt-2">
               Hint: addresses must be checksummed 0x... and amounts are decimals. Invalid lines are ignored.
             </p>
-          </div>
+          </motion.div>
         )}
 
         {/* Error Display */}
         {error && (
-          <div
+          <motion.div
             className="mb-6 rounded-2xl p-3 flex items-start gap-2"
             style={{
               background: "rgba(255, 240, 240, 0.9)",
@@ -572,12 +581,12 @@ function MultisendTool() {
           >
             <AlertCircle size={20} className="text-red-600 flex-shrink-0 mt-0.5" />
             <p className="text-red-600 text-sm">{error}</p>
-          </div>
+          </motion.div>
         )}
 
         {/* Send Button */}
         {account && (
-          <button
+          <motion.button
             onClick={executeMultisend}
             disabled={loading || parseRecipients().length === 0}
             className="w-full py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 neumo-btn"
@@ -602,12 +611,12 @@ function MultisendTool() {
                 Execute Multisend ({parseRecipients().length})
               </>
             )}
-          </button>
+          </motion.button>
         )}
 
         {/* Transaction Results */}
         {txResults.length > 0 && (
-          <div
+          <motion.div
             className="mt-6 rounded-2xl p-4"
             style={{
               background: "#E3E8EF",
@@ -674,10 +683,10 @@ function MultisendTool() {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 

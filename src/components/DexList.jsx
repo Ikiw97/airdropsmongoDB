@@ -1,5 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { ExternalLink, Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  fadeInUpVariants,
+  containerVariants,
+  itemVariants,
+  buttonHoverVariants,
+} from '../utils/animationVariants';
 
 /** ===========================
  *  DATA DEX
@@ -333,10 +340,18 @@ export default function DexBridgePanel() {
 
 
   return (
-    <div className="min-h-screen p-6 space-y-6 bg-[#e0e5ec]">
+    <motion.div
+      className="min-h-screen p-6 space-y-6 bg-[#e0e5ec]"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
 
       {/* SEARCH BAR */}
-      <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl ${neuInset}`}>
+      <motion.div
+        className={`flex items-center gap-3 px-4 py-3 rounded-2xl ${neuInset}`}
+        variants={fadeInUpVariants}
+      >
         <Search size={20} className="text-[#666]" />
         <input
           type="text"
@@ -345,11 +360,11 @@ export default function DexBridgePanel() {
           onChange={e => setSearchTerm(e.target.value)}
           className="flex-1 bg-transparent outline-none text-[#666]"
         />
-      </div>
+      </motion.div>
 
 
       {/* ======================= DEX LIST ====================== */}
-      <div className={`rounded-3xl ${neuBase}`}>
+      <motion.div className={`rounded-3xl ${neuBase}`} variants={fadeInUpVariants}>
         <button
           className="w-full flex justify-between items-center p-5 text-lg font-semibold text-[#555]"
           onClick={() => toggleCategory('dex')}
@@ -357,68 +372,92 @@ export default function DexBridgePanel() {
           List DEX {expandedCategory.dex ? <ChevronUp /> : <ChevronDown />}
         </button>
 
-        {expandedCategory.dex && (
-          <div className="px-5 pb-5 space-y-5">
+        <AnimatePresence>
+          {expandedCategory.dex && (
+            <motion.div
+              className="px-5 pb-5 space-y-5"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+            >
 
-            {Object.entries(groupedDex).map(([blockchain, chains]) => (
-              <div key={blockchain}>
+              {Object.entries(groupedDex).map(([blockchain, chains]) => (
+                <motion.div key={blockchain} variants={itemVariants}>
 
-                {/* BLOCKCHAIN */}
-                <button
-                  className={`w-full flex justify-between items-center px-4 py-3 rounded-xl ${neuButton}`}
-                  onClick={() => toggleSub(`dex-${blockchain}`)}
-                >
-                  <span className="font-semibold">{blockchain}</span>
-                  {expandedSub[`dex-${blockchain}`] ? <ChevronUp /> : <ChevronDown />}
-                </button>
+                  {/* BLOCKCHAIN */}
+                  <button
+                    className={`w-full flex justify-between items-center px-4 py-3 rounded-xl ${neuButton}`}
+                    onClick={() => toggleSub(`dex-${blockchain}`)}
+                  >
+                    <span className="font-semibold">{blockchain}</span>
+                    {expandedSub[`dex-${blockchain}`] ? <ChevronUp /> : <ChevronDown />}
+                  </button>
 
-                {/* CHAINS INSIDE */}
-                {expandedSub[`dex-${blockchain}`] && (
-                  <div className="mt-3 space-y-4">
-                    {Object.entries(chains).map(([chain, dexList]) => (
-                      <div key={chain}>
+                  {/* CHAINS INSIDE */}
+                  <AnimatePresence>
+                    {expandedSub[`dex-${blockchain}`] && (
+                      <motion.div
+                        className="mt-3 space-y-4"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        {Object.entries(chains).map(([chain, dexList]) => (
+                          <div key={chain}>
 
-                        <h5 className="text-[#777] font-medium mb-2">{chain}</h5>
+                            <h5 className="text-[#777] font-medium mb-2">{chain}</h5>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                          {dexList.map((dex, i) => (
-                            <a
-                              key={i}
-                              href={dex.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={`flex justify-between items-center px-3 py-2 rounded-xl ${neuButton}`}
+                            <motion.div
+                              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+                              initial="hidden"
+                              animate="visible"
+                              variants={containerVariants}
                             >
-                              <div className="flex items-center gap-3">
-                                <img
-                                  src={DEX_LOGOS[dex.dex] || CHAIN_LOGOS[dex.chain] || FALLBACK_LOGO}
-                                  alt={dex.dex}
-                                  className="w-7 h-7 object-contain"
-                                  onError={(e) => { e.currentTarget.src = FALLBACK_LOGO; }}
-                                />
-                                <span>{dex.dex}</span>
-                              </div>
-                              <ExternalLink size={18} className="text-[#777]" />
-                            </a>
-                          ))}
-                        </div>
+                              {dexList.map((dex, i) => (
+                                <motion.a
+                                  key={i}
+                                  href={dex.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={`flex justify-between items-center px-3 py-2 rounded-xl ${neuButton}`}
+                                  variants={itemVariants}
+                                  custom={i}
+                                  whileHover={{ y: -2 }}
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <img
+                                      src={DEX_LOGOS[dex.dex] || CHAIN_LOGOS[dex.chain] || FALLBACK_LOGO}
+                                      alt={dex.dex}
+                                      className="w-7 h-7 object-contain"
+                                      onError={(e) => { e.currentTarget.src = FALLBACK_LOGO; }}
+                                    />
+                                    <span>{dex.dex}</span>
+                                  </div>
+                                  <ExternalLink size={18} className="text-[#777]" />
+                                </motion.a>
+                              ))}
+                            </motion.div>
 
-                      </div>
-                    ))}
-                  </div>
-                )}
+                          </div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
-              </div>
-            ))}
+                </motion.div>
+              ))}
 
-          </div>
-        )}
-      </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
 
 
 
       {/* ======================= BRIDGE LIST ====================== */}
-      <div className={`rounded-3xl ${neuBase}`}>
+      <motion.div className={`rounded-3xl ${neuBase}`} variants={fadeInUpVariants}>
         <button
           className="w-full flex justify-between items-center p-5 text-lg font-semibold text-[#555]"
           onClick={() => toggleCategory('bridge')}
@@ -426,48 +465,67 @@ export default function DexBridgePanel() {
           List Bridge {expandedCategory.bridge ? <ChevronUp /> : <ChevronDown />}
         </button>
 
-        {expandedCategory.bridge && (
-          <div className="px-5 pb-5 space-y-5">
+        <AnimatePresence>
+          {expandedCategory.bridge && (
+            <motion.div
+              className="px-5 pb-5 space-y-5"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+            >
 
-            {Object.entries(filteredBridge).map(([chain, bridges]) => (
-              <div key={chain}>
+              {Object.entries(filteredBridge).map(([chain, bridges]) => (
+                <motion.div key={chain} variants={itemVariants}>
 
-                {/* CHAIN CATEGORY */}
-                <button
-                  className={`w-full flex justify-between items-center px-4 py-3 rounded-xl ${neuButton}`}
-                  onClick={() => toggleSub(`bridge-${chain}`)}
-                >
-                  <span className="font-semibold">{chain}</span>
-                  {expandedSub[`bridge-${chain}`] ? <ChevronUp /> : <ChevronDown />}
-                </button>
+                  {/* CHAIN CATEGORY */}
+                  <button
+                    className={`w-full flex justify-between items-center px-4 py-3 rounded-xl ${neuButton}`}
+                    onClick={() => toggleSub(`bridge-${chain}`)}
+                  >
+                    <span className="font-semibold">{chain}</span>
+                    {expandedSub[`bridge-${chain}`] ? <ChevronUp /> : <ChevronDown />}
+                  </button>
 
-                {/* BRIDGE ITEMS */}
-                {expandedSub[`bridge-${chain}`] && (
-                  <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-
-                    {bridges.map((bridge, i) => (
-                      <a
-                        key={i}
-                        href={bridge.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`flex justify-between items-center px-3 py-2 rounded-xl ${neuButton}`}
+                  {/* BRIDGE ITEMS */}
+                  <AnimatePresence>
+                    {expandedSub[`bridge-${chain}`] && (
+                      <motion.div
+                        className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
                       >
-                        <span>{bridge.name}</span>
-                        <ExternalLink size={18} className="text-[#777]" />
-                      </a>
-                    ))}
 
-                  </div>
-                )}
+                        {bridges.map((bridge, i) => (
+                          <motion.a
+                            key={i}
+                            href={bridge.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`flex justify-between items-center px-3 py-2 rounded-xl ${neuButton}`}
+                            variants={itemVariants}
+                            custom={i}
+                            whileHover={{ y: -2 }}
+                          >
+                            <span>{bridge.name}</span>
+                            <ExternalLink size={18} className="text-[#777]" />
+                          </motion.a>
+                        ))}
 
-              </div>
-            ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
-          </div>
-        )}
-      </div>
+                </motion.div>
+              ))}
 
-    </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+    </motion.div>
   );
 }

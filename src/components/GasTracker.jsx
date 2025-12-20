@@ -7,6 +7,13 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  fadeInUpVariants,
+  containerVariants,
+  cardVariants,
+  buttonHoverVariants,
+} from "../utils/animationVariants";
 import {
   LineChart,
   Line,
@@ -228,46 +235,78 @@ const GasTracker = () => {
   ];
 
   return (
-    <div className="w-full mb-8">
+    <motion.div
+      className="w-full mb-8"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
 
       {/* HEADER CARD */}
-      <div
+      <motion.div
         className={`${neuHeader} flex justify-between items-center`}
         onClick={() => setIsExpanded(!isExpanded)}
+        variants={fadeInUpVariants}
+        whileHover={{ scale: 1.01 }}
       >
         <h2 className="text-2xl font-bold text-gray-700 flex items-center gap-2">
           <Fuel className="text-blue-400" size={26} />
           Real-time Gas Tracker
         </h2>
 
-        <div className="flex items-center gap-3 text-gray-500">
+        <motion.div
+          className="flex items-center gap-3 text-gray-500"
+          initial={{ rotate: 0 }}
+          animate={{ rotate: loading ? 360 : 0 }}
+          transition={{ duration: loading ? 1 : 0.3, repeat: loading ? Infinity : 0 }}
+        >
           {loading ? "🔄 Updating..." : "✅ Live"}
           {isExpanded ? <ChevronUp /> : <ChevronDown />}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {isExpanded && (
-        <div className={`${neuCard} mt-4 space-y-6`}>
+        <motion.div
+          className={`${neuCard} mt-4 space-y-6`}
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
 
           {/* CHAIN BUTTONS */}
-          <div className="flex flex-wrap justify-center gap-3">
-            {chains.map((chain) => (
-              <button
+          <motion.div className="flex flex-wrap justify-center gap-3" variants={containerVariants}>
+            {chains.map((chain, i) => (
+              <motion.button
                 key={chain.id}
                 onClick={() => setSelectedChain(chain.id)}
                 className={`${neuButton} ${
                   selectedChain === chain.id ? `${accentGradient} shadow-none` : ""
                 }`}
+                variants={buttonHoverVariants}
+                whileHover="hover"
+                whileTap="tap"
+                custom={i}
               >
                 {chain.name}
-              </button>
+              </motion.button>
             ))}
-          </div>
+          </motion.div>
 
           {/* GAS CARDS */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {["slow", "average", "fast"].map((speed) => (
-              <div key={speed} className={`${neuCard}`}>
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-5"
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+          >
+            {["slow", "average", "fast"].map((speed, i) => (
+              <motion.div
+                key={speed}
+                className={`${neuCard}`}
+                variants={cardVariants}
+                custom={i}
+                whileHover="hover"
+              >
                 <div className="text-sm text-gray-500 mb-1">
                   {speed === "slow"
                     ? "🐢 Lambat"
@@ -275,33 +314,51 @@ const GasTracker = () => {
                     ? "⚡ Rata-rata"
                     : "🚀 Cepat"}
                 </div>
-                <div className="text-3xl font-bold text-gray-700">
+                <motion.div
+                  className="text-3xl font-bold text-gray-700"
+                  key={`gas-${selectedChain}-${speed}`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
                   {gasData[selectedChain][speed]} Gwei
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           {/* RECOMMENDATION CARD */}
           {(() => {
             const rec = getRecommendation(selectedChain);
             const Icon = rec.icon;
             return (
-              <div className={`${neuCard} flex items-center gap-3`}>
-                <Icon className={rec.color} size={24} />
+              <motion.div
+                className={`${neuCard} flex items-center gap-3`}
+                variants={fadeInUpVariants}
+                key={`rec-${selectedChain}`}
+              >
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <Icon className={rec.color} size={24} />
+                </motion.div>
                 <div>
                   <div className={`font-semibold ${rec.color}`}>{rec.text}</div>
                   <div className="text-sm text-gray-500">
                     Rata-rata: {gasData[selectedChain].average} Gwei
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })()}
 
           {/* CHART */}
           {historicalData.length > 1 && (
-            <div className={`${neuCard}`}>
+            <motion.div
+              className={`${neuCard}`}
+              variants={fadeInUpVariants}
+            >
               <h3 className="text-lg font-semibold text-gray-600 mb-4">
                 📊 Tren Harga Gas
               </h3>
@@ -323,16 +380,19 @@ const GasTracker = () => {
                   <Line dataKey="polygon" stroke="#b769ff" strokeWidth={3} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
-            </div>
+            </motion.div>
           )}
 
-          <div className="text-center text-xs text-gray-500">
+          <motion.div
+            className="text-center text-xs text-gray-500"
+            variants={fadeInUpVariants}
+          >
             Auto update 15 detik
             {lastUpdate && ` • Terakhir: ${lastUpdate.toLocaleTimeString("id-ID")}`}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

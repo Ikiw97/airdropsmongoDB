@@ -23,6 +23,14 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  fadeInUpVariants,
+  containerVariants,
+  itemVariants,
+  cardVariants,
+  buttonHoverVariants,
+} from "../utils/animationVariants";
 
 /**
  * AnalyticsDashboard — Full file with Neumorphism styling applied
@@ -159,29 +167,52 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
 
   // Render
   return (
-    <div className="relative z-10 w-full mb-8">
+    <motion.div
+      className="relative z-10 w-full mb-8"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       {/* Header */}
-      <div className={`${neuContainer} flex justify-between items-center`}>
+      <motion.div
+        className={`${neuContainer} flex justify-between items-center`}
+        variants={fadeInUpVariants}
+        whileHover={{ scale: 1.01 }}
+      >
         <h2 className="text-2xl font-bold flex items-center gap-2" style={{ color: TEXT_GRAY }}>
           <Activity size={28} style={{ color: "#06b6d4" }} />{" "}
           <span>Analytics Dashboard</span>
         </h2>
 
-        <button
+        <motion.button
           onClick={() => setIsExpanded(!isExpanded)}
           className={neuButton + " px-4 py-2 flex items-center gap-2"}
           style={{ color: TEXT_GRAY }}
+          variants={buttonHoverVariants}
+          whileHover="hover"
+          whileTap="tap"
         >
           {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           {isExpanded ? "Collapse" : "Expand"}
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
       {/* Dashboard Content */}
       {isExpanded && (
-        <div className={`${neuContainer} mt-4 space-y-8`} style={{ background: NEU_BG }}>
+        <motion.div
+          className={`${neuContainer} mt-4 space-y-8`}
+          style={{ background: NEU_BG }}
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
           {/* Stats Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+          >
             {[
               {
                 label: "Total Projects",
@@ -209,7 +240,14 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
                 icon: Activity,
               },
             ].map((card, i) => (
-              <div key={i} className={neuCard} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <motion.div
+                key={i}
+                className={neuCard}
+                style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}
+                variants={cardVariants}
+                custom={i}
+                whileHover="hover"
+              >
                 <div>
                   <p className="text-sm" style={{ color: "#777" }}>{card.label}</p>
                   <p className="text-3xl font-bold" style={{ color: card.color }}>{card.value}</p>
@@ -218,13 +256,18 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
                   )}
                 </div>
                 <card.icon size={32} style={{ color: card.color }} />
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           {/* Secondary Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            <div className={neuCard}>
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-3 gap-5"
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+          >
+            <motion.div className={neuCard} variants={itemVariants}>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <Wallet size={24} style={{ color: "#f59e0b" }} />
                 <div>
@@ -232,9 +275,9 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
                   <p className="text-xl font-bold" style={{ color: TEXT_GRAY }}>{stats.uniqueWallets}</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            <div className={neuCard}>
+            <motion.div className={neuCard} variants={itemVariants}>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <Network size={24} style={{ color: "#06b6d4" }} />
                 <div>
@@ -244,10 +287,10 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
                   </p>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {balanceSummary && (
-              <div className={neuCard}>
+              <motion.div className={neuCard} variants={itemVariants}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <CheckCircle size={24} style={{ color: "#22c55e" }} />
                   <div>
@@ -265,13 +308,18 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
                     </p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )}
-          </div>
+          </motion.div>
 
           {/* Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className={neuCard}>
+          <motion.div
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+          >
+            <motion.div className={neuCard} variants={fadeInUpVariants}>
               <h3 className="text-lg font-semibold" style={{ color: "#555", marginBottom: 12 }}>
                 Task Distribution
               </h3>
@@ -293,9 +341,9 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
                   <Tooltip contentStyle={tooltipStyle} />
                 </PieChart>
               </ResponsiveContainer>
-            </div>
+            </motion.div>
 
-            <div className={neuCard}>
+            <motion.div className={neuCard} variants={fadeInUpVariants}>
               <h3 className="text-lg font-semibold" style={{ color: "#555", marginBottom: 12 }}>
                 Social Media Integration
               </h3>
@@ -311,11 +359,11 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Activity Line Chart */}
-          <div className={neuCard}>
+          <motion.div className={neuCard} variants={fadeInUpVariants}>
             <h3 className="text-lg font-semibold" style={{ color: "#555", marginBottom: 12 }}>
               Daily Activity (Last 7 Days)
             </h3>
@@ -334,10 +382,10 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
                 />
               </LineChart>
             </ResponsiveContainer>
-          </div>
+          </motion.div>
 
           {/* Progress Bar */}
-          <div className={neuCard}>
+          <motion.div className={neuCard} variants={fadeInUpVariants}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
               <h3 className="text-lg font-semibold" style={{ color: "#555" }}>
                 Overall Progress
@@ -352,34 +400,36 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
                 boxShadow: `inset 4px 4px 8px ${SHADOW_DARK}, inset -4px -4px 8px ${SHADOW_LIGHT}`,
               }}
             >
-              <div
+              <motion.div
                 className="absolute top-0 left-0 h-6 rounded-full flex items-center justify-end pr-3 text-xs font-semibold"
                 style={{
-                  width: `${stats.completionRate}%`,
                   background: "linear-gradient(90deg, #06b6d4, #8b5cf6, #ec4899)",
                   color: "#fff",
                 }}
+                initial={{ width: 0 }}
+                animate={{ width: `${stats.completionRate}%` }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
               >
                 {stats.dailyTasks}/{stats.total}
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Quick Insights */}
-          <div className={neuCard}>
+          <motion.div className={neuCard} variants={fadeInUpVariants}>
             <h3 className="text-lg font-semibold" style={{ color: "#555", marginBottom: 12 }}>
               📊 Quick Insights
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3" style={{ color: TEXT_GRAY }}>
-              <div>✓ Daily Tasks Checked: {stats.dailyTasks}</div>
-              <div>⏱ Ongoing Projects: {stats.ongoingProjects}</div>
-              <div>🌐 {stats.withTwitter} Twitter linked</div>
-              <div>💰 {stats.uniqueWallets} unique wallets</div>
+              <motion.div variants={itemVariants}>✓ Daily Tasks Checked: {stats.dailyTasks}</motion.div>
+              <motion.div variants={itemVariants}>⏱ Ongoing Projects: {stats.ongoingProjects}</motion.div>
+              <motion.div variants={itemVariants}>🌐 {stats.withTwitter} Twitter linked</motion.div>
+              <motion.div variants={itemVariants}>💰 {stats.uniqueWallets} unique wallets</motion.div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

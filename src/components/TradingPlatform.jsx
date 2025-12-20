@@ -1,5 +1,7 @@
 import React from "react";
 import { Zap, Wallet, Activity, Globe, ExternalLink } from "lucide-react";
+import { motion } from "framer-motion";
+import { containerVariants, fadeInUpVariants, itemVariants } from "../utils/animationVariants";
 
 export default function TradingPlatform() {
   const features = [
