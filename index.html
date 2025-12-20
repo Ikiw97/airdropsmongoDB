@@ -6,6 +6,49 @@
 
     <title>Airdrop Tracker By Ikiw97</title>
 
+    <!-- ==================== SECURITY HEADERS ==================== -->
+    <!-- Prevent clickjacking attacks -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
+
+    <!-- Content Security Policy - Strict security -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://api.coingecko.com;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+      img-src 'self' data: https: blob:;
+      connect-src 'self' https: wss:;
+      frame-ancestors 'self';
+      base-uri 'self';
+      form-action 'self';
+      upgrade-insecure-requests;
+    " />
+
+    <!-- Prevent MIME type sniffing -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+
+    <!-- Control referrer information -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!-- Restrict browser features and permissions -->
+    <meta http-equiv="Permissions-Policy" content="
+      camera=(),
+      microphone=(),
+      geolocation=(),
+      usb=(),
+      magnetometer=(),
+      gyroscope=(),
+      accelerometer=()
+    " />
+
+    <!-- Prevent prefetching of DNS and pages (security) -->
+    <meta http-equiv="X-DNS-Prefetch-Control" content="off" />
+
+    <!-- Enable HSTS (HTTPS only) - uncomment on production with HTTPS -->
+    <!-- <meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains" /> -->
+
+    <!-- ==================== FAVICONS ==================== -->
     <!-- ✅ Favicon Custom -->
     <link rel="icon" type="image/png" href="/logo.png" />
 
