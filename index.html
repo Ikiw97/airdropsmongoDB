@@ -7,23 +7,13 @@
     <title>Airdrop Tracker By Ikiw97</title>
 
     <!-- ==================== SECURITY HEADERS ==================== -->
-    <!-- Prevent clickjacking attacks -->
+    <!-- HTTP-Only Security Headers are configured in the backend (api/index.js) -->
+    <!-- These include: X-Frame-Options, Content-Security-Policy, X-Content-Type-Options, HSTS -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
 
-    <!-- Content Security Policy - Strict security -->
-    <meta http-equiv="Content-Security-Policy" content="
-      default-src 'self';
-      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://api.coingecko.com;
-      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-      font-src 'self' https://fonts.gstatic.com;
-      img-src 'self' data: https: blob:;
-      connect-src 'self' https: wss:;
-      frame-ancestors 'self';
-      base-uri 'self';
-      form-action 'self';
-      upgrade-insecure-requests;
-    " />
+    <!-- NOTE: CSP must be set via HTTP headers in server.js or vite.config.js
+         Meta tags cannot enforce: frame-ancestors, X-Frame-Options, sandbox
+         These security directives are configured in the backend headers. -->
 
     <!-- Prevent MIME type sniffing -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
