@@ -266,6 +266,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
   const fetchProjects = async () => {
     try {
       const data = await apiService.getProjects();
+      if (import.meta.env.DEV) console.log("Fetched projects from API:", data);
       secureLogger.log('FETCH_PROJECTS', { count: Array.isArray(data) ? data.length : 0 }, 'info');
 
       if (Array.isArray(data)) {
@@ -279,6 +280,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
           };
         });
 
+        if (import.meta.env.DEV) console.log("Parsed projects:", parsedData);
         secureLogger.log('PARSE_PROJECTS', { count: parsedData.length }, 'info');
         setProjects(parsedData);
       }
@@ -296,6 +298,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
     if (!formData.name) return alert("Nama project wajib diisi!");
     try {
       setLoading(true);
+      if (import.meta.env.DEV) console.log("Sending project data:", formData);
       await apiService.createProject(formData);
       
       // Show success popup
