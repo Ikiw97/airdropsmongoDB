@@ -41,6 +41,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { ethers } from "ethers";
+import { motion, AnimatePresence } from "framer-motion";
+import { fadeInUpVariants, cardVariants, containerVariants, listItemVariants, buttonHoverVariants, scaleInVariants } from "./utils/animationVariants";
 import NeonParticles from "./NeonParticles";
 import AnalyticsDashboard from "./components/AnalyticsDashboard";
 import GasTracker from "./components/GasTracker";
@@ -809,17 +811,26 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                 </button>
               </div>
 
-              <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
+              <motion.div
+                className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                <AnimatePresence>
                 {displayedProjects.map((p, i) => (
-                  <div
-  key={i}
-  className="group relative p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-sm rounded-2xl"
-  style={{
-    background: 'linear-gradient(145deg, #d1d6dd, #ecf0f3)',
-    boxShadow:
-      '10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)',
-  }}
->
+                  <motion.div
+                    key={i}
+                    custom={i}
+                    variants={cardVariants}
+                    whileHover="hover"
+                    className="group relative p-5 sm:p-6 w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-sm rounded-2xl"
+                    style={{
+                      background: 'linear-gradient(145deg, #d1d6dd, #ecf0f3)',
+                      boxShadow:
+                        '10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)',
+                    }}
+                  >
   <div className="flex justify-between items-start mb-3">
     <h3 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 pr-10">
       {p.name}
@@ -933,13 +944,15 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
     )}
   </div>
 
-  {/* Efek glowing lembut */}
-  <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-lg pointer-events-none"
-    style={{ background: 'radial-gradient(circle at center, rgba(147,197,253,0.25), transparent 70%)' }}
-  ></div>
-</div>
-))}
-</div>
+                    {/* Efek glowing lembut */}
+                    <motion.div
+                      className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-lg pointer-events-none"
+                      style={{ background: 'radial-gradient(circle at center, rgba(147,197,253,0.25), transparent 70%)' }}
+                    ></motion.div>
+                  </motion.div>
+                ))}
+                </AnimatePresence>
+              </motion.div>
 
               {filteredProjects.length > 3 && (
                 <div className="text-center">
