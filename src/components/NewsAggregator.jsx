@@ -71,11 +71,11 @@ const NewsAggregator = () => {
     let allNews = [];
 
     try {
-      // Source 1: CryptoCompare
+      // Source 1: CryptoCompare News API
       try {
         const response = await axios.get(
-          "https://min-api.cryptocompare.com/data/v2/news/?lang=EN",
-          { timeout: 6000 }
+          "https://min-api.cryptocompare.com/data/v2/news/?lang=EN&sortOrder=latest",
+          { timeout: 8000 }
         );
 
         if (response.data && response.data.Data && response.data.Data.length > 0) {
@@ -103,80 +103,386 @@ const NewsAggregator = () => {
             })
           );
           allNews = [...allNews, ...transformedNews];
+          console.log("✅ CryptoCompare news loaded:", transformedNews.length, "items");
         }
       } catch (err) {
-        console.warn("CryptoCompare source failed:", err.message);
+        console.warn("⚠️ CryptoCompare source failed:", err.message);
       }
 
-      // Source 2: CoinGecko - Trending cryptocurrencies
+      // Source 2: CoinGecko - Trending cryptocurrencies (real market data)
       try {
         const response = await axios.get(
           "https://api.coingecko.com/api/v3/search/trending",
-          { timeout: 6000 }
+          { timeout: 8000 }
         );
 
         if (response.data && response.data.coins && response.data.coins.length > 0) {
           const transformedNews = response.data.coins.map((coin, index) => {
-            const trendingText = `${coin.name || coin.item?.name} is trending`;
+            const item = coin.item;
             return {
-              id: `cg-trending-${coin.item?.id || Date.now() + index}`,
-              title: `🔥 ${coin.item?.name || "Unknown"} - Trending Coin`,
-              description: `Market cap rank: ${coin.item?.market_cap_rank || "N/A"}. ${coin.item?.symbol?.toUpperCase() || ""} is gaining traction in the crypto market.`,
-              source: "CoinGecko Trending",
-              category: detectCategory(trendingText),
-              url: coin.item?.url || "#",
-              sentiment: "bullish",
-              votes: Math.floor(Math.random() * 50),
-              timestamp: new Date(Date.now() - Math.random() * 86400000).toISOString(),
+              id: `cg-trending-${item?.id || Date.now() + index}`,
+              title: `🔥 ${item?.name || "Unknown"} (${item?.symbol?.toUpperCase()}) - Trending`,
+              description: `Market cap rank: #${item?.market_cap_rank || "N/A"}. Price: $${item?.data?.price?.toFixed(6) || "N/A"}. 24h change: ${item?.data?.price_change_percentage_24h?.usd?.toFixed(2)}%`,
+              source: "CoinGecko",
+              category: "defi",
+              url: item?.url || "#",
+              sentiment: (item?.data?.price_change_percentage_24h?.usd || 0) > 0 ? "bullish" : "bearish",
+              votes: Math.floor(Math.random() * 80 + 20),
+              timestamp: new Date().toISOString(),
               isFromApi: true,
-              imageurl: coin.item?.thumb || null,
+              imageurl: item?.thumb || null,
             };
           });
           allNews = [...allNews, ...transformedNews];
+          console.log("✅ CoinGecko trending loaded:", transformedNews.length, "items");
         }
       } catch (err) {
-        console.warn("CoinGecko source failed:", err.message);
+        console.warn("⚠️ CoinGecko trending failed:", err.message);
       }
 
-      // Source 3: CoinGecko - Recent events/global updates
+      // Source 3: CoinGecko - Global market data
       try {
         const response = await axios.get(
           "https://api.coingecko.com/api/v3/global",
-          { timeout: 6000 }
+          { timeout: 8000 }
         );
 
         if (response.data) {
           const globalData = response.data.data || response.data;
-          const marketNews = [
-            {
-              id: `cg-global-btc`,
-              title: "📊 Bitcoin Market Dominance Update",
-              description: `Bitcoin dominance: ${(globalData.btc_dominance || 0).toFixed(2)}%. Total market cap: $${(globalData.total_market_cap?.usd / 1e12 || 0).toFixed(2)}T`,
-              source: "CoinGecko Global",
+          const btcDom = globalData.btc_dominance || 0;
+          const ethDom = globalData.eth_dominance || 0;
+          const marketCapUSD = globalData.total_market_cap?.usd || 0;
+          const volumeUSD = globalData.total_volume?.usd || 0;
+          const marketCapChange24h = globalData.market_cap_change_percentage_24h_usd || 0;
+
+          const marketNews = [];
+
+          // Bitcoin market update
+          if (btcDom > 0) {
+            marketNews.push({
+              id: `cg-global-btc-${Date.now()}`,
+              title: "📊 Bitcoin Market Dominance",
+              description: `BTC Dominance: ${btcDom.toFixed(2)}%. Total Crypto Market Cap: $${(marketCapUSD / 1e12).toFixed(2)}T. Market change 24h: ${marketCapChange24h > 0 ? '+' : ''}${marketCapChange24h.toFixed(2)}%`,
+              source: "CoinGecko",
               category: "defi",
               url: "#",
-              sentiment: "neutral",
-              votes: Math.floor(Math.random() * 40),
+              sentiment: marketCapChange24h > 0 ? "bullish" : "bearish",
+              votes: Math.floor(Math.random() * 60 + 40),
               timestamp: new Date().toISOString(),
               isFromApi: true,
-            },
-            {
-              id: `cg-global-24h`,
-              title: "📈 24h Market Volume",
-              description: `Total 24h volume: $${(globalData.total_volume?.usd / 1e9 || 0).toFixed(2)}B. Market showing ${globalData.market_cap_change_percentage_24h_usd > 0 ? 'positive' : 'negative'} momentum.`,
-              source: "CoinGecko Global",
+            });
+          }
+
+          // Ethereum dominance update
+          if (ethDom > 0) {
+            marketNews.push({
+              id: `cg-global-eth-${Date.now()}`,
+              title: "⚡ Ethereum Dominance & Market Trends",
+              description: `ETH Dominance: ${ethDom.toFixed(2)}%. 24h Trading Volume: $${(volumeUSD / 1e9).toFixed(2)}B. Altseason momentum: ${ethDom > 15 ? 'Strong' : 'Moderate'}`,
+              source: "CoinGecko",
               category: "defi",
               url: "#",
-              sentiment: globalData.market_cap_change_percentage_24h_usd > 0 ? "bullish" : "bearish",
-              votes: Math.floor(Math.random() * 40),
+              sentiment: ethDom > 15 ? "bullish" : "neutral",
+              votes: Math.floor(Math.random() * 60 + 40),
               timestamp: new Date().toISOString(),
               isFromApi: true,
-            },
-          ];
+            });
+          }
+
           allNews = [...allNews, ...marketNews];
+          console.log("✅ CoinGecko global market data loaded:", marketNews.length, "items");
         }
       } catch (err) {
-        console.warn("CoinGecko global data failed:", err.message);
+        console.warn("⚠️ CoinGecko global data failed:", err.message);
+      }
+
+      // Source 4: CoinGecko - Top gainers & losers (real data)
+      try {
+        const response = await axios.get(
+          "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&sparkline=false&price_change_percentage=24h",
+          { timeout: 8000 }
+        );
+
+        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+          const gainers = response.data.filter(coin => (coin.price_change_percentage_24h || 0) > 5);
+          const losers = response.data.filter(coin => (coin.price_change_percentage_24h || 0) < -5);
+
+          const priceNews = [];
+
+          if (gainers.length > 0) {
+            const topGainer = gainers[0];
+            priceNews.push({
+              id: `cg-gainer-${topGainer.id}`,
+              title: `📈 Top Gainer: ${topGainer.name} (+${topGainer.price_change_percentage_24h?.toFixed(2)}%)`,
+              description: `${topGainer.symbol.toUpperCase()} surging today. Current price: $${topGainer.current_price?.toFixed(6)}. Market cap: $${(topGainer.market_cap / 1e9)?.toFixed(2)}B`,
+              source: "CoinGecko",
+              category: "defi",
+              url: "#",
+              sentiment: "bullish",
+              votes: Math.floor(Math.random() * 100 + 50),
+              timestamp: new Date().toISOString(),
+              isFromApi: true,
+            });
+          }
+
+          if (losers.length > 0) {
+            const topLoser = losers[losers.length - 1];
+            priceNews.push({
+              id: `cg-loser-${topLoser.id}`,
+              title: `📉 Notable Decline: ${topLoser.name} (${topLoser.price_change_percentage_24h?.toFixed(2)}%)`,
+              description: `${topLoser.symbol.toUpperCase()} seeing pressure. Current price: $${topLoser.current_price?.toFixed(6)}. Market cap: $${(topLoser.market_cap / 1e9)?.toFixed(2)}B`,
+              source: "CoinGecko",
+              category: "defi",
+              url: "#",
+              sentiment: "bearish",
+              votes: Math.floor(Math.random() * 80 + 20),
+              timestamp: new Date().toISOString(),
+              isFromApi: true,
+            });
+          }
+
+          allNews = [...allNews, ...priceNews];
+          console.log("✅ CoinGecko price movements loaded:", priceNews.length, "items");
+        }
+      } catch (err) {
+        console.warn("⚠️ CoinGecko price data failed:", err.message);
+      }
+
+      // Source 5: CoinGecko - Categories (DeFi, Layer2, NFT, Gaming data)
+      try {
+        const response = await axios.get(
+          "https://api.coingecko.com/api/v3/coins/categories",
+          { timeout: 8000 }
+        );
+
+        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+          const categoryNews = response.data
+            .filter(cat => cat.market_cap && cat.market_cap > 0)
+            .slice(0, 5)
+            .map((cat, idx) => ({
+              id: `cg-cat-${cat.id}-${Date.now()}`,
+              title: `💰 ${cat.name} Sector Update`,
+              description: `${cat.name} market cap: $${(cat.market_cap / 1e9).toFixed(2)}B. 24h change: ${cat.market_cap_change_24h > 0 ? '+' : ''}${cat.market_cap_change_24h?.toFixed(2)}%. Coins tracked: ${cat.coins_count}`,
+              source: "CoinGecko",
+              category: detectCategory(cat.name),
+              url: "#",
+              sentiment: (cat.market_cap_change_24h || 0) > 0 ? "bullish" : "bearish",
+              votes: Math.floor(Math.random() * 70 + 30),
+              timestamp: new Date().toISOString(),
+              isFromApi: true,
+            }));
+
+          allNews = [...allNews, ...categoryNews];
+          console.log("✅ CoinGecko categories loaded:", categoryNews.length, "items");
+        }
+      } catch (err) {
+        console.warn("⚠️ CoinGecko categories failed:", err.message);
+      }
+
+      // Source 6: CoinPaprika - Market data & coins info
+      try {
+        const response = await axios.get(
+          "https://api.coinpaprika.com/v1/coins?limit=20",
+          { timeout: 8000 }
+        );
+
+        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+          const paprikaNews = response.data.map((coin, idx) => ({
+            id: `cp-coin-${coin.id}-${Date.now()}`,
+            title: `📊 ${coin.name} (${coin.symbol}) - Market Data`,
+            description: `Rank: #${coin.rank}. Active: ${coin.is_active ? 'Yes' : 'No'}. Type: ${coin.type}`,
+            source: "CoinPaprika",
+            category: detectCategory(`${coin.name} ${coin.symbol}`),
+            url: "#",
+            sentiment: "neutral",
+            votes: Math.floor(Math.random() * 50 + 10),
+            timestamp: new Date().toISOString(),
+            isFromApi: true,
+          }));
+
+          allNews = [...allNews, ...paprikaNews];
+          console.log("✅ CoinPaprika coins loaded:", paprikaNews.length, "items");
+        }
+      } catch (err) {
+        console.warn("⚠️ CoinPaprika failed:", err.message);
+      }
+
+      // Source 7: Binance - Public market data (Top pairs)
+      try {
+        const response = await axios.get(
+          "https://api.binance.com/api/v3/ticker/24hr?limit=15",
+          { timeout: 8000 }
+        );
+
+        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+          const binanceNews = response.data
+            .filter(ticker => ticker.symbol.endsWith('USDT'))
+            .slice(0, 10)
+            .map((ticker) => {
+              const priceChange = parseFloat(ticker.priceChangePercent);
+              return {
+                id: `bn-${ticker.symbol}-${Date.now()}`,
+                title: `💹 ${ticker.symbol} - Binance Trading Data`,
+                description: `24h Change: ${priceChange > 0 ? '+' : ''}${priceChange.toFixed(2)}%. Volume: ${(ticker.quoteAssetVolume / 1e9).toFixed(2)}B USDT. High: $${ticker.highPrice}, Low: $${ticker.lowPrice}`,
+                source: "Binance",
+                category: "defi",
+                url: "#",
+                sentiment: priceChange > 0 ? "bullish" : "bearish",
+                votes: Math.floor(Math.random() * 60 + 20),
+                timestamp: new Date().toISOString(),
+                isFromApi: true,
+              };
+            });
+
+          allNews = [...allNews, ...binanceNews];
+          console.log("✅ Binance market data loaded:", binanceNews.length, "items");
+        }
+      } catch (err) {
+        console.warn("⚠️ Binance failed:", err.message);
+      }
+
+      // Source 8: Kraken - Public market data
+      try {
+        const response = await axios.get(
+          "https://api.kraken.com/0/public/Ticker?pair=XBTUSDT,ETHUSDT,ADAUSDT,DOGEUSDT,XRPUSDT",
+          { timeout: 8000 }
+        );
+
+        if (response.data && response.data.result) {
+          const krakenNews = Object.entries(response.data.result).map(([pair, data], idx) => {
+            const priceChange = data.p ? parseFloat(data.p[1]) : 0;
+            return {
+              id: `kr-${pair}-${Date.now()}`,
+              title: `📈 ${pair} - Kraken Ticker`,
+              description: `Bid: ${data.b ? data.b[0] : 'N/A'}, Ask: ${data.a ? data.a[0] : 'N/A'}. Volume: ${data.v ? data.v[1] : 'N/A'} pairs. VWAP: ${data.p ? data.p[0] : 'N/A'}`,
+              source: "Kraken",
+              category: "defi",
+              url: "#",
+              sentiment: priceChange > 0 ? "bullish" : "bearish",
+              votes: Math.floor(Math.random() * 40 + 10),
+              timestamp: new Date().toISOString(),
+              isFromApi: true,
+            };
+          });
+
+          allNews = [...allNews, ...krakenNews];
+          console.log("✅ Kraken market data loaded:", krakenNews.length, "items");
+        }
+      } catch (err) {
+        console.warn("⚠️ Kraken failed:", err.message);
+      }
+
+      // Source 9: Messari - Crypto market intelligence (public endpoints)
+      try {
+        const response = await axios.get(
+          "https://data.messari.io/api/v1/assets?limit=20",
+          { timeout: 8000 }
+        );
+
+        if (response.data && response.data.data && Array.isArray(response.data.data)) {
+          const messariNews = response.data.data.slice(0, 10).map((asset) => ({
+            id: `ms-${asset.id}-${Date.now()}`,
+            title: `💎 ${asset.name} - Market Intelligence`,
+            description: `Symbol: ${asset.symbol}. Rank: #${asset.metrics?.rank_ref_market_cap || 'N/A'}. Real Volume: $${asset.metrics?.market_data?.volume_last_24_hours || 'N/A'} USD`,
+            source: "Messari",
+            category: detectCategory(asset.name),
+            url: "#",
+            sentiment: "neutral",
+            votes: Math.floor(Math.random() * 50 + 15),
+            timestamp: new Date().toISOString(),
+            isFromApi: true,
+          }));
+
+          allNews = [...allNews, ...messariNews];
+          console.log("✅ Messari crypto intelligence loaded:", messariNews.length, "items");
+        }
+      } catch (err) {
+        console.warn("⚠️ Messari failed:", err.message);
+      }
+
+      // Source 10: Huobi - Exchange data
+      try {
+        const response = await axios.get(
+          "https://api.huobi.pro/market/detail/merged?symbol=btcusdt",
+          { timeout: 8000 }
+        );
+
+        if (response.data && response.data.tick) {
+          const tick = response.data.tick;
+          const huobiNews = [{
+            id: `hb-btc-${Date.now()}`,
+            title: `🔥 Bitcoin on Huobi - Real Trading Data`,
+            description: `Close: $${tick.close}. Open: $${tick.open}. High: $${tick.high}. Low: $${tick.low}. Volume: ${(tick.vol / 1e8).toFixed(2)}M BTC. Ask: ${tick.ask?.[0] || 'N/A'}, Bid: ${tick.bid?.[0] || 'N/A'}`,
+            source: "Huobi",
+            category: "defi",
+            url: "#",
+            sentiment: tick.close > tick.open ? "bullish" : "bearish",
+            votes: Math.floor(Math.random() * 70 + 30),
+            timestamp: new Date().toISOString(),
+            isFromApi: true,
+          }];
+
+          allNews = [...allNews, ...huobiNews];
+          console.log("✅ Huobi market data loaded:", huobiNews.length, "items");
+        }
+      } catch (err) {
+        console.warn("⚠️ Huobi failed:", err.message);
+      }
+
+      // Source 11: CoinGecko - Exchange data
+      try {
+        const response = await axios.get(
+          "https://api.coingecko.com/api/v3/exchanges?per_page=15&order=trade_volume_24h_btc_desc",
+          { timeout: 8000 }
+        );
+
+        if (response.data && Array.isArray(response.data)) {
+          const exchangeNews = response.data.slice(0, 8).map((exchange) => ({
+            id: `cg-ex-${exchange.id}-${Date.now()}`,
+            title: `💱 ${exchange.name} - Exchange Update`,
+            description: `24h BTC Volume: ${exchange.trade_volume_24h_btc ? exchange.trade_volume_24h_btc.toFixed(2) : 'N/A'} BTC. Trust Score: ${exchange.trust_score || 'N/A'}/10. Established: ${exchange.year_established || 'N/A'}`,
+            source: "CoinGecko",
+            category: "defi",
+            url: exchange.url || "#",
+            sentiment: "neutral",
+            votes: Math.floor(Math.random() * 45 + 15),
+            timestamp: new Date().toISOString(),
+            isFromApi: true,
+          }));
+
+          allNews = [...allNews, ...exchangeNews];
+          console.log("✅ CoinGecko exchanges loaded:", exchangeNews.length, "items");
+        }
+      } catch (err) {
+        console.warn("⚠️ CoinGecko exchanges failed:", err.message);
+      }
+
+      // Source 12: CoinGecko - NFT data
+      try {
+        const response = await axios.get(
+          "https://api.coingecko.com/api/v3/nft?order=h24_volume_usd_desc&per_page=10",
+          { timeout: 8000 }
+        );
+
+        if (response.data && Array.isArray(response.data)) {
+          const nftNews = response.data.slice(0, 8).map((nft) => ({
+            id: `cg-nft-${nft.id}-${Date.now()}`,
+            title: `🎨 ${nft.name} - NFT Market Data`,
+            description: `24h Volume: $${nft.volume_24h || 0}. Market Cap: $${nft.market_cap || 0}. Floor Price: $${nft.floor_price_usd || 'N/A'}. 24h Change: ${nft.volume_change_percentage_24h ? nft.volume_change_percentage_24h.toFixed(2) : 'N/A'}%`,
+            source: "CoinGecko",
+            category: "nft",
+            url: "#",
+            sentiment: (nft.volume_change_percentage_24h || 0) > 0 ? "bullish" : "bearish",
+            votes: Math.floor(Math.random() * 60 + 20),
+            timestamp: new Date().toISOString(),
+            isFromApi: true,
+          }));
+
+          allNews = [...allNews, ...nftNews];
+          console.log("✅ CoinGecko NFT data loaded:", nftNews.length, "items");
+        }
+      } catch (err) {
+        console.warn("⚠️ CoinGecko NFT data failed:", err.message);
       }
 
       // If we have any news from APIs, use it
@@ -191,15 +497,24 @@ const NewsAggregator = () => {
             uniqueNews.push(item);
           }
         }
-        setApiNews(uniqueNews.slice(0, 50)); // Show up to 50 items
+
+        const sortedNews = uniqueNews.sort((a, b) => {
+          const timeA = new Date(a.timestamp).getTime();
+          const timeB = new Date(b.timestamp).getTime();
+          return timeB - timeA;
+        });
+
+        setApiNews(sortedNews.slice(0, 100)); // Show up to 100 items
         setLastUpdate(new Date());
+        console.log("✅ Total unique news loaded:", sortedNews.length, "items");
         return;
       }
     } catch (err) {
-      console.error("All news sources failed:", err.message);
+      console.error("❌ All news sources failed:", err.message);
     }
 
-    // Fallback: Use comprehensive sample data
+    // Fallback: Use sample data only if ALL APIs fail
+    console.warn("⚠️ Using fallback sample data");
     const fallbackNews = getSampleNews();
     setApiNews(fallbackNews);
     setLastUpdate(new Date());
