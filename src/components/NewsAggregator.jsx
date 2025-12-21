@@ -68,18 +68,20 @@ const NewsAggregator = () => {
   const fetchCryptoNews = useCallback(async () => {
     setIsLoading(true);
     setError(null);
+    let allNews = [];
 
     try {
+      // Source 1: CryptoCompare
       try {
         const response = await axios.get(
           "https://min-api.cryptocompare.com/data/v2/news/?lang=EN",
-          { timeout: 8000 }
+          { timeout: 6000 }
         );
 
         if (response.data && response.data.Data && response.data.Data.length > 0) {
-          const transformedNews = response.data.Data.slice(0, 20).map(
+          const transformedNews = response.data.Data.map(
             (item, index) => ({
-              id: `api-${item.id || Date.now() + index}`,
+              id: `cc-${item.id || Date.now() + index}`,
               title: item.title || "No Title",
               description: item.body || "No description available",
               source: item.source || "CryptoCompare",
@@ -100,27 +102,108 @@ const NewsAggregator = () => {
               imageurl: item.imageurl || null,
             })
           );
-
-          setApiNews(transformedNews);
-          setLastUpdate(new Date());
-          return;
+          allNews = [...allNews, ...transformedNews];
         }
-      } catch (primaryError) {
-        console.warn("Primary news source failed, using sample data");
+      } catch (err) {
+        console.warn("CryptoCompare source failed:", err.message);
       }
 
-      const fallbackNews = getSampleNews();
-      setApiNews(fallbackNews);
-      setLastUpdate(new Date());
+      // Source 2: CoinGecko - Trending cryptocurrencies
+      try {
+        const response = await axios.get(
+          "https://api.coingecko.com/api/v3/search/trending",
+          { timeout: 6000 }
+        );
 
+        if (response.data && response.data.coins && response.data.coins.length > 0) {
+          const transformedNews = response.data.coins.map((coin, index) => {
+            const trendingText = `${coin.name || coin.item?.name} is trending`;
+            return {
+              id: `cg-trending-${coin.item?.id || Date.now() + index}`,
+              title: `🔥 ${coin.item?.name || "Unknown"} - Trending Coin`,
+              description: `Market cap rank: ${coin.item?.market_cap_rank || "N/A"}. ${coin.item?.symbol?.toUpperCase() || ""} is gaining traction in the crypto market.`,
+              source: "CoinGecko Trending",
+              category: detectCategory(trendingText),
+              url: coin.item?.url || "#",
+              sentiment: "bullish",
+              votes: Math.floor(Math.random() * 50),
+              timestamp: new Date(Date.now() - Math.random() * 86400000).toISOString(),
+              isFromApi: true,
+              imageurl: coin.item?.thumb || null,
+            };
+          });
+          allNews = [...allNews, ...transformedNews];
+        }
+      } catch (err) {
+        console.warn("CoinGecko source failed:", err.message);
+      }
+
+      // Source 3: CoinGecko - Recent events/global updates
+      try {
+        const response = await axios.get(
+          "https://api.coingecko.com/api/v3/global",
+          { timeout: 6000 }
+        );
+
+        if (response.data) {
+          const globalData = response.data.data || response.data;
+          const marketNews = [
+            {
+              id: `cg-global-btc`,
+              title: "📊 Bitcoin Market Dominance Update",
+              description: `Bitcoin dominance: ${(globalData.btc_dominance || 0).toFixed(2)}%. Total market cap: $${(globalData.total_market_cap?.usd / 1e12 || 0).toFixed(2)}T`,
+              source: "CoinGecko Global",
+              category: "defi",
+              url: "#",
+              sentiment: "neutral",
+              votes: Math.floor(Math.random() * 40),
+              timestamp: new Date().toISOString(),
+              isFromApi: true,
+            },
+            {
+              id: `cg-global-24h`,
+              title: "📈 24h Market Volume",
+              description: `Total 24h volume: $${(globalData.total_volume?.usd / 1e9 || 0).toFixed(2)}B. Market showing ${globalData.market_cap_change_percentage_24h_usd > 0 ? 'positive' : 'negative'} momentum.`,
+              source: "CoinGecko Global",
+              category: "defi",
+              url: "#",
+              sentiment: globalData.market_cap_change_percentage_24h_usd > 0 ? "bullish" : "bearish",
+              votes: Math.floor(Math.random() * 40),
+              timestamp: new Date().toISOString(),
+              isFromApi: true,
+            },
+          ];
+          allNews = [...allNews, ...marketNews];
+        }
+      } catch (err) {
+        console.warn("CoinGecko global data failed:", err.message);
+      }
+
+      // If we have any news from APIs, use it
+      if (allNews.length > 0) {
+        // Remove duplicates based on title similarity
+        const uniqueNews = [];
+        const seenTitles = new Set();
+        for (const item of allNews) {
+          const titleLower = item.title.toLowerCase();
+          if (!seenTitles.has(titleLower)) {
+            seenTitles.add(titleLower);
+            uniqueNews.push(item);
+          }
+        }
+        setApiNews(uniqueNews.slice(0, 50)); // Show up to 50 items
+        setLastUpdate(new Date());
+        return;
+      }
     } catch (err) {
-      console.error("News fetch error:", err.message);
-      if (apiNews.length === 0) {
-        setApiNews(getSampleNews());
-      }
-    } finally {
-      setIsLoading(false);
+      console.error("All news sources failed:", err.message);
     }
+
+    // Fallback: Use comprehensive sample data
+    const fallbackNews = getSampleNews();
+    setApiNews(fallbackNews);
+    setLastUpdate(new Date());
+
   }, [apiNews.length]);
 
   const detectCategory = (text) => {
@@ -147,6 +230,7 @@ const NewsAggregator = () => {
   };
 
   const getSampleNews = () => [
+    // Airdrop News
     {
       id: "sample-1",
       title: "Major L2 Protocol Announces Airdrop Snapshot",
@@ -155,7 +239,7 @@ const NewsAggregator = () => {
       category: "airdrop",
       url: "#",
       sentiment: "bullish",
-      votes: 45,
+      votes: 125,
       timestamp: new Date(Date.now() - 3600000).toISOString(),
       isFromApi: true,
     },
@@ -167,7 +251,7 @@ const NewsAggregator = () => {
       category: "defi",
       url: "#",
       sentiment: "bullish",
-      votes: 32,
+      votes: 98,
       timestamp: new Date(Date.now() - 7200000).toISOString(),
       isFromApi: true,
     },
@@ -179,19 +263,19 @@ const NewsAggregator = () => {
       category: "bridge",
       url: "#",
       sentiment: "bullish",
-      votes: 28,
+      votes: 87,
       timestamp: new Date(Date.now() - 10800000).toISOString(),
       isFromApi: true,
     },
     {
       id: "sample-4",
-      title: "GameFi Platform Announces Player Rewards",
-      description: "Popular GameFi platform reveals new player reward system with daily rewards.",
+      title: "🔥 Ethereum Layer2 Ecosystem Expansion",
+      description: "Arbitrum and Optimism see record transaction volumes. Rewards program launched for ecosystem participants.",
       source: "CryptoNews",
-      category: "gamefi",
+      category: "layer2",
       url: "#",
       sentiment: "bullish",
-      votes: 22,
+      votes: 156,
       timestamp: new Date(Date.now() - 14400000).toISOString(),
       isFromApi: true,
     },
@@ -203,8 +287,315 @@ const NewsAggregator = () => {
       category: "nft",
       url: "#",
       sentiment: "bullish",
-      votes: 18,
+      votes: 72,
       timestamp: new Date(Date.now() - 18000000).toISOString(),
+      isFromApi: true,
+    },
+    // DeFi News
+    {
+      id: "sample-6",
+      title: "Uniswap V4 Beta Launch Attracts Liquidity Providers",
+      description: "Next generation decentralized exchange brings new features for concentrated liquidity and custom pools.",
+      source: "CoinNews",
+      category: "defi",
+      url: "#",
+      sentiment: "bullish",
+      votes: 143,
+      timestamp: new Date(Date.now() - 21600000).toISOString(),
+      isFromApi: true,
+    },
+    {
+      id: "sample-7",
+      title: "Aave Flash Loan Usage Reaches All-Time High",
+      description: "DeFi lending protocol records surge in flash loan activity. New use cases emerging for developers.",
+      source: "CoinNews",
+      category: "defi",
+      url: "#",
+      sentiment: "bullish",
+      votes: 89,
+      timestamp: new Date(Date.now() - 25200000).toISOString(),
+      isFromApi: true,
+    },
+    {
+      id: "sample-8",
+      title: "Curve Finance Governance Vote Passes",
+      description: "Community approves new parameter changes for improved capital efficiency across liquidity pools.",
+      source: "CoinNews",
+      category: "defi",
+      url: "#",
+      sentiment: "bullish",
+      votes: 112,
+      timestamp: new Date(Date.now() - 28800000).toISOString(),
+      isFromApi: true,
+    },
+    // GameFi News
+    {
+      id: "sample-9",
+      title: "GameFi Platform Announces Player Rewards",
+      description: "Popular GameFi platform reveals new player reward system with daily rewards and seasonal events.",
+      source: "GameNews",
+      category: "gamefi",
+      url: "#",
+      sentiment: "bullish",
+      votes: 94,
+      timestamp: new Date(Date.now() - 32400000).toISOString(),
+      isFromApi: true,
+    },
+    {
+      id: "sample-10",
+      title: "Axie Infinity Launches New Game Mode",
+      description: "Play-to-earn gaming continues evolution with PvE dungeon raids and competitive tournaments.",
+      source: "GameNews",
+      category: "gamefi",
+      url: "#",
+      sentiment: "bullish",
+      votes: 134,
+      timestamp: new Date(Date.now() - 36000000).toISOString(),
+      isFromApi: true,
+    },
+    {
+      id: "sample-11",
+      title: "Guild of Guardians Announces Beta Launch",
+      description: "Mobile gaming meets blockchain rewards. Early players eligible for exclusive token airdrops.",
+      source: "GameNews",
+      category: "gamefi",
+      url: "#",
+      sentiment: "bullish",
+      votes: 108,
+      timestamp: new Date(Date.now() - 39600000).toISOString(),
+      isFromApi: true,
+    },
+    // Bridge & Infrastructure
+    {
+      id: "sample-12",
+      title: "StarGate Finance Expands to New Chains",
+      description: "Cross-chain bridge protocol adds support for 3 new blockchain networks. User rewards increased.",
+      source: "CryptoNews",
+      category: "bridge",
+      url: "#",
+      sentiment: "bullish",
+      votes: 126,
+      timestamp: new Date(Date.now() - 43200000).toISOString(),
+      isFromApi: true,
+    },
+    {
+      id: "sample-13",
+      title: "Cosmos IBC Protocol Reaches 100M Daily Volume",
+      description: "Interchain communication milestone achieved. New dApps integrating cross-chain functionality.",
+      source: "CryptoNews",
+      category: "infra",
+      url: "#",
+      sentiment: "bullish",
+      votes: 117,
+      timestamp: new Date(Date.now() - 46800000).toISOString(),
+      isFromApi: true,
+    },
+    {
+      id: "sample-14",
+      title: "Chainlink CCIP Beta Expands Developer Access",
+      description: "Cross-chain messaging infrastructure opens to more teams. Reward program for early builders.",
+      source: "CryptoNews",
+      category: "infra",
+      url: "#",
+      sentiment: "bullish",
+      votes: 145,
+      timestamp: new Date(Date.now() - 50400000).toISOString(),
+      isFromApi: true,
+    },
+    // Layer 2 & Scaling
+    {
+      id: "sample-15",
+      title: "zkSync Era Transaction Costs Drop 50%",
+      description: "Zero-knowledge rollup upgrade improves compression. Users enjoy significantly lower gas fees.",
+      source: "CryptoNews",
+      category: "layer2",
+      url: "#",
+      sentiment: "bullish",
+      votes: 178,
+      timestamp: new Date(Date.now() - 54000000).toISOString(),
+      isFromApi: true,
+    },
+    {
+      id: "sample-16",
+      title: "Polygon Launches zkEVM Mainnet",
+      description: "Ethereum-compatible zero-knowledge scaling solution goes live. Enterprise partnerships announced.",
+      source: "CryptoNews",
+      category: "layer2",
+      url: "#",
+      sentiment: "bullish",
+      votes: 267,
+      timestamp: new Date(Date.now() - 57600000).toISOString(),
+      isFromApi: true,
+    },
+    {
+      id: "sample-17",
+      title: "Starknet Releases New Cairo Update",
+      description: "StarkWare rollout brings improved developer tooling and enhanced performance metrics.",
+      source: "CryptoNews",
+      category: "layer2",
+      url: "#",
+      sentiment: "bullish",
+      votes: 95,
+      timestamp: new Date(Date.now() - 61200000).toISOString(),
+      isFromApi: true,
+    },
+    // NFT & Web3
+    {
+      id: "sample-18",
+      title: "OpenSea Updates Creator Royalties System",
+      description: "NFT marketplace implements new royalty mechanisms to support artists and creators.",
+      source: "NFTNews",
+      category: "nft",
+      url: "#",
+      sentiment: "bullish",
+      votes: 84,
+      timestamp: new Date(Date.now() - 64800000).toISOString(),
+      isFromApi: true,
+    },
+    {
+      id: "sample-19",
+      title: "Art Blocks Introduces Curated Collection",
+      description: "Generative art platform expands with new artist collaborations and exclusive drops.",
+      source: "NFTNews",
+      category: "nft",
+      url: "#",
+      sentiment: "bullish",
+      votes: 102,
+      timestamp: new Date(Date.now() - 68400000).toISOString(),
+      isFromApi: true,
+    },
+    {
+      id: "sample-20",
+      title: "Blur NFT Marketplace Hits 10B Trading Volume",
+      description: "Next-gen NFT trading platform achieves major milestone. Community rewards distributed.",
+      source: "NFTNews",
+      category: "nft",
+      url: "#",
+      sentiment: "bullish",
+      votes: 189,
+      timestamp: new Date(Date.now() - 72000000).toISOString(),
+      isFromApi: true,
+    },
+    // SocialFi News
+    {
+      id: "sample-21",
+      title: "Lens Protocol Reaches 1M Active Users",
+      description: "Decentralized social network achieves user milestone. New creator monetization tools launched.",
+      source: "SocialFiNews",
+      category: "socialfi",
+      url: "#",
+      sentiment: "bullish",
+      votes: 156,
+      timestamp: new Date(Date.now() - 75600000).toISOString(),
+      isFromApi: true,
+    },
+    {
+      id: "sample-22",
+      title: "Friend.tech Trading Volume Surge",
+      description: "Friend key trading platform sees explosive growth. Early adopters earning significant returns.",
+      source: "SocialFiNews",
+      category: "socialfi",
+      url: "#",
+      sentiment: "bullish",
+      votes: 198,
+      timestamp: new Date(Date.now() - 79200000).toISOString(),
+      isFromApi: true,
+    },
+    {
+      id: "sample-23",
+      title: "Farcaster Announces New Creator Tools",
+      description: "Decentralized social platform rolls out monetization and analytics features for creators.",
+      source: "SocialFiNews",
+      category: "socialfi",
+      url: "#",
+      sentiment: "bullish",
+      votes: 127,
+      timestamp: new Date(Date.now() - 82800000).toISOString(),
+      isFromApi: true,
+    },
+    // Market & General News
+    {
+      id: "sample-24",
+      title: "Bitcoin ETF Approval Rumors Heat Up",
+      description: "Regulatory signals suggest imminent approval. Market reacts positively to institutional adoption news.",
+      source: "CryptoNews",
+      category: "defi",
+      url: "#",
+      sentiment: "bullish",
+      votes: 312,
+      timestamp: new Date(Date.now() - 86400000).toISOString(),
+      isFromApi: true,
+    },
+    {
+      id: "sample-25",
+      title: "Ethereum Staking Rewards Reach New High",
+      description: "Validator participation increases. Annual percentage yield makes staking increasingly attractive.",
+      source: "CryptoNews",
+      category: "defi",
+      url: "#",
+      sentiment: "bullish",
+      votes: 234,
+      timestamp: new Date(Date.now() - 90000000).toISOString(),
+      isFromApi: true,
+    },
+    {
+      id: "sample-26",
+      title: "Enterprise Crypto Adoption Accelerates",
+      description: "Fortune 500 companies integrating blockchain into operations. B2B partnerships on the rise.",
+      source: "CryptoNews",
+      category: "infra",
+      url: "#",
+      sentiment: "bullish",
+      votes: 267,
+      timestamp: new Date(Date.now() - 93600000).toISOString(),
+      isFromApi: true,
+    },
+    {
+      id: "sample-27",
+      title: "Blockchain Integration in Supply Chain",
+      description: "Companies using distributed ledger for tracking. Transparency improvements reduce counterfeiting.",
+      source: "CryptoNews",
+      category: "infra",
+      url: "#",
+      sentiment: "bullish",
+      votes: 145,
+      timestamp: new Date(Date.now() - 97200000).toISOString(),
+      isFromApi: true,
+    },
+    {
+      id: "sample-28",
+      title: "Central Bank Digital Currency Progress",
+      description: "Multiple nations advance CBDC pilot programs. Integration with blockchain ecosystems explored.",
+      source: "CryptoNews",
+      category: "defi",
+      url: "#",
+      sentiment: "neutral",
+      votes: 189,
+      timestamp: new Date(Date.now() - 100800000).toISOString(),
+      isFromApi: true,
+    },
+    {
+      id: "sample-29",
+      title: "Web3 Gaming Studios Secure Major Funding",
+      description: "Billion-dollar investments in blockchain gaming. Next generation titles in development.",
+      source: "GameNews",
+      category: "gamefi",
+      url: "#",
+      sentiment: "bullish",
+      votes: 223,
+      timestamp: new Date(Date.now() - 104400000).toISOString(),
+      isFromApi: true,
+    },
+    {
+      id: "sample-30",
+      title: "Meme Coin Community Launches Charitable Initiative",
+      description: "Decentralized community raises funds for global causes. Blockchain transparency ensures accountability.",
+      source: "CryptoNews",
+      category: "defi",
+      url: "#",
+      sentiment: "bullish",
+      votes: 156,
+      timestamp: new Date(Date.now() - 108000000).toISOString(),
       isFromApi: true,
     },
   ];
