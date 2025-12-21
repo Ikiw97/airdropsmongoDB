@@ -1,7 +1,7 @@
 import React from "react";
 import { Zap, Wallet, Activity, Globe, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
-import { containerVariants, fadeInUpVariants, itemVariants } from "../utils/animationVariants";
+import { containerVariants, fadeInUpVariants, itemVariants, buttonHoverVariants, scaleInVariants } from "../utils/animationVariants";
 
 export default function TradingPlatform() {
   const features = [
@@ -26,31 +26,51 @@ export default function TradingPlatform() {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 px-4 md:px-6">
+    <motion.div 
+      className="max-w-6xl mx-auto space-y-8 px-4 md:px-6"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       {/* HEADER */}
-      <div
+      <motion.div
         className="text-center py-6 md:py-8 rounded-2xl shadow-inner"
         style={{
           background: "#e3e7ee",
           boxShadow:
             "6px 6px 12px rgba(163,177,198,0.4), -6px -6px 12px rgba(255,255,255,0.7)",
         }}
+        variants={fadeInUpVariants}
       >
-        <div className="flex items-center justify-center gap-2 md:gap-3 mb-1">
-          <Zap className="text-green-600" size={26} />
+        <motion.div 
+          className="flex items-center justify-center gap-2 md:gap-3 mb-1"
+          variants={itemVariants}
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          >
+            <Zap className="text-green-600" size={26} />
+          </motion.div>
           <h2 className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-blue-600 to-purple-600">
             DeDoo Trading Platform
           </h2>
-        </div>
-        <p className="text-gray-600 text-sm md:text-base">
+        </motion.div>
+        <motion.p 
+          className="text-gray-600 text-sm md:text-base"
+          variants={fadeInUpVariants}
+        >
           Trade crypto with lightning speed & zero fees
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
 
       {/* FEATURE CARDS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-3 gap-5"
+        variants={containerVariants}
+      >
         {features.map((f, i) => (
-          <div
+          <motion.div
             key={i}
             className="p-5 md:p-6 rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
             style={{
@@ -58,36 +78,46 @@ export default function TradingPlatform() {
               boxShadow:
                 "4px 4px 8px rgba(163,177,198,0.5), -4px -4px 8px rgba(255,255,255,0.6)",
             }}
+            variants={itemVariants}
+            whileHover={{ y: -5, boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)" }}
+            transition={{ duration: 0.3 }}
           >
-            <div
+            <motion.div
               className="flex justify-center items-center mx-auto mb-3 w-12 h-12 rounded-xl"
               style={{
                 boxShadow:
                   "inset 2px 2px 4px rgba(163,177,198,0.4), inset -2px -2px 4px rgba(255,255,255,0.5)",
               }}
+              whileHover={{ scale: 1.1 }}
+              transition={{ duration: 0.3 }}
             >
               {f.icon}
-            </div>
-            <h3
+            </motion.div>
+            <motion.h3
               className={`font-semibold text-base md:text-lg bg-gradient-to-r ${f.color} text-transparent bg-clip-text mb-1`}
+              variants={itemVariants}
             >
               {f.title}
-            </h3>
-            <p className="text-gray-700 text-sm leading-snug max-w-xs mx-auto">
+            </motion.h3>
+            <motion.p 
+              className="text-gray-700 text-sm leading-snug max-w-xs mx-auto"
+              variants={itemVariants}
+            >
               {f.desc}
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* IFRAME CONTAINER */}
-      <div
+      <motion.div
         className="rounded-2xl overflow-hidden"
         style={{
           background: "#e3e7ee",
           boxShadow:
             "6px 6px 12px rgba(163,177,198,0.5), -6px -6px 12px rgba(255,255,255,0.6)",
         }}
+        variants={fadeInUpVariants}
       >
         <iframe
           src="https://trade.dedoo.xyz/"
@@ -96,11 +126,14 @@ export default function TradingPlatform() {
           title="DeDoo Trading Platform"
           loading="lazy"
         />
-      </div>
+      </motion.div>
 
       {/* OPEN IN NEW TAB BUTTON */}
-      <div className="flex justify-center">
-        <a
+      <motion.div 
+        className="flex justify-center"
+        variants={itemVariants}
+      >
+        <motion.a
           href="https://trade.dedoo.xyz/"
           target="_blank"
           rel="noopener noreferrer"
@@ -110,12 +143,15 @@ export default function TradingPlatform() {
             boxShadow:
               "6px 6px 12px rgba(163,177,198,0.5), -6px -6px 12px rgba(255,255,255,0.6)",
           }}
+          variants={buttonHoverVariants}
+          whileHover="hover"
+          whileTap="tap"
         >
           <Globe size={18} />
           <span>Open in New Tab</span>
           <ExternalLink size={16} />
-        </a>
-      </div>
-    </div>
+        </motion.a>
+      </motion.div>
+    </motion.div>
   );
 }
