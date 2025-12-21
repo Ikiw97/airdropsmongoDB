@@ -136,56 +136,83 @@ const ROICalculator = () => {
   };
 
   return (
-    <div className="relative z-10 w-full mb-8">
+    <motion.div 
+      className="relative z-10 w-full mb-8"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
 
       {/* HEADER */}
-      <div className={`${neuContainer} flex justify-between items-center`}>
-        <h2 className="text-2xl font-bold flex items-center gap-2 text-gray-700">
+      <motion.div 
+        className={`${neuContainer} flex justify-between items-center`}
+        variants={fadeInUpVariants}
+      >
+        <motion.h2 
+          className="text-2xl font-bold flex items-center gap-2 text-gray-700"
+          variants={itemVariants}
+        >
           <Calculator size={26} className="text-cyan-500" /> ROI Calculator
-        </h2>
+        </motion.h2>
 
-        <button
+        <motion.button
           onClick={() => setIsExpanded(!isExpanded)}
           className={`${neuButton} px-4 py-2 flex items-center gap-2`}
+          variants={buttonHoverVariants}
+          whileHover="hover"
+          whileTap="tap"
         >
           {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           {isExpanded ? "Collapse" : "Expand"}
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
       {/* BODY */}
       {isExpanded && (
-        <div className={`${neuContainer} mt-4 space-y-6`}>
+        <motion.div 
+          className={`${neuContainer} mt-4 space-y-6`}
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
 
           {/* INFO BANNER */}
-          <div
+          <motion.div
             className="rounded-2xl p-4 flex items-start gap-3 text-gray-700"
             style={{
               boxShadow:
                 "inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)",
             }}
+            variants={fadeInUpVariants}
           >
             <Info className="text-cyan-500 mt-0.5" size={20} />
             <p className="text-sm">
               💡 <b>How it works:</b> Enter your gas, time, and expected value.
               Time is valued at <b>$20/hour</b>.
             </p>
-          </div>
+          </motion.div>
 
           {/* INPUT AREA */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <motion.div 
+            className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+            variants={containerVariants}
+          >
 
             {/* LEFT INPUTS */}
-            <div className="space-y-4">
+            <motion.div 
+              className="space-y-4"
+              variants={containerVariants}
+            >
               <h3 className="text-lg font-semibold text-gray-600">Input Data</h3>
 
+              <motion.div className="space-y-4">
               {[
                 { label: "Project Name", key: "projectName", placeholder: "zkSync, LayerZero" },
                 { label: "💰 Gas Spent (USD)", key: "gasSpent", placeholder: "150" },
                 { label: "⏱️ Time Invested (Hours)", key: "timeInvested", placeholder: "5" },
                 { label: "🎯 Expected Airdrop Value (USD)", key: "expectedValue", placeholder: "3000" },
-              ].map((f) => (
-                <div key={f.key}>
+              ].map((f, idx) => (
+                <motion.div key={f.key} variants={itemVariants}>
                   <label className="block text-sm text-gray-500 mb-1">
                     {f.label}
                   </label>
@@ -198,11 +225,12 @@ const ROICalculator = () => {
                     }
                     className={neuInput}
                   />
-                </div>
+                </motion.div>
               ))}
+              </motion.div>
 
               {/* PROBABILITY */}
-              <div>
+              <motion.div variants={itemVariants}>
                 <label className="block text-sm text-gray-500 mb-2">
                   📊 Success Probability: {formData.probability}%
                 </label>
@@ -216,18 +244,21 @@ const ROICalculator = () => {
                   }
                   className="w-full accent-cyan-500"
                 />
-              </div>
+              </motion.div>
 
               {/* BUTTONS */}
-              <div className="flex gap-3">
-                <button
+              <motion.div className="flex gap-3" variants={containerVariants}>
+                <motion.button
                   onClick={calculateROI}
                   className={`${neuButton} flex-1 py-3 flex items-center justify-center gap-2 text-cyan-600`}
+                  variants={buttonHoverVariants}
+                  whileHover="hover"
+                  whileTap="tap"
                 >
                   <Calculator size={18} /> Calculate ROI
-                </button>
+                </motion.button>
 
-                <button
+                <motion.button
                   onClick={() =>
                     setFormData({
                       projectName: "",
@@ -238,19 +269,25 @@ const ROICalculator = () => {
                     })
                   }
                   className={`${neuButton} px-6 py-3 text-gray-600`}
+                  variants={buttonHoverVariants}
+                  whileHover="hover"
+                  whileTap="tap"
                 >
                   Clear
-                </button>
-              </div>
-            </div>
+                </motion.button>
+              </motion.div>
+            </motion.div>
 
             {/* RIGHT SIDE – HISTORICAL TABLE */}
-            <div
+            <motion.div
               className="rounded-3xl p-4 overflow-y-auto"
               style={{
                 boxShadow:
                   "inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)",
               }}
+              initial="hidden"
+              animate="visible"
+              variants={fadeInUpVariants}
             >
               <h3 className="text-lg font-semibold text-gray-600 mb-2">
                 Historical Airdrops
@@ -267,7 +304,7 @@ const ROICalculator = () => {
 
                 <tbody>
                   {historicalAirdrops.map((air, i) => (
-                    <tr
+                    <motion.tr
                       key={i}
                       className="hover:bg-[#d9dee5] cursor-pointer transition rounded-lg"
                       onClick={() =>
@@ -278,35 +315,45 @@ const ROICalculator = () => {
                           probability: air.probability.toString(),
                         })
                       }
+                      variants={itemVariants}
+                      whileHover={{ x: 5 }}
                     >
                       <td className="p-2 font-medium">{air.name}</td>
                       <td className="p-2 text-right">${air.avgReturn}</td>
                       <td className="p-2 text-right text-cyan-600">
                         {air.probability}%
                       </td>
-                    </tr>
+                    </motion.tr>
                   ))}
                 </tbody>
               </table>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* RESULTS */}
           {result && (
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
+            <motion.div 
+              className="space-y-6"
+              initial="hidden"
+              animate="visible"
+              variants={containerVariants}
+            >
+              <motion.div className="flex justify-between items-center" variants={itemVariants}>
                 <h3 className="text-xl font-bold text-gray-600">Results</h3>
 
-                <button
+                <motion.button
                   onClick={saveCalculation}
                   className={`${neuButton} px-5 py-2 flex items-center gap-2 text-cyan-600`}
+                  variants={buttonHoverVariants}
+                  whileHover="hover"
+                  whileTap="tap"
                 >
                   <Save size={16} /> Save
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
 
               {/* CARDS */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" variants={containerVariants}>
                 {[
                   { label: "Investment", value: `$${result.totalInvestment}`, icon: DollarSign },
                   { label: "Expected", value: `$${result.expectedReturn}`, icon: TrendingUp },
@@ -323,7 +370,7 @@ const ROICalculator = () => {
                     color: parseFloat(result.roiPercentage) >= 0 ? "text-purple-500" : "text-red-500",
                   },
                 ].map((card, i) => (
-                  <div key={i} className={`${neuContainer}`}>
+                  <motion.div key={i} className={`${neuContainer}`} variants={itemVariants}>
                     <div className="flex items-center gap-2">
                       <card.icon
                         size={26}
@@ -339,12 +386,12 @@ const ROICalculator = () => {
                     >
                       {card.value}
                     </p>
-                  </div>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
 
               {/* RISK LEVEL */}
-              <div className={`${neuContainer} flex items-center gap-3 text-gray-700`}>
+              <motion.div className={`${neuContainer} flex items-center gap-3 text-gray-700`} variants={itemVariants}>
                 <Info className={result.riskColor} size={24} />
                 <div>
                   <p className="font-semibold">
@@ -357,20 +404,20 @@ const ROICalculator = () => {
                     Break-even: ${result.breakEvenValue} | $20/hr time value
                   </p>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           )}
 
           {/* SAVED LIST */}
           {savedCalculations.length > 0 && (
-            <div>
+            <motion.div variants={containerVariants} initial="hidden" animate="visible">
               <h3 className="text-lg font-semibold text-gray-600 mb-3">
                 Saved Calculations
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <motion.div className="grid grid-cols-1 md:grid-cols-2 gap-4" variants={containerVariants}>
                 {savedCalculations.map((calc, i) => (
-                  <div key={i} className={`${neuContainer}`}>
+                  <motion.div key={i} className={`${neuContainer}`} variants={itemVariants}>
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <h4 className="font-semibold text-gray-700">
@@ -381,12 +428,14 @@ const ROICalculator = () => {
                         </p>
                       </div>
 
-                      <button
+                      <motion.button
                         onClick={() => deleteCalculation(i)}
                         className="text-red-400 hover:text-red-500"
+                        whileHover={{ scale: 1.2 }}
+                        whileTap={{ scale: 0.95 }}
                       >
                         <Trash2 size={16} />
-                      </button>
+                      </motion.button>
                     </div>
 
                     <div className="text-sm space-y-1">
@@ -423,14 +472,14 @@ const ROICalculator = () => {
                         </span>
                       </p>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
