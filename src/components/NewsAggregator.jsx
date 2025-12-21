@@ -21,6 +21,7 @@ import {
   containerVariants,
   fadeInUpVariants,
   itemVariants,
+  buttonHoverVariants,
 } from "../utils/animationVariants";
 
 // === NEUMORPHIC UTILITIES ===
@@ -162,72 +163,104 @@ const NewsAggregator = () => {
   }, [autoRefresh, fetchCryptoNews]);
 
   return (
-    <div
+    <motion.div
       className={`relative z-10 w-full mb-8 p-0 rounded-3xl ${neuOut} transition-all duration-300`}
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
     >
-      <div
+      <motion.div
         className={`p-5 flex justify-between items-center flex-wrap gap-3 rounded-t-3xl ${neuInset}`}
+        variants={fadeInUpVariants}
       >
-        <div className="flex items-center gap-3">
-          <h2 className="text-2xl font-bold text-gray-700 flex items-center gap-2">
-            <Newspaper size={28} className="text-blue-500" />
+        <motion.div className="flex items-center gap-3" variants={itemVariants}>
+          <motion.h2 
+            className="text-2xl font-bold text-gray-700 flex items-center gap-2"
+            variants={itemVariants}
+          >
+            <motion.div animate={{ rotate: 360 }} transition={{ duration: 3, repeat: Infinity, ease: "linear" }}>
+              <Newspaper size={28} className="text-blue-500" />
+            </motion.div>
             Airdrop News Aggregator
-          </h2>
+          </motion.h2>
           {isLoading && (
             <RefreshCw size={20} className="text-blue-400 animate-spin" />
           )}
-        </div>
+        </motion.div>
 
-        <div className="flex items-center gap-3 flex-wrap">
+        <motion.div className="flex items-center gap-3 flex-wrap" variants={containerVariants}>
           {lastUpdate && (
-            <div
+            <motion.div
               className={`flex items-center gap-2 text-gray-600 text-sm px-3 py-1 rounded-full ${neuInset}`}
+              variants={itemVariants}
             >
               <Clock size={16} />
               <span>
                 Updated {Math.floor((new Date() - lastUpdate) / 60000)}m ago
               </span>
-            </div>
+            </motion.div>
           )}
 
-          <button onClick={fetchCryptoNews} disabled={isLoading} className={neuButton + " px-4 py-2 text-gray-700"}>
+          <motion.button 
+            onClick={fetchCryptoNews} 
+            disabled={isLoading} 
+            className={neuButton + " px-4 py-2 text-gray-700"}
+            variants={buttonHoverVariants}
+            whileHover="hover"
+            whileTap="tap"
+          >
             <RefreshCw
               size={16}
               className={`inline-block mr-1 ${isLoading ? "animate-spin" : ""}`}
             />
             Refresh
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
             onClick={() => setAutoRefresh(!autoRefresh)}
             className={`${neuButton} px-4 py-2 text-gray-700`}
+            variants={buttonHoverVariants}
+            whileHover="hover"
+            whileTap="tap"
           >
             Auto: {autoRefresh ? "ON" : "OFF"}
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
             onClick={() => setIsExpanded(!isExpanded)}
             className={`${neuButton} px-4 py-2 text-gray-700 flex items-center gap-2`}
+            variants={buttonHoverVariants}
+            whileHover="hover"
+            whileTap="tap"
           >
             {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
             {isExpanded ? "Hide" : "Show"}
-          </button>
-        </div>
-      </div>
+          </motion.button>
+        </motion.div>
+      </motion.div>
 
       {error && (
-        <div className="p-4">
+        <motion.div 
+          className="p-4"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
           <div className={`p-3 text-gray-700 flex items-center gap-2 rounded-xl ${neuInset}`}>
             <AlertCircle size={18} className="text-yellow-600" />
             <span>{error}</span>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {isExpanded && (
-        <div className={`p-6 rounded-b-3xl space-y-6 ${neuInset}`}>
-          <div className="flex flex-wrap gap-4 items-center">
-            <div className="flex items-center gap-2">
+        <motion.div 
+          className={`p-6 rounded-b-3xl space-y-6 ${neuInset}`}
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
+          <motion.div className="flex flex-wrap gap-4 items-center" variants={containerVariants}>
+            <motion.div className="flex items-center gap-2" variants={itemVariants}>
               <Filter size={16} className="text-gray-600" />
               <select
                 value={filterCategory}
@@ -240,9 +273,9 @@ const NewsAggregator = () => {
                   </option>
                 ))}
               </select>
-            </div>
+            </motion.div>
 
-            <div className="flex items-center gap-2">
+            <motion.div className="flex items-center gap-2" variants={itemVariants}>
               <TrendingUp size={16} className="text-gray-600" />
               <select
                 value={sortBy}
@@ -253,11 +286,14 @@ const NewsAggregator = () => {
                 <option value="latest">Latest</option>
                 <option value="bullish">Most Bullish</option>
               </select>
-            </div>
+            </motion.div>
 
-            <button
+            <motion.button
               onClick={() => setShowAddForm(!showAddForm)}
               className={neuButton + " px-4 py-2 text-gray-700 ml-auto flex items-center gap-2"}
+              variants={buttonHoverVariants}
+              whileHover="hover"
+              whileTap="tap"
             >
               {showAddForm ? (
                 <>
@@ -268,8 +304,8 @@ const NewsAggregator = () => {
                   <Plus size={16} /> Add News
                 </>
               )}
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
 
           <AnimatePresence>
             {showAddForm && (
@@ -345,15 +381,21 @@ const NewsAggregator = () => {
                     onChange={(e) => setFormData({ ...formData, url: e.target.value })}
                     className={neuInput}
                   />
-                  <button type="submit" className={neuButton + " px-4 py-2 text-gray-700"}>
+                  <motion.button 
+                    type="submit" 
+                    className={neuButton + " px-4 py-2 text-gray-700"}
+                    variants={buttonHoverVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                  >
                     Add News
-                  </button>
+                  </motion.button>
                 </form>
               </motion.div>
             )}
           </AnimatePresence>
 
-          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <motion.div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6" variants={containerVariants}>
             {[...news,
               ...apiNews.filter(
                 (n) => filterCategory === "all" || n.category === filterCategory
@@ -372,8 +414,9 @@ const NewsAggregator = () => {
               .map((item) => (
                 <motion.div
                   key={item.id}
-                  whileHover={{ y: -3 }}
+                  whileHover={{ y: -5 }}
                   className={`rounded-3xl p-5 ${neuOut} transition`}
+                  variants={itemVariants}
                 >
                   <div className="flex justify-between items-start mb-3">
                     <span
@@ -405,7 +448,7 @@ const NewsAggregator = () => {
                     </a>
 
                     <div className="flex gap-2 text-gray-600">
-                      <button
+                      <motion.button
                         onClick={() => {
                           const all = [...news, ...apiNews];
                           const updated = all.map((n) =>
@@ -414,11 +457,13 @@ const NewsAggregator = () => {
                           setApiNews(updated.filter((n) => n.isFromApi));
                           setNews(updated.filter((n) => !n.isFromApi));
                         }}
+                        whileHover={{ scale: 1.2 }}
+                        whileTap={{ scale: 0.95 }}
                       >
                         <ThumbsUp size={16} />
-                      </button>
+                      </motion.button>
 
-                      <button
+                      <motion.button
                         onClick={() => {
                           const all = [...news, ...apiNews];
                           const updated = all.map((n) =>
@@ -427,19 +472,21 @@ const NewsAggregator = () => {
                           setApiNews(updated.filter((n) => n.isFromApi));
                           setNews(updated.filter((n) => !n.isFromApi));
                         }}
+                        whileHover={{ scale: 1.2 }}
+                        whileTap={{ scale: 0.95 }}
                       >
                         <ThumbsDown size={16} />
-                      </button>
+                      </motion.button>
 
                       <span className="text-sm">{item.votes}</span>
                     </div>
                   </div>
                 </motion.div>
               ))}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
