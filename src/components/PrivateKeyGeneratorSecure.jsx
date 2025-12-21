@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ethers } from "ethers";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Copy,
   AlertTriangle,
@@ -23,6 +24,12 @@ import {
   secureSensitiveFields,
 } from "../utils/securityUtils";
 import { useSecurityContext } from "../contexts/SecurityContext";
+import { 
+  containerVariants, 
+  fadeInUpVariants, 
+  itemVariants, 
+  buttonHoverVariants 
+} from "../utils/animationVariants";
 
 const PrivateKeyGeneratorSecure = () => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -245,70 +252,116 @@ const PrivateKeyGeneratorSecure = () => {
   };
 
   return (
-    <div className="w-full mb-8">
+    <motion.div 
+      className="w-full mb-8"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       {/* Session Status Bar */}
-      {sessionStatus && (
-        <div className={`p-3 rounded-lg mb-4 flex justify-between items-center text-sm font-semibold ${
-          sessionStatus.isValid
-            ? "bg-green-100 text-green-700"
-            : "bg-red-100 text-red-700"
-        }`}
-        style={{
-          boxShadow: "4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)"
-        }}>
-          <div className="flex items-center gap-2">
-            <Clock size={16} />
-            Session Time: {formatTime(sessionStatus.timeRemaining)}
-          </div>
-          {sessionStatus.warning && (
-            <span className="animate-pulse">⚠️ Session expiring soon</span>
-          )}
-        </div>
-      )}
+      <AnimatePresence>
+        {sessionStatus && (
+          <motion.div 
+            className={`p-3 rounded-lg mb-4 flex justify-between items-center text-sm font-semibold ${
+              sessionStatus.isValid
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            }`}
+            style={{
+              boxShadow: "4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)"
+            }}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+          >
+            <div className="flex items-center gap-2">
+              <Clock size={16} />
+              Session Time: {formatTime(sessionStatus.timeRemaining)}
+            </div>
+            {sessionStatus.warning && (
+              <motion.span 
+                className="animate-pulse"
+                animate={{ opacity: [1, 0.5, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                ⚠️ Session expiring soon
+              </motion.span>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Header */}
-      <div
+      <motion.div
         className={`rounded-3xl p-6 flex justify-between items-center bg-gradient-to-r from-[#e0e5ec] to-[#f1f4f8] cursor-pointer mb-4`}
         onClick={() => setIsExpanded(!isExpanded)}
         style={{
           boxShadow: "9px 9px 16px #b8b9be, -9px -9px 16px #ffffff",
         }}
+        variants={fadeInUpVariants}
+        whileHover={{ y: -2 }}
       >
-        <div className="flex items-center gap-3">
-          <h2 className="text-2xl font-bold flex items-center gap-2 text-gray-700">
+        <motion.div className="flex items-center gap-3" variants={itemVariants}>
+          <motion.h2 
+            className="text-2xl font-bold flex items-center gap-2 text-gray-700"
+            variants={itemVariants}
+          >
             🔐 EVM Private Key Generator
-          </h2>
-          <Shield size={24} className="text-red-600" />
-          <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
+          </motion.h2>
+          <motion.div
+            animate={{ rotate: [0, -5, 5, -5, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <Shield size={24} className="text-red-600" />
+          </motion.div>
+          <motion.span 
+            className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded"
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          >
             MAX SECURITY
-          </span>
-        </div>
-        <button
+          </motion.span>
+        </motion.div>
+        <motion.button
           className={`rounded-xl px-4 py-2 flex items-center gap-2 text-gray-700 font-semibold transition`}
           style={{
             boxShadow: "3px 3px 6px #b8b9be, -3px -3px 6px #ffffff",
           }}
+          variants={buttonHoverVariants}
+          whileHover="hover"
+          whileTap="tap"
         >
           {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
       {isExpanded && (
-        <div className="max-w-7xl mx-auto space-y-6">
+        <motion.div 
+          className="max-w-7xl mx-auto space-y-6"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
           {/* Security Warning */}
-          <div
+          <motion.div
             className="p-6 rounded-2xl border-2 border-red-300 flex gap-4"
             style={{
               background: "rgba(254, 226, 226, 0.5)",
               boxShadow:
                 "10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)",
             }}
+            variants={fadeInUpVariants}
           >
-            <AlertTriangle
-              size={24}
-              className="text-red-600 flex-shrink-0 mt-1"
-            />
-            <div>
+            <motion.div
+              animate={{ rotate: [0, 10, 0, -10, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <AlertTriangle
+                size={24}
+                className="text-red-600 flex-shrink-0 mt-1"
+              />
+            </motion.div>
+            <motion.div variants={itemVariants}>
               <h3 className="font-bold text-red-700 mb-2">
                 ⚠️ Maximum Security Mode - Critical Guidelines
               </h3>
@@ -322,24 +375,28 @@ const PrivateKeyGeneratorSecure = () => {
                 <li>🔒 Backup seed phrases OFFLINE in secure location</li>
                 <li>📋 All your actions are logged for audit trail</li>
               </ul>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Generator Section */}
-          <div
+          <motion.div
             className="p-6 rounded-2xl"
             style={{
               background: "#e0e5ec",
               boxShadow:
                 "10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)",
             }}
+            variants={fadeInUpVariants}
           >
-            <h2 className="text-2xl font-bold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+            <motion.h2 
+              className="text-2xl font-bold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600"
+              variants={itemVariants}
+            >
               Generate New Keys
-            </h2>
+            </motion.h2>
 
-            <div className="space-y-4">
-              <div>
+            <motion.div className="space-y-4" variants={containerVariants}>
+              <motion.div variants={itemVariants}>
                 <label className="block text-sm text-gray-600 mb-2 font-medium">
                   Number of Keys to Generate (1-100)
                 </label>
@@ -348,383 +405,195 @@ const PrivateKeyGeneratorSecure = () => {
                   min="1"
                   max="100"
                   value={quantityToGenerate}
-                  onChange={(e) =>
-                    setQuantityToGenerate(
-                      Math.min(100, Math.max(1, parseInt(e.target.value) || 1))
-                    )
-                  }
-                  className="w-full bg-[#e0e5ec] p-3 rounded-lg text-gray-800 font-semibold"
+                  onChange={(e) => setQuantityToGenerate(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl text-gray-700"
                   style={{
-                    boxShadow:
-                      "inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5)",
+                    background: "#f1f4f8",
+                    boxShadow: "inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5)"
                   }}
-                  data-sensitive
                 />
-              </div>
+              </motion.div>
 
-              <button
+              <motion.button
                 onClick={handleGenerateKeys}
                 disabled={isGenerating}
-                className={`w-full py-3 rounded-lg font-semibold text-lg transition ${
+                className={`w-full px-6 py-3 rounded-xl font-semibold transition text-white ${
                   isGenerating
-                    ? "text-gray-500 cursor-not-allowed"
-                    : "text-blue-700 hover:text-blue-800"
+                    ? "opacity-50 cursor-not-allowed"
+                    : "bg-gradient-to-r from-blue-600 to-purple-600"
                 }`}
                 style={{
-                  boxShadow: isGenerating
-                    ? "inset 4px 4px 8px rgba(163,177,198,0.6)"
-                    : "8px 8px 16px rgba(163,177,198,0.6), -8px -8px 16px rgba(255,255,255,0.5)",
+                  boxShadow: "6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)"
                 }}
+                variants={buttonHoverVariants}
+                whileHover="hover"
+                whileTap="tap"
               >
-                {isGenerating ? "⏳ Generating..." : "🔐 Generate Keys"}
-              </button>
-            </div>
-          </div>
+                {isGenerating ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    >
+                      🔄
+                    </motion.div>
+                    Generating...
+                  </span>
+                ) : (
+                  "🔐 Generate Keys"
+                )}
+              </motion.button>
+            </motion.div>
+          </motion.div>
 
-          {/* Results Section */}
+          {/* Generated Keys Display */}
           {generatedKeys.length > 0 && (
-            <div
+            <motion.div
               className="p-6 rounded-2xl"
               style={{
                 background: "#e0e5ec",
-                boxShadow:
-                  "10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)",
+                boxShadow: "10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)"
               }}
+              initial="hidden"
+              animate="visible"
+              variants={containerVariants}
             >
-              <div
-                className="flex justify-between items-center mb-6 p-4 rounded-lg bg-yellow-50 border border-yellow-200"
-              >
-                <div className="flex items-center gap-2">
-                  <AlertTriangle size={20} className="text-yellow-700" />
-                  <span className="font-semibold text-yellow-800">
-                    ⚠️ WATERMARK: Screen Recording & Screenshots Are BLOCKED
-                  </span>
-                </div>
-                <button
+              <motion.div className="flex justify-between items-center mb-4" variants={itemVariants}>
+                <h3 className="text-xl font-bold text-gray-700">Generated Keys ({generatedKeys.length})</h3>
+                <motion.button
                   onClick={() => setHideKeys(!hideKeys)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-700 font-semibold transition"
+                  className="px-4 py-2 rounded-lg text-gray-700 font-semibold"
                   style={{
-                    boxShadow:
-                      "4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)",
+                    boxShadow: "3px 3px 6px rgba(163,177,198,0.6), -3px -3px 6px rgba(255,255,255,0.5)"
                   }}
+                  variants={buttonHoverVariants}
+                  whileHover="hover"
+                  whileTap="tap"
                 >
                   {hideKeys ? <Eye size={18} /> : <EyeOff size={18} />}
-                  {hideKeys ? "Show" : "Hide"}
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
 
-              <div
-                className="rounded-lg p-4 space-y-3 max-h-[600px] overflow-y-auto"
-                ref={keyDisplayRef}
-                data-sensitive
-                style={{
-                  background: "linear-gradient(145deg, #d1d6dd, #ecf0f3)",
-                  boxShadow:
-                    "inset 4px 4px 8px rgba(163,177,198,0.4), inset -4px -4px 8px rgba(255,255,255,0.5)",
-                }}
+              <motion.div 
+                className="space-y-3 max-h-[400px] overflow-y-auto"
+                variants={containerVariants}
               >
                 {generatedKeys.map((key, index) => (
-                  <div
+                  <motion.div
                     key={key.id}
-                    className="bg-[#e0e5ec] p-4 rounded-xl space-y-3"
-                    data-sensitive
+                    className="p-4 rounded-lg bg-white"
                     style={{
-                      boxShadow:
-                        "6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)",
+                      boxShadow: "inset 3px 3px 6px rgba(163,177,198,0.4), inset -3px -3px 6px rgba(255,255,255,0.5)"
                     }}
+                    variants={itemVariants}
+                    whileHover={{ x: 5 }}
                   >
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-gray-700">
-                        Key #{index + 1}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {new Date().toLocaleString()}
-                      </span>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-sm font-medium text-gray-600">
-                        🔑 Private Key:
-                      </label>
-                      <div className="flex items-center gap-2">
-                        <code
-                          className="flex-1 text-xs bg-gray-100 p-2 rounded overflow-x-auto font-mono text-gray-800 break-all"
-                          style={{
-                            boxShadow:
-                              "inset 2px 2px 4px rgba(163,177,198,0.4)",
-                          }}
-                          data-secure-paste="false"
+                    <div className="text-sm font-mono text-gray-700 mb-2">
+                      <p className="mb-1">
+                        <strong>Address:</strong> {hideKeys ? "••••••" : key.address}
+                        <motion.button
+                          onClick={() => copyToClipboard(key.address, index, "address")}
+                          className="ml-2 text-blue-600 hover:text-blue-700"
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
                         >
-                          {hideKeys
-                            ? key.privateKey
-                                .substring(0, 6)
-                                .padEnd(key.privateKey.length - 6, "•")
-                            : key.privateKey}
-                        </code>
-                        <button
-                          onClick={() =>
-                            copyToClipboard(key.privateKey, index, "Private Key")
-                          }
-                          className={`flex-shrink-0 p-2 rounded-lg transition font-semibold ${
-                            copiedIndex === index
-                              ? "text-green-600"
-                              : "text-gray-600 hover:text-gray-800"
-                          }`}
-                          style={{
-                            boxShadow:
-                              "4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)",
-                          }}
-                        >
-                          {copiedIndex === index ? "✅" : <Copy size={16} />}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-sm font-medium text-gray-600">
-                        📍 Address:
-                      </label>
-                      <div className="flex items-center gap-2">
-                        <code
-                          className="flex-1 text-xs bg-gray-100 p-2 rounded overflow-x-auto font-mono text-gray-800 break-all"
-                          style={{
-                            boxShadow:
-                              "inset 2px 2px 4px rgba(163,177,198,0.4)",
-                          }}
-                        >
-                          {key.address}
-                        </code>
-                        <button
-                          onClick={() =>
-                            copyToClipboard(key.address, index, "Address")
-                          }
-                          className={`flex-shrink-0 p-2 rounded-lg transition font-semibold ${
-                            copiedIndex === index
-                              ? "text-green-600"
-                              : "text-gray-600 hover:text-gray-800"
-                          }`}
-                          style={{
-                            boxShadow:
-                              "4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)",
-                          }}
-                        >
-                          {copiedIndex === index ? "✅" : <Copy size={16} />}
-                        </button>
-                      </div>
-                    </div>
-
-                    {key.mnemonic !== "N/A" && (
-                      <div className="space-y-1.5">
-                        <label className="text-sm font-medium text-gray-600">
-                          🌱 Mnemonic (BIP39):
-                        </label>
-                        <div className="flex items-center gap-2">
-                          <code
-                            className="flex-1 text-xs bg-gray-100 p-2 rounded overflow-x-auto font-mono text-gray-800 break-words"
-                            style={{
-                              boxShadow:
-                                "inset 2px 2px 4px rgba(163,177,198,0.4)",
-                            }}
-                            data-sensitive
-                          >
-                            {hideKeys
-                              ? key.mnemonic
-                                  .split(" ")
-                                  .map((word, idx) =>
-                                    idx === 0 ? word : word.replace(/./g, "•")
-                                  )
-                                  .join(" ")
-                              : key.mnemonic}
-                          </code>
-                          <button
-                            onClick={() =>
-                              copyToClipboard(key.mnemonic, index, "Mnemonic")
-                            }
-                            className={`flex-shrink-0 p-2 rounded-lg transition font-semibold ${
-                              copiedIndex === index
-                                ? "text-green-600"
-                                : "text-gray-600 hover:text-gray-800"
-                            }`}
-                            style={{
-                              boxShadow:
-                                "4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)",
-                            }}
-                          >
-                            {copiedIndex === index ? "✅" : <Copy size={16} />}
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Export Section */}
-              <div className="mt-6 space-y-3">
-                {!showExportPassword ? (
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => setShowExportPassword(true)}
-                      className="flex-1 py-2 rounded-lg font-semibold text-blue-700 hover:text-blue-800 transition text-sm"
-                      style={{
-                        boxShadow:
-                          "6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)",
-                      }}
-                    >
-                      🔐 Download Encrypted (Recommended)
-                    </button>
-                    <button
-                      onClick={downloadPlainCSV}
-                      className="flex-1 py-2 rounded-lg font-semibold text-orange-700 hover:text-orange-800 transition text-sm"
-                      style={{
-                        boxShadow:
-                          "6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)",
-                      }}
-                    >
-                      ⚠️ Download Plain CSV
-                    </button>
-                    <button
-                      onClick={clearAllKeys}
-                      className="flex-1 py-2 rounded-lg font-semibold text-red-700 hover:text-red-800 transition text-sm"
-                      style={{
-                        boxShadow:
-                          "6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)",
-                      }}
-                    >
-                      🗑️ Clear All
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-3 p-4 rounded-lg bg-blue-50 border border-blue-200">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        🔐 Enter Strong Password (min 8 chars):
-                      </label>
-                      <input
-                        type="password"
-                        placeholder="Create a strong password..."
-                        value={exportPassword}
-                        onChange={(e) => setExportPassword(e.target.value)}
-                        className="w-full bg-white p-2 rounded border border-gray-300 text-gray-800"
-                        data-sensitive
-                      />
-                      <p className="text-xs text-gray-600 mt-1">
-                        ✅ Password strength: {exportPassword.length < 8 ? "❌ Weak" : exportPassword.length < 16 ? "⚠️ Medium" : "✅ Strong"}
+                          <Copy size={14} />
+                        </motion.button>
                       </p>
                     </div>
-                    <div className="flex gap-2">
-                      <button
+                  </motion.div>
+                ))}
+              </motion.div>
+
+              {/* Export Buttons */}
+              <motion.div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6" variants={containerVariants}>
+                <motion.button
+                  onClick={() => setShowExportPassword(!showExportPassword)}
+                  className="px-4 py-3 rounded-lg font-semibold bg-gradient-to-r from-green-500 to-emerald-600 text-white"
+                  style={{
+                    boxShadow: "6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)"
+                  }}
+                  variants={buttonHoverVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                >
+                  🔒 Download Encrypted
+                </motion.button>
+                <motion.button
+                  onClick={downloadPlainCSV}
+                  className="px-4 py-3 rounded-lg font-semibold bg-gradient-to-r from-orange-500 to-red-600 text-white"
+                  style={{
+                    boxShadow: "6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)"
+                  }}
+                  variants={buttonHoverVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                >
+                  📥 Download CSV
+                </motion.button>
+              </motion.div>
+
+              {/* Password Input */}
+              <AnimatePresence>
+                {showExportPassword && (
+                  <motion.div
+                    className="mt-4 p-4 rounded-lg"
+                    style={{
+                      background: "#f1f4f8",
+                      boxShadow: "inset 3px 3px 6px rgba(163,177,198,0.4)"
+                    }}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                  >
+                    <motion.div variants={itemVariants}>
+                      <label className="block text-sm text-gray-600 mb-2 font-medium">
+                        Encryption Password (min 8 chars)
+                      </label>
+                      <input
+                        type={showExportPassword ? "text" : "password"}
+                        value={exportPassword}
+                        onChange={(e) => setExportPassword(e.target.value)}
+                        className="w-full px-4 py-2 rounded-lg text-gray-700 mb-3"
+                        style={{
+                          background: "#e0e5ec",
+                          boxShadow: "inset 3px 3px 6px rgba(163,177,198,0.6)"
+                        }}
+                        placeholder="Enter strong password"
+                      />
+                      <motion.button
                         onClick={downloadEncryptedKeys}
-                        disabled={isExporting || exportPassword.length < 8}
-                        className={`flex-1 py-2 rounded-lg font-semibold transition text-sm ${
-                          isExporting || exportPassword.length < 8
-                            ? "text-gray-500 cursor-not-allowed"
-                            : "text-green-700 hover:text-green-800"
-                        }`}
-                        style={{
-                          boxShadow: isExporting
-                            ? "inset 4px 4px 8px rgba(163,177,198,0.6)"
-                            : "6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)",
-                        }}
+                        disabled={isExporting}
+                        className="w-full px-4 py-2 rounded-lg font-semibold bg-green-600 text-white"
+                        variants={buttonHoverVariants}
+                        whileHover="hover"
+                        whileTap="tap"
                       >
-                        {isExporting ? "⏳ Encrypting..." : "✅ Confirm & Download"}
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowExportPassword(false);
-                          setExportPassword("");
-                        }}
-                        className="px-4 py-2 rounded-lg font-semibold text-gray-700 hover:text-gray-800 transition"
-                        style={{
-                          boxShadow:
-                            "6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)",
-                        }}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
+                        {isExporting ? "Downloading..." : "Download with Password"}
+                      </motion.button>
+                    </motion.div>
+                  </motion.div>
                 )}
-              </div>
-            </div>
+              </AnimatePresence>
+
+              {/* Clear Button */}
+              <motion.button
+                onClick={clearAllKeys}
+                className="w-full mt-4 px-4 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700"
+                style={{
+                  boxShadow: "6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)"
+                }}
+                variants={buttonHoverVariants}
+                whileHover="hover"
+                whileTap="tap"
+              >
+                🗑️ Clear All Keys
+              </motion.button>
+            </motion.div>
           )}
-
-          {/* Audit Log Section */}
-          <div
-            className="p-6 rounded-2xl cursor-pointer"
-            onClick={() => setShowAuditLog(!showAuditLog)}
-            style={{
-              background: "#e0e5ec",
-              boxShadow:
-                "10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)",
-            }}
-          >
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-bold text-gray-700 flex items-center gap-2">
-                <Activity size={20} />
-                Activity Log
-              </h3>
-              {showAuditLog ? <ChevronUp /> : <ChevronDown />}
-            </div>
-
-            {showAuditLog && (
-              <div className="mt-4 space-y-2 max-h-64 overflow-y-auto text-xs">
-                {getAuditLogs().length === 0 ? (
-                  <p className="text-gray-500">No activities logged yet</p>
-                ) : (
-                  getAuditLogs().map((log, idx) => (
-                    <div
-                      key={log.id}
-                      className={`p-2 rounded text-gray-700 ${
-                        log.severity === "critical"
-                          ? "bg-red-100"
-                          : log.severity === "warning"
-                          ? "bg-yellow-100"
-                          : "bg-blue-100"
-                      }`}
-                    >
-                      <strong>{log.action}</strong> - {new Date(log.timestamp).toLocaleTimeString()}
-                      {log.details?.count && ` (Count: ${log.details.count})`}
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Info Section */}
-          <div
-            className="p-6 rounded-2xl"
-            style={{
-              background: "#e0e5ec",
-              boxShadow:
-                "10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)",
-            }}
-          >
-            <h3 className="text-xl font-bold mb-4 text-gray-700">
-              ℹ️ Security Information
-            </h3>
-            <div className="space-y-3 text-sm text-gray-600">
-              <p>
-                <strong>🔒 AES-256 Encryption:</strong> Downloaded files are encrypted with AES-GCM
-              </p>
-              <p>
-                <strong>🏠 Local Generation:</strong> All keys generated in your browser, never transmitted
-              </p>
-              <p>
-                <strong>⏱️ Session Timeout:</strong> Automatic logout after 30 minutes for security
-              </p>
-              <p>
-                <strong>📋 Audit Trail:</strong> All actions logged for security review
-              </p>
-              <p>
-                <strong>🚫 Anti-Screenshot:</strong> Screenshots and DevTools are blocked
-              </p>
-            </div>
-          </div>
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
