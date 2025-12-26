@@ -18,7 +18,6 @@ const SENSITIVE_FIELDS = [
   'refresh_token',
   'seed',
   'mnemonic',
-  'email',
   'phone',
   'ssn',
   'creditCard',
