@@ -11,6 +11,7 @@ import {
 } from "../utils/animationVariants";
 import { secureLogger } from "../utils/dataSecurityUtils";
 import { alchemyProxyService } from "../utils/alchemyProxy";
+import { useTheme } from "../contexts/ThemeContext";
 
 const NETWORKS = {
   Ethereum: { rpc: "https://eth.llamarpc.com" },
@@ -21,6 +22,7 @@ const NETWORKS = {
 };
 
 const BalanceChecker = () => {
+  const { theme } = useTheme();
   const [isExpanded, setIsExpanded] = useState(true);
 
   // State untuk EVM Native & Tokens Balance Checker
@@ -173,8 +175,8 @@ const BalanceChecker = () => {
                 symbol: symbol
               });
             } catch (err) {
-            secureLogger.logError('CHECK_BALANCE_ERROR', err, { address: addr.substring(0, 6) + '...' });
-            result.push({
+              secureLogger.logError('CHECK_BALANCE_ERROR', err, { address: addr.substring(0, 6) + '...' });
+              result.push({
                 address: addr,
                 balance: "❌ Error",
                 symbol: symbol
@@ -254,28 +256,28 @@ const BalanceChecker = () => {
   };
 
   // Neumorphic styles
-  const neuContainer = "bg-[#e0e5ec] rounded-3xl shadow-[9px_9px_16px_#b8b9be,-9px_-9px_16px_#ffffff] p-6 transition";
-  const neuButton = "bg-[#e0e5ec] rounded-xl shadow-[3px_3px_6px_#b8b9be,-3px_-3px_6px_#ffffff] active:shadow-[inset_3px_3px_6px_#b8b9be,inset_-3px_-3px_6px_#ffffff] transition text-gray-700 font-semibold";
+  // const neuContainer = "bg-[#e0e5ec] rounded-3xl shadow-[9px_9px_16px_#b8b9be,-9px_-9px_16px_#ffffff] p-6 transition";
+  // const neuButton = "bg-[#e0e5ec] rounded-xl shadow-[3px_3px_6px_#b8b9be,-3px_-3px_6px_#ffffff] active:shadow-[inset_3px_3px_6px_#b8b9be,inset_-3px_-3px_6px_#ffffff] transition text-gray-700 font-semibold";
 
   return (
     <motion.div
-      className="w-full mb-8"
+      className="w-full mb-8 bg-gray-200 dark:bg-gray-900 transition-colors"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
       {/* Header */}
       <motion.div
-        className={`${neuContainer} flex justify-between items-center bg-gradient-to-r from-[#e0e5ec] to-[#f1f4f8] cursor-pointer mb-4`}
+        className="rounded-3xl p-6 transition flex justify-between items-center bg-gradient-to-r from-gray-200 to-gray-100 dark:from-gray-800 dark:to-gray-900 shadow-neu-flat dark:shadow-neu-flat-dark cursor-pointer mb-4"
         onClick={() => setIsExpanded(!isExpanded)}
         variants={fadeInUpVariants}
         whileHover={{ scale: 1.01 }}
       >
-        <h2 className="text-2xl font-bold flex items-center gap-2 text-gray-700">
+        <h2 className="text-2xl font-bold flex items-center gap-2 text-gray-700 dark:text-gray-200">
           <Wallet size={26} className="text-indigo-500" /> Balance Checker
         </h2>
         <motion.button
-          className={`${neuButton} px-4 py-2 flex items-center gap-2`}
+          className="bg-main-light dark:bg-main-dark rounded-xl shadow-neu-flat dark:shadow-neu-flat-dark active:shadow-neu-pressed dark:active:shadow-neu-pressed-dark transition text-gray-700 dark:text-gray-300 font-semibold px-4 py-2 flex items-center gap-2"
           variants={buttonHoverVariants}
           whileHover="hover"
           whileTap="tap"
@@ -293,12 +295,7 @@ const BalanceChecker = () => {
           variants={containerVariants}
         >
           {/* EVM Native & Tokens Balance Checker */}
-          <div className="p-6 rounded-2xl"
-            style={{
-              background: '#e0e5ec',
-              boxShadow: '10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)'
-            }}
-          >
+          <div className="p-6 rounded-2xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark">
             <h2 className="text-2xl font-bold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
               🔷 EVM Native & Tokens Balance Checker
             </h2>
@@ -306,32 +303,26 @@ const BalanceChecker = () => {
             <div className="space-y-4">
               {/* RPC URL Input */}
               <div>
-                <label className="block text-sm text-gray-600 mb-2 font-medium">Input RPC URL</label>
+                <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">Input RPC URL</label>
                 <input
                   type="text"
                   placeholder="e.g. https://1.rpc.thirdweb.com"
                   value={customRpcUrl}
                   onChange={(e) => setCustomRpcUrl(e.target.value)}
-                  className="w-full bg-[#e0e5ec] p-3 rounded-lg text-gray-800"
-                  style={{
-                    boxShadow: 'inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5)'
-                  }}
+                  className="w-full bg-main-light dark:bg-main-dark p-3 rounded-lg text-gray-800 dark:text-gray-200 shadow-neu-pressed dark:shadow-neu-pressed-dark placeholder-gray-400 dark:placeholder-gray-500"
                 />
               </div>
 
               {/* Check Type Dropdown */}
               <div>
-                <label className="block text-sm text-gray-600 mb-2 font-medium">Select Check Type</label>
+                <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">Select Check Type</label>
                 <select
                   value={checkType}
                   onChange={(e) => {
                     setCheckType(e.target.value);
                     setEvmBalances([]);
                   }}
-                  className="w-full bg-[#e0e5ec] p-3 rounded-lg text-gray-800 cursor-pointer font-medium"
-                  style={{
-                    boxShadow: 'inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5)'
-                  }}
+                  className="w-full bg-main-light dark:bg-main-dark p-3 rounded-lg text-gray-800 dark:text-gray-200 cursor-pointer font-medium shadow-neu-pressed dark:shadow-neu-pressed-dark outline-none"
                 >
                   <option value="native">Check Native Balance</option>
                   <option value="token">Check Token Balance</option>
@@ -341,28 +332,22 @@ const BalanceChecker = () => {
               {/* Token Contract Address (only show if checkType is token) */}
               {checkType === "token" ? (
                 <div>
-                  <label className="block text-sm text-gray-600 mb-2 font-medium">Token Contract Address</label>
+                  <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">Token Contract Address</label>
                   <input
                     type="text"
                     placeholder="0xabc...def"
                     value={tokenContractAddress}
                     onChange={(e) => setTokenContractAddress(e.target.value)}
-                    className="w-full bg-[#e0e5ec] p-3 rounded-lg text-gray-800"
-                    style={{
-                      boxShadow: 'inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5)'
-                    }}
+                    className="w-full bg-main-light dark:bg-main-dark p-3 rounded-lg text-gray-800 dark:text-gray-200 shadow-neu-pressed dark:shadow-neu-pressed-dark placeholder-gray-400 dark:placeholder-gray-500"
                   />
                 </div>
               ) : null}
 
               {/* Wallet Addresses Input */}
               <div>
-                <label className="block text-sm text-gray-600 mb-2 font-medium">Wallet Addresses (one per line)</label>
+                <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">Wallet Addresses (one per line)</label>
                 <textarea
-                  className="w-full bg-[#e0e5ec] p-3 rounded-lg text-gray-800 resize-none"
-                  style={{
-                    boxShadow: 'inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5)'
-                  }}
+                  className="w-full bg-main-light dark:bg-main-dark p-3 rounded-lg text-gray-800 dark:text-gray-200 resize-none shadow-neu-pressed dark:shadow-neu-pressed-dark placeholder-gray-400 dark:placeholder-gray-500"
                   placeholder="Paste wallet addresses (one per line)&#10;Example:&#10;0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb&#10;0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
                   rows="6"
                   value={evmAddresses}
@@ -374,16 +359,10 @@ const BalanceChecker = () => {
               <button
                 onClick={checkEVMBalances}
                 disabled={evmBalanceLoading}
-                className={`w-full py-3 rounded-lg font-semibold text-lg transition ${
-                  evmBalanceLoading
-                    ? "text-gray-500 cursor-not-allowed"
-                    : "text-blue-700 hover:text-blue-800"
-                }`}
-                style={{
-                  boxShadow: evmBalanceLoading
-                    ? 'inset 4px 4px 8px rgba(163,177,198,0.6)'
-                    : '8px 8px 16px rgba(163,177,198,0.6), -8px -8px 16px rgba(255,255,255,0.5)'
-                }}
+                className={`w-full py-3 rounded-lg font-semibold text-lg transition ${evmBalanceLoading
+                    ? "text-gray-500 cursor-not-allowed bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark"
+                    : "text-blue-700 dark:text-blue-400 hover:text-blue-800 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark"
+                  }`}
               >
                 {evmBalanceLoading ? "⏳ Checking..." : "Check Balance"}
               </button>
@@ -391,23 +370,14 @@ const BalanceChecker = () => {
 
             {/* Results Table */}
             {evmBalances.length > 0 && (
-              <div className="mt-6 rounded-lg p-4"
-                style={{
-                  background: 'linear-gradient(145deg, #d1d6dd, #ecf0f3)',
-                  boxShadow: 'inset 4px 4px 8px rgba(163,177,198,0.4), inset -4px -4px 8px rgba(255,255,255,0.5)'
-                }}
-              >
+              <div className="mt-6 rounded-lg p-4 bg-gray-100 dark:bg-gray-800 shadow-neu-pressed dark:shadow-neu-pressed-dark">
                 <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-blue-700 font-semibold">
+                  <h3 className="text-blue-700 dark:text-blue-400 font-semibold">
                     Results - {checkType === "native" ? "Native Balance" : "Token Balance"}
                   </h3>
                   <button
                     onClick={() => setEvmBalances([])}
-                    className="text-xs text-white px-3 py-1 rounded"
-                    style={{
-                      background: 'linear-gradient(145deg, #dc2626, #ef4444)',
-                      boxShadow: '4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)'
-                    }}
+                    className="text-xs text-white px-3 py-1 rounded bg-red-600 shadow-md hover:shadow-sm"
                   >
                     Clear
                   </button>
@@ -415,7 +385,7 @@ const BalanceChecker = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm">
                     <thead>
-                      <tr className="text-blue-700 border-b border-gray-300">
+                      <tr className="text-blue-700 dark:text-blue-400 border-b border-gray-300 dark:border-gray-600">
                         <th className="p-2">#</th>
                         <th className="p-2">Address</th>
                         <th className="p-2 text-right">Balance</th>
@@ -423,21 +393,20 @@ const BalanceChecker = () => {
                     </thead>
                     <tbody>
                       {evmBalances.map((b, i) => (
-                        <tr key={i} className="border-b border-gray-300">
-                          <td className="p-2 text-gray-600">{i + 1}</td>
-                          <td className="p-2 break-all font-mono text-xs text-gray-700">{b.address}</td>
-                          <td className={`p-2 text-right font-semibold ${
-                            b.balance.includes('Error') || b.balance.includes('Invalid')
-                              ? 'text-red-600'
+                        <tr key={i} className="border-b border-gray-300 dark:border-gray-700">
+                          <td className="p-2 text-gray-600 dark:text-gray-400">{i + 1}</td>
+                          <td className="p-2 break-all font-mono text-xs text-gray-700 dark:text-gray-300">{b.address}</td>
+                          <td className={`p-2 text-right font-semibold ${b.balance.includes('Error') || b.balance.includes('Invalid')
+                              ? 'text-red-600 dark:text-red-400'
                               : parseFloat(b.balance) > 0
-                              ? 'text-green-600'
-                              : 'text-gray-600'
-                          }`}>
+                                ? 'text-green-600 dark:text-green-400'
+                                : 'text-gray-600 dark:text-gray-400'
+                            }`}>
                             {b.balance.includes('Error') || b.balance.includes('Invalid')
                               ? b.balance
                               : checkType === "token"
-                              ? `${b.balance} ${b.symbol || 'TOKEN'}`
-                              : `${b.balance} Native`
+                                ? `${b.balance} ${b.symbol || 'TOKEN'}`
+                                : `${b.balance} Native`
                             }
                           </td>
                         </tr>
@@ -446,7 +415,7 @@ const BalanceChecker = () => {
                   </table>
                 </div>
                 {checkType === "native" && (
-                  <div className="mt-3 text-xs text-gray-600 text-right font-medium">
+                  <div className="mt-3 text-xs text-gray-600 dark:text-gray-400 text-right font-medium">
                     Total Balance: {evmBalances
                       .filter(b => !b.balance.includes('Error') && !b.balance.includes('Invalid'))
                       .reduce((sum, b) => sum + parseFloat(b.balance), 0)
@@ -454,7 +423,7 @@ const BalanceChecker = () => {
                   </div>
                 )}
                 {checkType === "token" && evmBalances[0]?.symbol && (
-                  <div className="mt-3 text-xs text-gray-600 text-right font-medium">
+                  <div className="mt-3 text-xs text-gray-600 dark:text-gray-400 text-right font-medium">
                     Total Balance: {evmBalances
                       .filter(b => !b.balance.includes('Error') && !b.balance.includes('Invalid'))
                       .reduce((sum, b) => sum + parseFloat(b.balance), 0)
@@ -466,12 +435,7 @@ const BalanceChecker = () => {
           </div>
 
           {/* Default Network Balance Checker */}
-          <div className="p-6 rounded-2xl"
-            style={{
-              background: '#e0e5ec',
-              boxShadow: '10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)'
-            }}
-          >
+          <div className="p-6 rounded-2xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark">
             <h2 className="text-2xl font-bold mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600">
               💰 Quick Network Balance Checker
             </h2>
@@ -481,20 +445,10 @@ const BalanceChecker = () => {
                 <button
                   key={net}
                   onClick={() => setSelectedNetwork(net)}
-                  className={`px-4 py-2 rounded-lg text-sm md:text-base transition font-medium ${
-                    selectedNetwork === net
-                      ? "text-blue-700"
-                      : "text-gray-600 hover:text-gray-800"
-                  }`}
-                  style={
-                    selectedNetwork === net
-                      ? {
-                          boxShadow: 'inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)'
-                        }
-                      : {
-                          boxShadow: '6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)'
-                        }
-                  }
+                  className={`px-4 py-2 rounded-lg text-sm md:text-base transition font-medium ${selectedNetwork === net
+                      ? "text-blue-700 dark:text-blue-400 bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark"
+                      : "text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark"
+                    }`}
                 >
                   {net}
                 </button>
@@ -502,10 +456,7 @@ const BalanceChecker = () => {
             </div>
 
             <textarea
-              className="w-full bg-[#e0e5ec] p-3 rounded-lg text-gray-800 resize-none"
-              style={{
-                boxShadow: 'inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5)'
-              }}
+              className="w-full bg-main-light dark:bg-main-dark p-3 rounded-lg text-gray-800 dark:text-gray-200 resize-none shadow-neu-pressed dark:shadow-neu-pressed-dark placeholder-gray-400 dark:placeholder-gray-500"
               placeholder="Paste wallet addresses (one per line)&#10;Example:&#10;0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb&#10;0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
               rows="8"
               value={quickAddresses}
@@ -516,42 +467,27 @@ const BalanceChecker = () => {
               <button
                 onClick={checkBalances}
                 disabled={quickBalanceLoading}
-                className={`w-full sm:w-auto px-6 py-3 rounded-lg font-semibold transition ${
-                  quickBalanceLoading
-                    ? "text-gray-500 cursor-not-allowed"
-                    : "text-green-700 hover:text-green-800"
-                }`}
-                style={{
-                  boxShadow: quickBalanceLoading
-                    ? 'inset 4px 4px 8px rgba(163,177,198,0.6)'
-                    : '8px 8px 16px rgba(163,177,198,0.6), -8px -8px 16px rgba(255,255,255,0.5)'
-                }}
+                className={`w-full sm:w-auto px-6 py-3 rounded-lg font-semibold transition ${quickBalanceLoading
+                    ? "text-gray-500 cursor-not-allowed bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark"
+                    : "text-green-700 dark:text-green-400 hover:text-green-800 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark"
+                  }`}
               >
                 {quickBalanceLoading ? "⏳ Checking..." : "✅ Check Balance"}
               </button>
               {quickBalances.length > 0 && (
-                <span className="text-sm text-gray-600 font-medium">
+                <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
                   Total: {quickBalances.length} address(es) checked
                 </span>
               )}
             </div>
 
             {quickBalances.length > 0 && (
-              <div className="mt-6 rounded-lg p-4"
-                style={{
-                  background: 'linear-gradient(145deg, #d1d6dd, #ecf0f3)',
-                  boxShadow: 'inset 4px 4px 8px rgba(163,177,198,0.4), inset -4px -4px 8px rgba(255,255,255,0.5)'
-                }}
-              >
+              <div className="mt-6 rounded-lg p-4 bg-gray-100 dark:bg-gray-800 shadow-neu-pressed dark:shadow-neu-pressed-dark">
                 <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-blue-700 font-semibold">Results - {selectedNetwork}</h3>
+                  <h3 className="text-blue-700 dark:text-blue-400 font-semibold">Results - {selectedNetwork}</h3>
                   <button
                     onClick={() => setQuickBalances([])}
-                    className="text-xs text-white px-3 py-1 rounded"
-                    style={{
-                      background: 'linear-gradient(145deg, #dc2626, #ef4444)',
-                      boxShadow: '4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)'
-                    }}
+                    className="text-xs text-white px-3 py-1 rounded bg-red-600 shadow-md hover:shadow-sm"
                   >
                     Clear
                   </button>
@@ -559,7 +495,7 @@ const BalanceChecker = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm">
                     <thead>
-                      <tr className="text-blue-700 border-b border-gray-300">
+                      <tr className="text-blue-700 dark:text-blue-400 border-b border-gray-300 dark:border-gray-600">
                         <th className="p-2">#</th>
                         <th className="p-2">Address</th>
                         <th className="p-2 text-right">Balance</th>
@@ -567,16 +503,15 @@ const BalanceChecker = () => {
                     </thead>
                     <tbody>
                       {quickBalances.map((b, i) => (
-                        <tr key={i} className="border-b border-gray-300">
-                          <td className="p-2 text-gray-600">{i + 1}</td>
-                          <td className="p-2 break-all font-mono text-xs text-gray-700">{b.address}</td>
-                          <td className={`p-2 text-right font-semibold ${
-                            b.balance.includes('Error') || b.balance.includes('Invalid')
-                              ? 'text-red-600'
+                        <tr key={i} className="border-b border-gray-300 dark:border-gray-700">
+                          <td className="p-2 text-gray-600 dark:text-gray-400">{i + 1}</td>
+                          <td className="p-2 break-all font-mono text-xs text-gray-700 dark:text-gray-300">{b.address}</td>
+                          <td className={`p-2 text-right font-semibold ${b.balance.includes('Error') || b.balance.includes('Invalid')
+                              ? 'text-red-600 dark:text-red-400'
                               : parseFloat(b.balance) > 0
-                              ? 'text-green-600'
-                              : 'text-gray-600'
-                          }`}>
+                                ? 'text-green-600 dark:text-green-400'
+                                : 'text-gray-600 dark:text-gray-400'
+                            }`}>
                             {b.balance.includes('Error') || b.balance.includes('Invalid')
                               ? b.balance
                               : `${b.balance} ${selectedNetwork === 'BSC' ? 'BNB' : selectedNetwork === 'Polygon' ? 'MATIC' : 'ETH'}`
@@ -587,7 +522,7 @@ const BalanceChecker = () => {
                     </tbody>
                   </table>
                 </div>
-                <div className="mt-3 text-xs text-gray-600 text-right font-medium">
+                <div className="mt-3 text-xs text-gray-600 dark:text-gray-400 text-right font-medium">
                   Total Balance: {quickBalances
                     .filter(b => !b.balance.includes('Error') && !b.balance.includes('Invalid'))
                     .reduce((sum, b) => sum + parseFloat(b.balance), 0)
@@ -598,12 +533,7 @@ const BalanceChecker = () => {
           </div>
 
           {/* Auto Wallet Scanner */}
-          <div className="p-6 rounded-2xl"
-            style={{
-              background: '#e0e5ec',
-              boxShadow: '10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)'
-            }}
-          >
+          <div className="p-6 rounded-2xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark">
             <h2 className="text-2xl font-bold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
               🪙 Auto Wallet Scanner
             </h2>
@@ -614,18 +544,10 @@ const BalanceChecker = () => {
                 <button
                   key={c}
                   onClick={() => setScannerChain(c)}
-                  className={`px-4 py-2 rounded-lg text-sm md:text-base transition font-medium ${
-                    scannerChain === c
-                      ? "text-white bg-gradient-to-r from-orange-400 to-pink-400"
-                      : "text-gray-600 hover:text-gray-800"
-                  }`}
-                  style={
-                    scannerChain === c
-                      ? {}
-                      : {
-                          boxShadow: '6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)'
-                        }
-                  }
+                  className={`px-4 py-2 rounded-lg text-sm md:text-base transition font-medium ${scannerChain === c
+                      ? "text-white bg-gradient-to-r from-orange-400 to-pink-400 shadow-md"
+                      : "text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark"
+                    }`}
                 >
                   {c === "eth-mainnet"
                     ? "Ethereum"
@@ -641,24 +563,15 @@ const BalanceChecker = () => {
                 placeholder="Masukkan wallet address..."
                 value={scannerAddress}
                 onChange={(e) => setScannerAddress(e.target.value)}
-                className="flex-1 bg-[#e0e5ec] text-gray-700 rounded-xl px-4 py-3"
-                style={{
-                  boxShadow: 'inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5)'
-                }}
+                className="flex-1 bg-main-light dark:bg-main-dark text-gray-700 dark:text-gray-200 rounded-xl px-4 py-3 shadow-neu-pressed dark:shadow-neu-pressed-dark outline-none placeholder-gray-400 dark:placeholder-gray-500"
               />
               <button
                 onClick={fetchTokens}
                 disabled={scannerLoading}
-                className={`px-6 py-3 rounded-lg font-semibold transition ${
-                  scannerLoading
-                    ? "text-gray-500 cursor-not-allowed"
-                    : "text-white bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600"
-                }`}
-                style={{
-                  boxShadow: scannerLoading
-                    ? 'inset 4px 4px 8px rgba(163,177,198,0.6)'
-                    : '8px 8px 16px rgba(163,177,198,0.6), -8px -8px 16px rgba(255,255,255,0.5)'
-                }}
+                className={`px-6 py-3 rounded-lg font-semibold transition ${scannerLoading
+                    ? "text-gray-500 cursor-not-allowed bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark"
+                    : "text-white bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 shadow-neu-flat dark:shadow-neu-flat-dark"
+                  }`}
               >
                 {scannerLoading ? "⏳ Scanning..." : "🔍 Scan"}
               </button>
@@ -670,23 +583,14 @@ const BalanceChecker = () => {
 
             {/* Token List */}
             {tokens.length > 0 && (
-              <div className="rounded-lg p-4 space-y-3 max-h-96 overflow-y-auto"
-                style={{
-                  background: 'linear-gradient(145deg, #d1d6dd, #ecf0f3)',
-                  boxShadow: 'inset 4px 4px 8px rgba(163,177,198,0.4), inset -4px -4px 8px rgba(255,255,255,0.5)'
-                }}
-              >
+              <div className="rounded-lg p-4 space-y-3 max-h-96 overflow-y-auto bg-gray-100 dark:bg-gray-800 shadow-neu-pressed dark:shadow-neu-pressed-dark">
                 <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-blue-700 font-semibold">
+                  <h3 className="text-blue-700 dark:text-blue-400 font-semibold">
                     Found {tokens.length} Token{tokens.length > 1 ? 's' : ''}
                   </h3>
                   <button
                     onClick={() => setTokens([])}
-                    className="text-xs text-white px-3 py-1 rounded"
-                    style={{
-                      background: 'linear-gradient(145deg, #dc2626, #ef4444)',
-                      boxShadow: '4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)'
-                    }}
+                    className="text-xs text-white px-3 py-1 rounded bg-red-600 shadow-md hover:shadow-sm"
                   >
                     Clear
                   </button>
@@ -694,10 +598,7 @@ const BalanceChecker = () => {
                 {tokens.map((t, i) => (
                   <div
                     key={i}
-                    className="bg-[#e0e5ec] flex items-center justify-between px-4 py-3 rounded-2xl"
-                    style={{
-                      boxShadow: 'inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5)'
-                    }}
+                    className="bg-main-light dark:bg-main-dark flex items-center justify-between px-4 py-3 rounded-2xl shadow-neu-pressed dark:shadow-neu-pressed-dark"
                   >
                     <div className="flex items-center gap-3">
                       {t.logo ? (
@@ -707,13 +608,13 @@ const BalanceChecker = () => {
                           className="w-7 h-7 rounded-full shadow-md"
                         />
                       ) : (
-                        <div className="w-7 h-7 rounded-full bg-gray-300" />
+                        <div className="w-7 h-7 rounded-full bg-gray-300 dark:bg-gray-600" />
                       )}
-                      <span className="text-gray-700 font-medium text-sm">
+                      <span className="text-gray-700 dark:text-gray-200 font-medium text-sm">
                         {t.name} ({t.symbol})
                       </span>
                     </div>
-                    <span className="text-gray-600 text-sm font-semibold">
+                    <span className="text-gray-600 dark:text-gray-400 text-sm font-semibold">
                       {t.balance}
                     </span>
                   </div>
@@ -722,12 +623,7 @@ const BalanceChecker = () => {
             )}
 
             {!scannerLoading && tokens.length === 0 && !scannerError && (
-              <div className="text-center text-gray-500 text-sm p-4 rounded-lg"
-                style={{
-                  background: '#e0e5ec',
-                  boxShadow: 'inset 3px 3px 6px rgba(163,177,198,0.4), inset -3px -3px 6px rgba(255,255,255,0.5)'
-                }}
-              >
+              <div className="text-center text-gray-500 dark:text-gray-400 text-sm p-4 rounded-lg bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark">
                 Masukkan wallet dan klik <b>Scan</b> untuk melihat token yang dimiliki.
               </div>
             )}
