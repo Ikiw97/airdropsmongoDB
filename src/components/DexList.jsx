@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useTheme } from "../contexts/ThemeContext";
 import { ExternalLink, Search, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -282,6 +283,7 @@ const DEX_LOGOS = {
  *  ===========================
  */
 export default function DexBridgePanel() {
+  const { theme } = useTheme();
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedCategory, setExpandedCategory] = useState({ dex: true, bridge: false });
   const [expandedSub, setExpandedSub] = useState({});
@@ -334,14 +336,13 @@ export default function DexBridgePanel() {
   /** ===========================
    *     STYLE PRESETS
    *  =========================== */
-  const neuBase = "bg-[#e0e5ec] text-[#666] shadow-[9px_9px_16px_rgba(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)]";
-  const neuInset = "bg-[#e0e5ec] shadow-[inset_6px_6px_12px_rgba(163,177,198,0.6),inset_-6px_-6px_12px_rgba(255,255,255,0.5)]";
-  const neuButton = "bg-[#e0e5ec] text-[#666] rounded-xl shadow-[6px_6px_12px_rgba(163,177,198,0.6),-6px_-6px_12px_rgba(255,255,255,0.5)] hover:shadow-[3px_3px_6px_rgba(163,177,198,0.6),-3px_-3px_6px_rgba(255,255,255,0.5)] transition";
+  // Styles moved to Tailwind classes
+
 
 
   return (
     <motion.div
-      className="min-h-screen p-6 space-y-6 bg-[#e0e5ec]"
+      className="min-h-screen p-6 space-y-6 bg-gray-200 dark:bg-gray-900 transition-colors"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
@@ -349,24 +350,24 @@ export default function DexBridgePanel() {
 
       {/* SEARCH BAR */}
       <motion.div
-        className={`flex items-center gap-3 px-4 py-3 rounded-2xl ${neuInset}`}
+        className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark"
         variants={fadeInUpVariants}
       >
-        <Search size={20} className="text-[#666]" />
+        <Search size={20} className="text-gray-500 dark:text-gray-400" />
         <input
           type="text"
           placeholder="Search DEX or Bridge..."
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
-          className="flex-1 bg-transparent outline-none text-[#666]"
+          className="flex-1 bg-transparent outline-none text-gray-700 dark:text-gray-200"
         />
       </motion.div>
 
 
       {/* ======================= DEX LIST ====================== */}
-      <motion.div className={`rounded-3xl ${neuBase}`} variants={fadeInUpVariants}>
+      <motion.div className="rounded-3xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark transition-all" variants={fadeInUpVariants}>
         <button
-          className="w-full flex justify-between items-center p-5 text-lg font-semibold text-[#555]"
+          className="w-full flex justify-between items-center p-5 text-lg font-semibold text-gray-600 dark:text-gray-300"
           onClick={() => toggleCategory('dex')}
         >
           List DEX {expandedCategory.dex ? <ChevronUp /> : <ChevronDown />}
@@ -387,7 +388,7 @@ export default function DexBridgePanel() {
 
                   {/* BLOCKCHAIN */}
                   <button
-                    className={`w-full flex justify-between items-center px-4 py-3 rounded-xl ${neuButton}`}
+                    className="w-full flex justify-between items-center px-4 py-3 rounded-xl bg-main-light dark:bg-main-dark text-gray-600 dark:text-gray-300 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark transition"
                     onClick={() => toggleSub(`dex-${blockchain}`)}
                   >
                     <span className="font-semibold">{blockchain}</span>
@@ -407,7 +408,7 @@ export default function DexBridgePanel() {
                         {Object.entries(chains).map(([chain, dexList]) => (
                           <div key={chain}>
 
-                            <h5 className="text-[#777] font-medium mb-2">{chain}</h5>
+                            <h5 className="text-gray-500 dark:text-gray-400 font-medium mb-2">{chain}</h5>
 
                             <motion.div
                               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
@@ -435,7 +436,7 @@ export default function DexBridgePanel() {
                                     />
                                     <span>{dex.dex}</span>
                                   </div>
-                                  <ExternalLink size={18} className="text-[#777]" />
+                                  <ExternalLink size={18} className="text-gray-500 dark:text-gray-400" />
                                 </motion.a>
                               ))}
                             </motion.div>
@@ -457,9 +458,9 @@ export default function DexBridgePanel() {
 
 
       {/* ======================= BRIDGE LIST ====================== */}
-      <motion.div className={`rounded-3xl ${neuBase}`} variants={fadeInUpVariants}>
+      <motion.div className="rounded-3xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark transition-all" variants={fadeInUpVariants}>
         <button
-          className="w-full flex justify-between items-center p-5 text-lg font-semibold text-[#555]"
+          className="w-full flex justify-between items-center p-5 text-lg font-semibold text-gray-600 dark:text-gray-300"
           onClick={() => toggleCategory('bridge')}
         >
           List Bridge {expandedCategory.bridge ? <ChevronUp /> : <ChevronDown />}
@@ -480,7 +481,7 @@ export default function DexBridgePanel() {
 
                   {/* CHAIN CATEGORY */}
                   <button
-                    className={`w-full flex justify-between items-center px-4 py-3 rounded-xl ${neuButton}`}
+                    className="w-full flex justify-between items-center px-4 py-3 rounded-xl bg-main-light dark:bg-main-dark text-gray-600 dark:text-gray-300 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark transition"
                     onClick={() => toggleSub(`bridge-${chain}`)}
                   >
                     <span className="font-semibold">{chain}</span>
@@ -504,13 +505,13 @@ export default function DexBridgePanel() {
                             href={bridge.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={`flex justify-between items-center px-3 py-2 rounded-xl ${neuButton}`}
+                            className="flex justify-between items-center px-3 py-2 rounded-xl bg-main-light dark:bg-main-dark text-gray-600 dark:text-gray-300 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark transition"
                             variants={itemVariants}
                             custom={i}
                             whileHover={{ y: -2 }}
                           >
                             <span>{bridge.name}</span>
-                            <ExternalLink size={18} className="text-[#777]" />
+                            <ExternalLink size={18} className="text-gray-500 dark:text-gray-400" />
                           </motion.a>
                         ))}
 
