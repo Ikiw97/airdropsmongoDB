@@ -24,6 +24,8 @@ import {
   Legend,
 } from "recharts";
 
+import { useTheme } from "../contexts/ThemeContext";
+
 const GasTracker = () => {
   const [gasData, setGasData] = useState({
     ethereum: { slow: 0, average: 0, fast: 0 },
@@ -36,26 +38,7 @@ const GasTracker = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(null);
 
-  // ========================
-  // NEUMORPHIC STYLE CLASSES (SOFT WHITE SHADOW)
-  // ========================
-
-  const neuCard =
-    "bg-[#e0e5ec] rounded-3xl p-5 shadow-[9px_9px_16px_#b8b9be,-9px_-9px_16px_rgba(255,255,255,0.55)] transition";
-
-  const neuInset =
-    "shadow-[inset_4px_4px_8px_#b8b9be,inset_-4px_-4px_8px_rgba(255,255,255,0.45)]";
-
-  const neuButton =
-    "px-6 py-2 bg-[#e0e5ec] rounded-xl text-gray-700 font-semibold shadow-[3px_3px_6px_#b8b9be,-3px_-3px_6px_rgba(255,255,255,0.5)] active:shadow-[inset_3px_3px_6px_#b8b9be,inset_-3px_-3px_6px_rgba(255,255,255,0.45)] transition";
-
-  const neuHeader =
-    "bg-[#e0e5ec] rounded-3xl p-6 shadow-[9px_9px_16px_#b8b9be,-9px_-9px_16px_rgba(255,255,255,0.55)] cursor-pointer";
-
-  const accentGradient =
-    "bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 text-white";
-
-  const softText = "text-gray-600";
+  const { theme } = useTheme();
 
   // == Fetch Functions (no changes) ===
   const fetchGasPrices = async () => {
@@ -244,12 +227,12 @@ const GasTracker = () => {
 
       {/* HEADER CARD */}
       <motion.div
-        className={`${neuHeader} flex justify-between items-center`}
+        className="bg-main-light dark:bg-main-dark rounded-3xl p-6 shadow-neu-flat dark:shadow-neu-flat-dark cursor-pointer flex justify-between items-center transition-all"
         onClick={() => setIsExpanded(!isExpanded)}
         variants={fadeInUpVariants}
         whileHover={{ scale: 1.01 }}
       >
-        <h2 className="text-2xl font-bold text-gray-700 flex items-center gap-2">
+        <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-200 flex items-center gap-2">
           <Fuel className="text-blue-400" size={26} />
           Real-time Gas Tracker
         </h2>
@@ -267,7 +250,7 @@ const GasTracker = () => {
 
       {isExpanded && (
         <motion.div
-          className={`${neuCard} mt-4 space-y-6`}
+          className="bg-main-light dark:bg-main-dark rounded-3xl p-5 shadow-neu-flat dark:shadow-neu-flat-dark transition-all mt-4 space-y-6"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
@@ -279,9 +262,10 @@ const GasTracker = () => {
               <motion.button
                 key={chain.id}
                 onClick={() => setSelectedChain(chain.id)}
-                className={`${neuButton} ${
-                  selectedChain === chain.id ? `${accentGradient} shadow-none` : ""
-                }`}
+                className={`px-6 py-2 rounded-xl font-semibold transition-all ${selectedChain === chain.id
+                    ? "bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 text-white shadow-none"
+                    : "bg-main-light dark:bg-main-dark text-gray-700 dark:text-gray-300 shadow-neu-flat dark:shadow-neu-flat-dark active:shadow-neu-pressed dark:active:shadow-neu-pressed-dark"
+                  }`}
                 variants={buttonHoverVariants}
                 whileHover="hover"
                 whileTap="tap"
@@ -302,7 +286,7 @@ const GasTracker = () => {
             {["slow", "average", "fast"].map((speed, i) => (
               <motion.div
                 key={speed}
-                className={`${neuCard}`}
+                className="bg-main-light dark:bg-main-dark rounded-3xl p-5 shadow-neu-flat dark:shadow-neu-flat-dark transition-all"
                 variants={cardVariants}
                 custom={i}
                 whileHover="hover"
@@ -311,11 +295,11 @@ const GasTracker = () => {
                   {speed === "slow"
                     ? "🐢 Lambat"
                     : speed === "average"
-                    ? "⚡ Rata-rata"
-                    : "🚀 Cepat"}
+                      ? "⚡ Rata-rata"
+                      : "🚀 Cepat"}
                 </div>
                 <motion.div
-                  className="text-3xl font-bold text-gray-700"
+                  className="text-3xl font-bold text-gray-700 dark:text-gray-200"
                   key={`gas-${selectedChain}-${speed}`}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -333,7 +317,7 @@ const GasTracker = () => {
             const Icon = rec.icon;
             return (
               <motion.div
-                className={`${neuCard} flex items-center gap-3`}
+                className="bg-main-light dark:bg-main-dark rounded-3xl p-5 shadow-neu-flat dark:shadow-neu-flat-dark transition-all flex items-center gap-3"
                 variants={fadeInUpVariants}
                 key={`rec-${selectedChain}`}
               >
@@ -356,10 +340,10 @@ const GasTracker = () => {
           {/* CHART */}
           {historicalData.length > 1 && (
             <motion.div
-              className={`${neuCard}`}
+              className="bg-main-light dark:bg-main-dark rounded-3xl p-5 shadow-neu-flat dark:shadow-neu-flat-dark transition-all"
               variants={fadeInUpVariants}
             >
-              <h3 className="text-lg font-semibold text-gray-600 mb-4">
+              <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-4">
                 📊 Tren Harga Gas
               </h3>
               <ResponsiveContainer width="100%" height={200}>
@@ -368,10 +352,13 @@ const GasTracker = () => {
                   <YAxis stroke="#9ca3af" />
                   <Tooltip
                     contentStyle={{
-                      background: "#e0e5ec",
+                      background: theme === 'dark' ? '#1e293b' : '#e0e5ec',
                       border: "none",
-                      boxShadow:
-                        "inset 3px 3px 6px #b8b9be, inset -3px -3px 6px rgba(255,255,255,0.45)",
+                      color: theme === 'dark' ? '#f3f4f6' : '#1f2937',
+                      borderRadius: "8px",
+                      boxShadow: theme === 'dark'
+                        ? '4px 4px 8px #0f172a, -4px -4px 8px #334155'
+                        : '4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)'
                     }}
                   />
                   <Legend />
