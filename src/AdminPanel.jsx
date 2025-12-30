@@ -48,7 +48,7 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
 
   const handleReject = async (userId) => {
     if (!confirm("Are you sure you want to reject and delete this pending user?")) return;
-    
+
     try {
       const token = localStorage.getItem("token");
       await axios.delete(`${API_URL}/api/admin/reject-user/${userId}`, {
@@ -62,7 +62,7 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
 
   const handleDeleteApprovedUser = async (userId, username) => {
     if (!confirm(`Are you sure you want to delete approved user "${username}"? This will also delete all their projects.`)) return;
-    
+
     try {
       const token = localStorage.getItem("token");
       await axios.delete(`${API_URL}/api/admin/delete-user/${userId}`, {
@@ -75,17 +75,17 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
   };
 
   const filteredUsers = allUsers.filter((u) => {
-    const matchesSearch = 
+    const matchesSearch =
       u.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
       u.email.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     let matchesStatus = true;
     if (statusFilter === "pending") {
       matchesStatus = !u.is_approved;
     } else if (statusFilter === "approved") {
       matchesStatus = u.is_approved;
     }
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -97,69 +97,49 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
       key={userData._id}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      style={{
-        background: '#e0e5ec',
-        boxShadow: '9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5)',
-      }}
-      className="p-3 sm:p-5 rounded-2xl transition-all duration-300 hover:shadow-[6px_6px_12px_rgba(163,177,198,0.4),-6px_-6px_12px_rgba(255,255,255,0.4)]"
+      className="p-3 sm:p-5 rounded-2xl transition-all duration-300 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
       data-testid={`user-card-${userData.username}`}
     >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-start sm:items-center gap-3 mb-2 sm:mb-3">
-            <div 
-              style={{
-                boxShadow: 'inset 4px 4px 8px rgba(163, 177, 198, 0.4), inset -4px -4px 8px rgba(255, 255, 255, 0.5)',
-              }}
-              className={`w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center font-bold text-lg sm:text-2xl flex-shrink-0 ${
-                userData.is_admin 
-                  ? 'bg-gradient-to-br from-amber-300 to-orange-400 text-white' 
+            <div
+              className={`w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center font-bold text-lg sm:text-2xl flex-shrink-0 shadow-neu-pressed dark:shadow-neu-pressed-dark ${userData.is_admin
+                  ? 'bg-gradient-to-br from-amber-300 to-orange-400 text-white'
                   : 'bg-gradient-to-br from-blue-400 to-purple-500 text-white'
-              }`}
+                }`}
             >
               {userData.username.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
-                <h3 className="font-bold text-base sm:text-lg text-gray-800 truncate">{userData.username}</h3>
+                <h3 className="font-bold text-base sm:text-lg text-gray-800 dark:text-gray-100 truncate">{userData.username}</h3>
                 {userData.is_admin && (
-                  <span 
-                    style={{
-                      background: 'linear-gradient(145deg, #fbbf24, #f59e0b)',
-                      boxShadow: '3px 3px 6px rgba(163, 177, 198, 0.4), -3px -3px 6px rgba(255, 255, 255, 0.5)',
-                    }}
-                    className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-bold rounded-full text-white"
+                  <span
+                    className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-bold rounded-full text-white bg-gradient-to-br from-amber-400 to-amber-500 shadow-neu-icon dark:shadow-neu-icon-dark"
                   >
                     Admin
                   </span>
                 )}
                 {isPending && (
-                  <span 
-                    style={{
-                      background: 'linear-gradient(145deg, #fb923c, #f97316)',
-                      boxShadow: '3px 3px 6px rgba(163, 177, 198, 0.4), -3px -3px 6px rgba(255, 255, 255, 0.5)',
-                    }}
-                    className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-bold rounded-full text-white"
+                  <span
+                    className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-bold rounded-full text-white bg-gradient-to-br from-orange-400 to-orange-600 shadow-neu-icon dark:shadow-neu-icon-dark"
                   >
                     Pending
                   </span>
                 )}
                 {!isPending && !userData.is_admin && (
-                  <span 
-                    style={{
-                      background: 'linear-gradient(145deg, #4ade80, #22c55e)',
-                      boxShadow: '3px 3px 6px rgba(163, 177, 198, 0.4), -3px -3px 6px rgba(255, 255, 255, 0.5)',
-                    }}
-                    className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-bold rounded-full text-white"
+                  <span
+                    className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-bold rounded-full text-white bg-gradient-to-br from-green-400 to-green-600 shadow-neu-icon dark:shadow-neu-icon-dark"
                   >
                     Approved
                   </span>
                 )}
               </div>
-              <p className="text-xs sm:text-sm text-gray-600 font-medium truncate">{userData.email}</p>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium truncate">{userData.email}</p>
             </div>
           </div>
-          <p className="text-xs text-gray-500 ml-0 sm:ml-[3.5rem]">
+          <p className="text-xs text-gray-500 dark:text-gray-500 ml-0 sm:ml-[3.5rem]">
             Registered: {new Date(userData.created_at).toLocaleString()}
           </p>
         </div>
@@ -168,11 +148,7 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
             <>
               <button
                 onClick={() => handleApprove(userData._id)}
-                style={{
-                  background: 'linear-gradient(145deg, #4ade80, #22c55e)',
-                  boxShadow: '6px 6px 12px rgba(163, 177, 198, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.5)',
-                }}
-                className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-white transition-all hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.5)]"
+                className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-white transition-all bg-gradient-to-br from-green-400 to-green-600 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark active:shadow-neu-pressed dark:active:shadow-neu-pressed-dark"
                 data-testid={`approve-btn-${userData.username}`}
               >
                 <UserCheck size={16} className="sm:w-[18px] sm:h-[18px]" />
@@ -180,11 +156,7 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
               </button>
               <button
                 onClick={() => handleReject(userData._id)}
-                style={{
-                  background: 'linear-gradient(145deg, #f87171, #ef4444)',
-                  boxShadow: '6px 6px 12px rgba(163, 177, 198, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.5)',
-                }}
-                className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-white transition-all hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.5)]"
+                className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-white transition-all bg-gradient-to-br from-red-400 to-red-600 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark active:shadow-neu-pressed dark:active:shadow-neu-pressed-dark"
                 data-testid={`reject-btn-${userData.username}`}
               >
                 <UserX size={16} className="sm:w-[18px] sm:h-[18px]" />
@@ -195,11 +167,7 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
             !userData.is_admin && (
               <button
                 onClick={() => handleDeleteApprovedUser(userData._id, userData.username)}
-                style={{
-                  background: 'linear-gradient(145deg, #f87171, #ef4444)',
-                  boxShadow: '6px 6px 12px rgba(163, 177, 198, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.5)',
-                }}
-                className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-white transition-all hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.5)]"
+                className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-white transition-all bg-gradient-to-br from-red-400 to-red-600 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark active:shadow-neu-pressed dark:active:shadow-neu-pressed-dark"
                 data-testid={`delete-btn-${userData.username}`}
               >
                 <Trash2 size={16} className="sm:w-[18px] sm:h-[18px]" />
@@ -213,87 +181,50 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
   );
 
   return (
-    <div className="min-h-screen bg-[#e0e5ec]">
+    <div className="min-h-screen bg-main-light dark:bg-main-dark transition-colors duration-300 text-text-light dark:text-text-dark">
       {/* Header */}
-      <div 
-        style={{
-          boxShadow: '0 8px 16px rgba(163, 177, 198, 0.4)',
-        }}
-        className="p-3 sm:p-6 bg-[#e0e5ec]"
-      >
+      <div className="p-3 sm:p-6 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark z-10 relative">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 max-w-7xl mx-auto">
           <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={onBack}
-              style={{
-                background: '#e0e5ec',
-                boxShadow: '6px 6px 12px rgba(163, 177, 198, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.5)',
-              }}
-              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-gray-700 transition-all hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.5)]"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-gray-700 dark:text-gray-200 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark active:shadow-neu-pressed dark:active:shadow-neu-pressed-dark transition-all"
               data-testid="back-btn"
             >
               <ChevronLeft size={18} className="sm:w-5 sm:h-5" />
               <span className="text-xs sm:text-base">Back</span>
             </button>
-            <h1 className="flex items-center gap-2 text-base sm:text-2xl font-bold text-gray-800">
-              <div 
-                style={{
-                  background: '#e0e5ec',
-                  boxShadow: '4px 4px 8px rgba(163, 177, 198, 0.6), -4px -4px 8px rgba(255, 255, 255, 0.5)',
-                }}
-                className="p-1.5 sm:p-2 rounded-xl"
-              >
-                <Shield size={20} className="sm:w-7 sm:h-7 text-blue-600" />
+            <h1 className="flex items-center gap-2 text-base sm:text-2xl font-bold text-gray-800 dark:text-white">
+              <div className="p-1.5 sm:p-2 rounded-xl bg-main-light dark:bg-main-dark shadow-neu-icon dark:shadow-neu-icon-dark text-blue-600 dark:text-blue-400">
+                <Shield size={20} className="sm:w-7 sm:h-7" />
               </div>
               <span className="hidden lg:inline">Admin Panel - User Management</span>
               <span className="lg:hidden">Admin Panel</span>
             </h1>
           </div>
-          <div 
-            style={{
-              background: '#e0e5ec',
-              boxShadow: '6px 6px 12px rgba(163, 177, 198, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.5)',
-            }}
-            className="px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl"
-          >
-            <span className="text-xs sm:text-sm text-gray-600">Logged in: </span>
-            <span className="text-xs sm:text-sm font-bold text-blue-600">{user?.username}</span>
+          <div className="px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark">
+            <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Logged in: </span>
+            <span className="text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400">{user?.username}</span>
           </div>
         </div>
       </div>
 
       {/* Content */}
       <div className="p-3 sm:p-6 max-w-7xl mx-auto">
-        <div 
-          style={{
-            background: '#e0e5ec',
-            boxShadow: '12px 12px 24px rgba(163, 177, 198, 0.6), -12px -12px 24px rgba(255, 255, 255, 0.5)',
-          }}
-          className="p-4 sm:p-8 rounded-3xl"
-        >
+        <div className="p-4 sm:p-8 rounded-3xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark">
           {/* Search and Filter Section */}
           <div className="mb-6 sm:mb-8 space-y-4 sm:space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <h2 className="text-lg sm:text-2xl font-bold text-gray-800 flex items-center gap-2 sm:gap-3">
-                <div 
-                  style={{
-                    background: '#e0e5ec',
-                    boxShadow: '4px 4px 8px rgba(163, 177, 198, 0.6), -4px -4px 8px rgba(255, 255, 255, 0.5)',
-                  }}
-                  className="p-1.5 sm:p-2 rounded-xl"
-                >
-                  <Users size={20} className="sm:w-7 sm:h-7 text-blue-600" />
+              <h2 className="text-lg sm:text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2 sm:gap-3">
+                <div className="p-1.5 sm:p-2 rounded-xl bg-main-light dark:bg-main-dark shadow-neu-icon dark:shadow-neu-icon-dark text-blue-600 dark:text-blue-400">
+                  <Users size={20} className="sm:w-7 sm:h-7" />
                 </div>
                 All Users ({filteredUsers.length})
               </h2>
               <button
                 onClick={fetchAllUsers}
                 disabled={loading}
-                style={{
-                  background: 'linear-gradient(145deg, #60a5fa, #3b82f6)',
-                  boxShadow: '6px 6px 12px rgba(163, 177, 198, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.5)',
-                }}
-                className="flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-white transition-all hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)] active:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.4),inset_-4px_-4px_8px_rgba(255,255,255,0.5)] disabled:opacity-50"
+                className="flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-blue-400 to-blue-600 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark active:shadow-neu-pressed dark:active:shadow-neu-pressed-dark disabled:opacity-50 transition-all"
                 data-testid="refresh-btn"
               >
                 <RefreshCw size={16} className={`sm:w-[18px] sm:h-[18px] ${loading ? "animate-spin" : ""}`} />
@@ -311,11 +242,7 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
                     placeholder="Search by username or email..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{
-                      background: '#e0e5ec',
-                      boxShadow: 'inset 6px 6px 12px rgba(163, 177, 198, 0.4), inset -6px -6px 12px rgba(255, 255, 255, 0.5)',
-                    }}
-                    className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.3),inset_-4px_-4px_8px_rgba(255,255,255,0.4)] transition-all"
+                    className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base text-gray-800 dark:text-gray-200 placeholder-gray-400 bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
                     data-testid="search-input"
                   />
                 </div>
@@ -325,51 +252,30 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <button
                   onClick={() => setStatusFilter("all")}
-                  style={{
-                    background: statusFilter === "all" 
-                      ? 'linear-gradient(145deg, #60a5fa, #3b82f6)' 
-                      : '#e0e5ec',
-                    boxShadow: statusFilter === "all"
-                      ? 'inset 4px 4px 8px rgba(163, 177, 198, 0.4), inset -4px -4px 8px rgba(255, 255, 255, 0.5)'
-                      : '6px 6px 12px rgba(163, 177, 198, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.5)',
-                  }}
-                  className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-semibold text-xs sm:text-base transition-all ${
-                    statusFilter === "all" ? "text-white" : "text-gray-700 hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)]"
-                  }`}
+                  className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-semibold text-xs sm:text-base transition-all ${statusFilter === "all"
+                    ? 'bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-neu-pressed dark:shadow-neu-pressed-dark'
+                    : 'bg-main-light dark:bg-main-dark text-gray-700 dark:text-gray-300 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark'
+                    }`}
                   data-testid="filter-all"
                 >
                   All ({allUsers.length})
                 </button>
                 <button
                   onClick={() => setStatusFilter("pending")}
-                  style={{
-                    background: statusFilter === "pending" 
-                      ? 'linear-gradient(145deg, #fb923c, #f97316)' 
-                      : '#e0e5ec',
-                    boxShadow: statusFilter === "pending"
-                      ? 'inset 4px 4px 8px rgba(163, 177, 198, 0.4), inset -4px -4px 8px rgba(255, 255, 255, 0.5)'
-                      : '6px 6px 12px rgba(163, 177, 198, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.5)',
-                  }}
-                  className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-semibold text-xs sm:text-base transition-all ${
-                    statusFilter === "pending" ? "text-white" : "text-gray-700 hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)]"
-                  }`}
+                  className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-semibold text-xs sm:text-base transition-all ${statusFilter === "pending"
+                    ? 'bg-gradient-to-br from-orange-400 to-orange-600 text-white shadow-neu-pressed dark:shadow-neu-pressed-dark'
+                    : 'bg-main-light dark:bg-main-dark text-gray-700 dark:text-gray-300 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark'
+                    }`}
                   data-testid="filter-pending"
                 >
                   Pending ({allUsers.filter(u => !u.is_approved).length})
                 </button>
                 <button
                   onClick={() => setStatusFilter("approved")}
-                  style={{
-                    background: statusFilter === "approved" 
-                      ? 'linear-gradient(145deg, #4ade80, #22c55e)' 
-                      : '#e0e5ec',
-                    boxShadow: statusFilter === "approved"
-                      ? 'inset 4px 4px 8px rgba(163, 177, 198, 0.4), inset -4px -4px 8px rgba(255, 255, 255, 0.5)'
-                      : '6px 6px 12px rgba(163, 177, 198, 0.6), -6px -6px 12px rgba(255, 255, 255, 0.5)',
-                  }}
-                  className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-semibold text-xs sm:text-base transition-all ${
-                    statusFilter === "approved" ? "text-white" : "text-gray-700 hover:shadow-[4px_4px_8px_rgba(163,177,198,0.4),-4px_-4px_8px_rgba(255,255,255,0.4)]"
-                  }`}
+                  className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-semibold text-xs sm:text-base transition-all ${statusFilter === "approved"
+                    ? 'bg-gradient-to-br from-green-400 to-green-600 text-white shadow-neu-pressed dark:shadow-neu-pressed-dark'
+                    : 'bg-main-light dark:bg-main-dark text-gray-700 dark:text-gray-300 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark'
+                    }`}
                   data-testid="filter-approved"
                 >
                   Approved ({allUsers.filter(u => u.is_approved).length})
@@ -379,39 +285,21 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
           </div>
 
           {error && (
-            <div 
-              style={{
-                background: 'linear-gradient(145deg, #fca5a5, #f87171)',
-                boxShadow: '6px 6px 12px rgba(163, 177, 198, 0.4), -6px -6px 12px rgba(255, 255, 255, 0.3)',
-              }}
-              className="mb-4 sm:mb-6 p-3 sm:p-4 rounded-xl text-white font-medium text-sm sm:text-base"
-            >
+            <div className="mb-4 sm:mb-6 p-3 sm:p-4 rounded-xl text-white font-medium text-sm sm:text-base bg-gradient-to-br from-red-400 to-red-600 shadow-neu-flat dark:shadow-neu-flat-dark">
               {error}
             </div>
           )}
 
           {loading ? (
-            <div className="text-center py-12 sm:py-16 text-gray-500">
-              <div 
-                style={{
-                  background: '#e0e5ec',
-                  boxShadow: '8px 8px 16px rgba(163, 177, 198, 0.6), -8px -8px 16px rgba(255, 255, 255, 0.5)',
-                }}
-                className="inline-block p-3 sm:p-4 rounded-2xl mb-3 sm:mb-4"
-              >
-                <RefreshCw size={32} className="sm:w-10 sm:h-10 animate-spin text-blue-600" />
+            <div className="text-center py-12 sm:py-16 text-gray-500 dark:text-gray-400">
+              <div className="inline-block p-3 sm:p-4 rounded-2xl mb-3 sm:mb-4 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark">
+                <RefreshCw size={32} className="sm:w-10 sm:h-10 animate-spin text-blue-600 dark:text-blue-400" />
               </div>
               <p className="text-base sm:text-lg font-semibold">Loading...</p>
             </div>
           ) : filteredUsers.length === 0 ? (
-            <div className="text-center py-12 sm:py-16 text-gray-400">
-              <div 
-                style={{
-                  background: '#e0e5ec',
-                  boxShadow: '8px 8px 16px rgba(163, 177, 198, 0.6), -8px -8px 16px rgba(255, 255, 255, 0.5)',
-                }}
-                className="inline-block p-3 sm:p-4 rounded-2xl mb-3 sm:mb-4"
-              >
+            <div className="text-center py-12 sm:py-16 text-gray-400 dark:text-gray-500">
+              <div className="inline-block p-3 sm:p-4 rounded-2xl mb-3 sm:mb-4 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark">
                 <Users size={40} className="sm:w-[50px] sm:h-[50px] opacity-30" />
               </div>
               <p className="text-base sm:text-lg font-semibold">No users found</p>
@@ -422,16 +310,10 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
               {pendingUsers.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                    <div 
-                      style={{
-                        background: '#e0e5ec',
-                        boxShadow: '4px 4px 8px rgba(163, 177, 198, 0.6), -4px -4px 8px rgba(255, 255, 255, 0.5)',
-                      }}
-                      className="p-1.5 sm:p-2 rounded-xl"
-                    >
-                      <UserCog size={18} className="sm:w-[22px] sm:h-[22px] text-orange-500" />
+                    <div className="p-1.5 sm:p-2 rounded-xl bg-main-light dark:bg-main-dark shadow-neu-icon dark:shadow-neu-icon-dark text-orange-500">
+                      <UserCog size={18} className="sm:w-[22px] sm:h-[22px]" />
                     </div>
-                    <h3 className="text-base sm:text-xl font-bold text-gray-800">
+                    <h3 className="text-base sm:text-xl font-bold text-gray-800 dark:text-white">
                       Pending Approvals ({pendingUsers.length})
                     </h3>
                   </div>
@@ -445,16 +327,10 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
               {approvedUsers.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                    <div 
-                      style={{
-                        background: '#e0e5ec',
-                        boxShadow: '4px 4px 8px rgba(163, 177, 198, 0.6), -4px -4px 8px rgba(255, 255, 255, 0.5)',
-                      }}
-                      className="p-1.5 sm:p-2 rounded-xl"
-                    >
-                      <UserCheck size={18} className="sm:w-[22px] sm:h-[22px] text-green-600" />
+                    <div className="p-1.5 sm:p-2 rounded-xl bg-main-light dark:bg-main-dark shadow-neu-icon dark:shadow-neu-icon-dark text-green-600 dark:text-green-500">
+                      <UserCheck size={18} className="sm:w-[22px] sm:h-[22px]" />
                     </div>
-                    <h3 className="text-base sm:text-xl font-bold text-gray-800">
+                    <h3 className="text-base sm:text-xl font-bold text-gray-800 dark:text-white">
                       Approved Users ({approvedUsers.length})
                     </h3>
                   </div>
