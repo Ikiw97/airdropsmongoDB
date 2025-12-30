@@ -237,15 +237,10 @@ const GasTracker = () => {
           Real-time Gas Tracker
         </h2>
 
-        <motion.div
-          className="flex items-center gap-3 text-gray-500"
-          initial={{ rotate: 0 }}
-          animate={{ rotate: loading ? 360 : 0 }}
-          transition={{ duration: loading ? 1 : 0.3, repeat: loading ? Infinity : 0 }}
-        >
-          {loading ? "🔄 Updating..." : "✅ Live"}
+        <div className="flex items-center gap-3 text-gray-500">
+          <span className="text-green-500 font-semibold">Live</span>
           {isExpanded ? <ChevronUp /> : <ChevronDown />}
-        </motion.div>
+        </div>
       </motion.div>
 
       {isExpanded && (
@@ -263,8 +258,8 @@ const GasTracker = () => {
                 key={chain.id}
                 onClick={() => setSelectedChain(chain.id)}
                 className={`px-6 py-2 rounded-xl font-semibold transition-all ${selectedChain === chain.id
-                    ? "bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 text-white shadow-none"
-                    : "bg-main-light dark:bg-main-dark text-gray-700 dark:text-gray-300 shadow-neu-flat dark:shadow-neu-flat-dark active:shadow-neu-pressed dark:active:shadow-neu-pressed-dark"
+                  ? "bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 text-white shadow-none"
+                  : "bg-main-light dark:bg-main-dark text-gray-700 dark:text-gray-300 shadow-neu-flat dark:shadow-neu-flat-dark active:shadow-neu-pressed dark:active:shadow-neu-pressed-dark"
                   }`}
                 variants={buttonHoverVariants}
                 whileHover="hover"
