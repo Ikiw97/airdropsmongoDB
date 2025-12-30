@@ -27,11 +27,12 @@ export default {
                 'neu-icon-pressed': 'inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff',
 
                 // Dark Mode Shadows (using darker shadows for depth and lighter reflections)
+                // Dark Mode Shadows (using darker shadows for depth and lighter reflections)
                 // Background assumed to be Slate-800 (#1e293b)
-                'neu-flat-dark': '6px 6px 12px #0f172a, -6px -6px 12px #334155', // slate-900 shadow, slate-700 highlight
-                'neu-pressed-dark': 'inset 6px 6px 12px #0f172a, inset -6px -6px 12px #334155',
-                'neu-icon-dark': '4px 4px 8px #0f172a, -4px -4px 8px #334155',
-                'neu-icon-pressed-dark': 'inset 4px 4px 8px #0f172a, inset -4px -4px 8px #334155',
+                'neu-flat-dark': '6px 6px 12px #0f172a, -6px -6px 12px rgba(255, 255, 255, 0.05)',
+                'neu-pressed-dark': 'inset 6px 6px 12px #0f172a, inset -6px -6px 12px rgba(255, 255, 255, 0.05)',
+                'neu-icon-dark': '4px 4px 8px #0f172a, -4px -4px 8px rgba(255, 255, 255, 0.05)',
+                'neu-icon-pressed-dark': 'inset 4px 4px 8px #0f172a, inset -4px -4px 8px rgba(255, 255, 255, 0.05)',
             }
         },
     },
