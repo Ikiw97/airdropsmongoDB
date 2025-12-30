@@ -32,43 +32,11 @@ import {
   buttonHoverVariants,
 } from "../utils/animationVariants";
 
-/**
- * AnalyticsDashboard — Full file with Neumorphism styling applied
- * - Base color: #e0e5ec
- * - Dark shadow: rgba(163,177,198,0.6)
- * - Light highlight: rgba(255,255,255,0.5)
- * - Text: gray (#666 - #777)
- *
- * Keeps original functionality; only styles updated & tidied.
- */
-
-const NEU_BG = "#e0e5ec";
-const SHADOW_DARK = "rgba(163,177,198,0.6)";
-const SHADOW_LIGHT = "rgba(255,255,255,0.5)";
-const TEXT_GRAY = "#666";
-
-const neuCard =
-  `bg-[${NEU_BG}] rounded-3xl p-5 shadow-[9px_9px_16px_${SHADOW_DARK},-9px_-9px_16px_${SHADOW_LIGHT}] hover:shadow-[inset_4px_4px_8px_${SHADOW_DARK},inset_-4px_-4px_8px_${SHADOW_LIGHT}] transition`;
-const neuContainer =
-  `bg-[${NEU_BG}] rounded-3xl shadow-[9px_9px_16px_${SHADOW_DARK},-9px_-9px_16px_${SHADOW_LIGHT}] p-6 transition`;
-const neuButton =
-  `bg-[${NEU_BG}] rounded-xl shadow-[3px_3px_6px_${SHADOW_DARK},-3px_-3px_6px_${SHADOW_LIGHT}] active:shadow-[inset_3px_3px_6px_${SHADOW_DARK},inset_-3px_-3px_6px_${SHADOW_LIGHT}] transition text-[${TEXT_GRAY}] font-semibold`;
-const neuInsetStyle = {
-  boxShadow: `inset 4px 4px 8px ${SHADOW_DARK}, inset -4px -4px 8px ${SHADOW_LIGHT}`,
-  background: NEU_BG,
-  borderRadius: 16,
-  color: TEXT_GRAY,
-};
-
-const tooltipStyle = {
-  background: "#f5f7fa",
-  border: "1px solid #d1d5db",
-  borderRadius: 8,
-  color: "#111",
-};
+import { useTheme } from "../contexts/ThemeContext";
 
 const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "Ethereum" }) => {
   const [isExpanded, setIsExpanded] = useState(true);
+  const { theme } = useTheme();
 
   // ===== Pure Frontend Calculations =====
   const stats = useMemo(() => {
@@ -175,19 +143,18 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
     >
       {/* Header */}
       <motion.div
-        className={`${neuContainer} flex justify-between items-center`}
+        className="bg-main-light dark:bg-main-dark rounded-3xl shadow-neu-flat dark:shadow-neu-flat-dark p-6 transition-all flex justify-between items-center"
         variants={fadeInUpVariants}
         whileHover={{ scale: 1.01 }}
       >
-        <h2 className="text-2xl font-bold flex items-center gap-2" style={{ color: TEXT_GRAY }}>
-          <Activity size={28} style={{ color: "#06b6d4" }} />{" "}
+        <h2 className="text-2xl font-bold flex items-center gap-2 text-gray-600 dark:text-gray-200">
+          <Activity size={28} className="text-cyan-500" />{" "}
           <span>Analytics Dashboard</span>
         </h2>
 
         <motion.button
           onClick={() => setIsExpanded(!isExpanded)}
-          className={neuButton + " px-4 py-2 flex items-center gap-2"}
-          style={{ color: TEXT_GRAY }}
+          className="bg-main-light dark:bg-main-dark rounded-xl shadow-neu-flat dark:shadow-neu-flat-dark active:shadow-neu-pressed dark:active:shadow-neu-pressed-dark transition p-2 md:px-4 md:py-2 flex items-center gap-2 text-gray-600 dark:text-gray-300 font-semibold"
           variants={buttonHoverVariants}
           whileHover="hover"
           whileTap="tap"
@@ -200,8 +167,7 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
       {/* Dashboard Content */}
       {isExpanded && (
         <motion.div
-          className={`${neuContainer} mt-4 space-y-8`}
-          style={{ background: NEU_BG }}
+          className="bg-main-light dark:bg-main-dark rounded-3xl shadow-neu-flat dark:shadow-neu-flat-dark p-6 transition-all mt-4 space-y-8"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
@@ -242,17 +208,16 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
             ].map((card, i) => (
               <motion.div
                 key={i}
-                className={neuCard}
-                style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}
+                className="bg-main-light dark:bg-main-dark rounded-3xl p-5 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark transition-all flex items-center justify-between"
                 variants={cardVariants}
                 custom={i}
                 whileHover="hover"
               >
                 <div>
-                  <p className="text-sm" style={{ color: "#777" }}>{card.label}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{card.label}</p>
                   <p className="text-3xl font-bold" style={{ color: card.color }}>{card.value}</p>
                   {card.subtitle && (
-                    <p className="text-xs mt-1" style={{ color: "#8a8f98" }}>{card.subtitle}</p>
+                    <p className="text-xs mt-1 text-gray-400 dark:text-gray-500">{card.subtitle}</p>
                   )}
                 </div>
                 <card.icon size={32} style={{ color: card.color }} />
@@ -267,22 +232,22 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
             animate="visible"
             variants={containerVariants}
           >
-            <motion.div className={neuCard} variants={itemVariants}>
+            <motion.div className="bg-main-light dark:bg-main-dark rounded-3xl p-5 shadow-neu-flat dark:shadow-neu-flat-dark transition-all" variants={itemVariants}>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <Wallet size={24} style={{ color: "#f59e0b" }} />
+                <Wallet size={24} className="text-amber-500" />
                 <div>
-                  <p className="text-sm" style={{ color: "#777" }}>Unique Wallets</p>
-                  <p className="text-xl font-bold" style={{ color: TEXT_GRAY }}>{stats.uniqueWallets}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Unique Wallets</p>
+                  <p className="text-xl font-bold text-gray-600 dark:text-gray-200">{stats.uniqueWallets}</p>
                 </div>
               </div>
             </motion.div>
 
-            <motion.div className={neuCard} variants={itemVariants}>
+            <motion.div className="bg-main-light dark:bg-main-dark rounded-3xl p-5 shadow-neu-flat dark:shadow-neu-flat-dark transition-all" variants={itemVariants}>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <Network size={24} style={{ color: "#06b6d4" }} />
+                <Network size={24} className="text-cyan-500" />
                 <div>
-                  <p className="text-sm" style={{ color: "#777" }}>Networks Used</p>
-                  <p className="text-xl font-bold" style={{ color: TEXT_GRAY }}>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Networks Used</p>
+                  <p className="text-xl font-bold text-gray-600 dark:text-gray-200">
                     {Object.keys(stats.networkCount).length || 1}
                   </p>
                 </div>
@@ -290,12 +255,12 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
             </motion.div>
 
             {balanceSummary && (
-              <motion.div className={neuCard} variants={itemVariants}>
+              <motion.div className="bg-main-light dark:bg-main-dark rounded-3xl p-5 shadow-neu-flat dark:shadow-neu-flat-dark transition-all" variants={itemVariants}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <CheckCircle size={24} style={{ color: "#22c55e" }} />
+                  <CheckCircle size={24} className="text-green-500" />
                   <div>
-                    <p className="text-sm" style={{ color: "#777" }}>Total Balance Checked</p>
-                    <p className="text-xl font-bold" style={{ color: "#16a34a" }}>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Total Balance Checked</p>
+                    <p className="text-xl font-bold text-green-600 dark:text-green-400">
                       {balanceSummary.total}{" "}
                       {selectedNetwork === "BSC"
                         ? "BNB"
@@ -303,7 +268,7 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
                           ? "MATIC"
                           : "ETH"}
                     </p>
-                    <p className="text-xs" style={{ color: "#777" }}>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       {balanceSummary.nonZero} wallets with balance
                     </p>
                   </div>
@@ -319,8 +284,8 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
             animate="visible"
             variants={containerVariants}
           >
-            <motion.div className={neuCard} variants={fadeInUpVariants}>
-              <h3 className="text-lg font-semibold" style={{ color: "#555", marginBottom: 12 }}>
+            <motion.div className="bg-main-light dark:bg-main-dark rounded-3xl p-5 shadow-neu-flat dark:shadow-neu-flat-dark transition-all" variants={fadeInUpVariants}>
+              <h3 className="text-lg font-semibold mb-3 text-gray-600 dark:text-gray-300">
                 Task Distribution
               </h3>
               <ResponsiveContainer width="100%" height={250}>
@@ -338,20 +303,41 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
                       <Cell key={index} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={tooltipStyle} />
+                  <Tooltip
+                    contentStyle={{
+                      background: theme === 'dark' ? '#1e293b' : '#e0e5ec',
+                      border: "none",
+                      color: theme === 'dark' ? '#f3f4f6' : '#1f2937',
+                      borderRadius: "8px",
+                      boxShadow: theme === 'dark'
+                        ? '4px 4px 8px #0f172a, -4px -4px 8px #334155'
+                        : '4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)'
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </motion.div>
 
-            <motion.div className={neuCard} variants={fadeInUpVariants}>
-              <h3 className="text-lg font-semibold" style={{ color: "#555", marginBottom: 12 }}>
+            <motion.div className="bg-main-light dark:bg-main-dark rounded-3xl p-5 shadow-neu-flat dark:shadow-neu-flat-dark transition-all" variants={fadeInUpVariants}>
+              <h3 className="text-lg font-semibold mb-3 text-gray-600 dark:text-gray-300">
                 Social Media Integration
               </h3>
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={socialData}>
-                  <XAxis dataKey="name" stroke="#9ca3af" />
-                  <YAxis stroke="#9ca3af" />
-                  <Tooltip contentStyle={tooltipStyle} />
+                  <XAxis dataKey="name" stroke={theme === 'dark' ? "#9ca3af" : "#6b7280"} />
+                  <YAxis stroke={theme === 'dark' ? "#9ca3af" : "#6b7280"} />
+                  <Tooltip
+                    cursor={{ fill: theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }}
+                    contentStyle={{
+                      background: theme === 'dark' ? '#1e293b' : '#e0e5ec',
+                      border: "none",
+                      color: theme === 'dark' ? '#f3f4f6' : '#1f2937',
+                      borderRadius: "8px",
+                      boxShadow: theme === 'dark'
+                        ? '4px 4px 8px #0f172a, -4px -4px 8px #334155'
+                        : '4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)'
+                    }}
+                  />
                   <Bar dataKey="count" radius={[8, 8, 0, 0]}>
                     {socialData.map((entry, i) => (
                       <Cell key={i} fill={entry.color} />
@@ -363,15 +349,25 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
           </motion.div>
 
           {/* Activity Line Chart */}
-          <motion.div className={neuCard} variants={fadeInUpVariants}>
-            <h3 className="text-lg font-semibold" style={{ color: "#555", marginBottom: 12 }}>
+          <motion.div className="bg-main-light dark:bg-main-dark rounded-3xl p-5 shadow-neu-flat dark:shadow-neu-flat-dark transition-all" variants={fadeInUpVariants}>
+            <h3 className="text-lg font-semibold mb-3 text-gray-600 dark:text-gray-300">
               Daily Activity (Last 7 Days)
             </h3>
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={activityData}>
-                <XAxis dataKey="day" stroke="#9ca3af" />
-                <YAxis stroke="#9ca3af" />
-                <Tooltip contentStyle={tooltipStyle} />
+                <XAxis dataKey="day" stroke={theme === 'dark' ? "#9ca3af" : "#6b7280"} />
+                <YAxis stroke={theme === 'dark' ? "#9ca3af" : "#6b7280"} />
+                <Tooltip
+                  contentStyle={{
+                    background: theme === 'dark' ? '#1e293b' : '#e0e5ec',
+                    border: "none",
+                    color: theme === 'dark' ? '#f3f4f6' : '#1f2937',
+                    borderRadius: "8px",
+                    boxShadow: theme === 'dark'
+                      ? '4px 4px 8px #0f172a, -4px -4px 8px #334155'
+                      : '4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)'
+                  }}
+                />
                 <Line
                   type="monotone"
                   dataKey="checks"
@@ -385,9 +381,9 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
           </motion.div>
 
           {/* Progress Bar */}
-          <motion.div className={neuCard} variants={fadeInUpVariants}>
+          <motion.div className="bg-main-light dark:bg-main-dark rounded-3xl p-5 shadow-neu-flat dark:shadow-neu-flat-dark transition-all" variants={fadeInUpVariants}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-              <h3 className="text-lg font-semibold" style={{ color: "#555" }}>
+              <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300">
                 Overall Progress
               </h3>
               <span className="text-2xl font-bold" style={{ color: "#8b5cf6" }}>
@@ -395,10 +391,7 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
               </span>
             </div>
             <div
-              className="w-full rounded-full h-6 bg-[#e0e5ec] relative"
-              style={{
-                boxShadow: `inset 4px 4px 8px ${SHADOW_DARK}, inset -4px -4px 8px ${SHADOW_LIGHT}`,
-              }}
+              className="w-full rounded-full h-6 bg-main-light dark:bg-main-dark relative shadow-neu-pressed dark:shadow-neu-pressed-dark"
             >
               <motion.div
                 className="absolute top-0 left-0 h-6 rounded-full flex items-center justify-end pr-3 text-xs font-semibold"
@@ -416,11 +409,11 @@ const AnalyticsDashboard = ({ projects = [], balances = [], selectedNetwork = "E
           </motion.div>
 
           {/* Quick Insights */}
-          <motion.div className={neuCard} variants={fadeInUpVariants}>
-            <h3 className="text-lg font-semibold" style={{ color: "#555", marginBottom: 12 }}>
+          <motion.div className="bg-main-light dark:bg-main-dark rounded-3xl p-5 shadow-neu-flat dark:shadow-neu-flat-dark transition-all" variants={fadeInUpVariants}>
+            <h3 className="text-lg font-semibold mb-3 text-gray-600 dark:text-gray-300">
               📊 Quick Insights
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3" style={{ color: TEXT_GRAY }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-600 dark:text-gray-400">
               <motion.div variants={itemVariants}>✓ Daily Tasks Checked: {stats.dailyTasks}</motion.div>
               <motion.div variants={itemVariants}>⏱ Ongoing Projects: {stats.ongoingProjects}</motion.div>
               <motion.div variants={itemVariants}>🌐 {stats.withTwitter} Twitter linked</motion.div>
