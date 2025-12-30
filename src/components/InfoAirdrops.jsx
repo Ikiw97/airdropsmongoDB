@@ -2,6 +2,7 @@ import React from "react";
 import { Send, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import { containerVariants, itemVariants, fadeInUpVariants } from "../utils/animationVariants";
+import { useTheme } from "../contexts/ThemeContext";
 
 const channels = [
   { name: "@airdropfind", url: "https://t.me/airdropfind", description: "Daily latest airdrop updates", img: "/images/airdropfind.png" },
@@ -17,6 +18,7 @@ const channels = [
 ];
 
 function InfoAirdrops() {
+  const { theme } = useTheme();
   const openInTelegram = (url) => {
     window.open(url, "_blank", "noopener,noreferrer");
   };
@@ -48,13 +50,8 @@ function InfoAirdrops() {
           return (
             <motion.div
               key={ch.name}
-              className={`p-4 rounded-2xl flex flex-col justify-between w-full ${
-                isLast ? "lg:col-start-2" : ""
-              }`}
-              style={{
-                background: "#e0e5ec",
-                boxShadow: "8px 8px 16px rgba(163,177,198,0.6), -8px -8px 16px rgba(255,255,255,0.5)",
-              }}
+              className={`p-4 rounded-2xl flex flex-col justify-between w-full ${isLast ? "lg:col-start-2" : ""
+                } bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark transition`}
               variants={itemVariants}
               custom={index}
               whileHover={{ y: -5 }}
@@ -64,21 +61,16 @@ function InfoAirdrops() {
                 <img
                   src={ch.img}
                   alt={ch.name}
-                  className="mx-auto mb-2"
-                  style={{ width: "50px", height: "50px", objectFit: "contain" }}
+                  className="mx-auto mb-2 w-[50px] h-[50px] object-contain"
                 />
-                <h3 className="font-bold text-gray-800 text-lg mb-1">{ch.name}</h3>
-                <p className="text-gray-600 text-sm">{ch.description}</p>
+                <h3 className="font-bold text-gray-800 dark:text-gray-200 text-lg mb-1">{ch.name}</h3>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">{ch.description}</p>
               </motion.div>
 
               {/* Telegram Button */}
               <motion.button
                 onClick={() => openInTelegram(ch.url)}
-                className="mt-auto px-4 py-2 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all"
-                style={{
-                  background: "linear-gradient(145deg, #0088cc, #0099dd)",
-                  boxShadow: "6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)",
-                }}
+                className="mt-auto px-4 py-2 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-cyan-600 to-blue-500 shadow-neu-flat dark:shadow-neu-flat-dark"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -93,11 +85,7 @@ function InfoAirdrops() {
 
       {/* Footer Text */}
       <motion.div
-        className="p-8 rounded-2xl text-center mt-8"
-        style={{
-          background: "linear-gradient(145deg, #667eea, #764ba2)",
-          boxShadow: "10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)",
-        }}
+        className="p-8 rounded-2xl text-center mt-8 bg-gradient-to-r from-indigo-500 to-purple-600 shadow-neu-flat dark:shadow-neu-flat-dark"
         variants={fadeInUpVariants}
       >
         <h3 className="text-2xl font-bold text-white mb-3">
