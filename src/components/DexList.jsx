@@ -377,9 +377,13 @@ export default function DexBridgePanel() {
           {expandedCategory.dex && (
             <motion.div
               className="px-5 pb-5 space-y-5"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              variants={{
+                visible: { opacity: 1, height: "auto" },
+                hidden: { opacity: 0, height: 0 }
+              }}
               transition={{ duration: 0.3 }}
             >
 
@@ -470,9 +474,13 @@ export default function DexBridgePanel() {
           {expandedCategory.bridge && (
             <motion.div
               className="px-5 pb-5 space-y-5"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              variants={{
+                visible: { opacity: 1, height: "auto" },
+                hidden: { opacity: 0, height: 0 }
+              }}
               transition={{ duration: 0.3 }}
             >
 
