@@ -43,6 +43,7 @@ import {
 import { ethers } from "ethers";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeInUpVariants, cardVariants, containerVariants, listItemVariants, buttonHoverVariants, scaleInVariants } from "./utils/animationVariants";
+import { useTheme } from "./contexts/ThemeContext";
 import NeonParticles from "./NeonParticles";
 import AnalyticsDashboard from "./components/AnalyticsDashboard";
 import GasTracker from "./components/GasTracker";
@@ -141,17 +142,15 @@ function SuccessPopup({ message, onClose }) {
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm" onClick={onClose}>
-      <div 
-        className="relative max-w-md w-full p-6 rounded-2xl animate-bounce-in"
+      <div
+        className="relative max-w-md w-full p-6 rounded-2xl animate-bounce-in bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark"
         style={{
-          background: '#e0e5ec',
-          boxShadow: '12px 12px 24px rgba(163,177,198,0.6), -12px -12px 24px rgba(255,255,255,0.5)',
           animation: 'slideDown 0.5s ease-out'
         }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-4">
-          <div 
+          <div
             className="flex-shrink-0 p-3 rounded-full"
             style={{
               background: 'linear-gradient(145deg, #4ade80, #22c55e)',
@@ -174,16 +173,16 @@ function SuccessPopup({ message, onClose }) {
             <X size={20} />
           </button>
         </div>
-        
+
         {/* Progress bar */}
-        <div 
+        <div
           className="mt-4 h-1 rounded-full overflow-hidden"
           style={{
             background: '#e0e5ec',
             boxShadow: 'inset 2px 2px 4px rgba(163,177,198,0.6)'
           }}
         >
-          <div 
+          <div
             className="h-full bg-gradient-to-r from-green-400 to-green-600"
             style={{
               animation: 'progressBar 3s linear'
@@ -191,7 +190,7 @@ function SuccessPopup({ message, onClose }) {
           />
         </div>
       </div>
-      
+
       <style>{`
         @keyframes slideDown {
           from {
@@ -230,6 +229,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
   const [showDexList, setShowDexList] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const { theme } = useTheme();
 
   const [selectedTags, setSelectedTags] = useState([]);
   const [filterTag, setFilterTag] = useState("all");
@@ -302,11 +302,11 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
       setLoading(true);
       if (import.meta.env.DEV) console.log("Sending project data:", formData);
       await apiService.createProject(formData);
-      
+
       // Show success popup
       setSuccessMessage(`Project "${formData.name}" berhasil ditambahkan!`);
       setShowSuccessPopup(true);
-      
+
       fetchProjects();
       setFormData({
         name: "",
@@ -333,13 +333,13 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
     const next = current === "CHECKED" ? "UNCHECKED" : "CHECKED";
     try {
       await apiService.updateDaily(name, next);
-      
+
       // Show success popup when marking as checked
       if (next === "CHECKED") {
         setSuccessMessage(`Daily task "${name}" berhasil di-check! ✓`);
         setShowSuccessPopup(true);
       }
-      
+
       fetchProjects();
     } catch (err) {
       secureLogger.logError('UPDATE_DAILY_ERROR', err, { name });
@@ -457,23 +457,19 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
   ];
 
   return (
-    <div className="min-h-screen text-gray-800 relative overflow-hidden bg-[#e0e5ec]">
+    <div className="min-h-screen text-gray-800 dark:text-gray-100 relative overflow-hidden bg-main-light dark:bg-main-dark transition-colors duration-300">
       {/* Success Popup */}
       {showSuccessPopup && (
-        <SuccessPopup 
-          message={successMessage} 
-          onClose={() => setShowSuccessPopup(false)} 
+        <SuccessPopup
+          message={successMessage}
+          onClose={() => setShowSuccessPopup(false)}
         />
       )}
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full bg-[#e0e5ec] z-50 transition-all duration-300 ${
-          sidebarOpen ? "w-64" : "w-0"
-        } ${isMobile ? "shadow-[20px_20px_40px_rgba(163,177,198,0.5),-20px_-20px_40px_rgba(255,255,255,0.8)]" : ""}`}
-        style={{
-          boxShadow: sidebarOpen ? '20px 0 40px rgba(163,177,198,0.3)' : 'none'
-        }}
+        className={`fixed top-0 left-0 h-full bg-main-light dark:bg-main-dark z-50 transition-all duration-300 ${sidebarOpen ? "w-64 shadow-2xl dark:shadow-black/50" : "w-0"
+          } ${isMobile ? "shadow-2xl dark:shadow-black/50" : ""}`}
       >
         {sidebarOpen && (
           <div className="h-full flex flex-col">
@@ -502,21 +498,10 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                       setActiveView(item.id);
                       if (isMobile) setSidebarOpen(false);
                     }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ease-in-out ${
-                      activeView === item.id
-                        ? "text-gray-800 font-semibold"
-                        : "text-gray-600 hover:text-gray-800"
-                    }`}
-                    style={
-                      activeView === item.id
-                        ? {
-                            boxShadow: 'inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)',
-                            background: 'linear-gradient(145deg, #d1d6dd, #ecf0f3)'
-                          }
-                        : {
-                            boxShadow: '6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)'
-                          }
-                    }
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ease-in-out ${activeView === item.id
+                      ? "text-gray-800 dark:text-gray-100 font-semibold bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark"
+                      : "text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
+                      }`}
                   >
                     <Icon size={20} className={activeView === item.id ? item.color : ""} />
                     <span>{item.label}</span>
@@ -569,52 +554,48 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
 
 
       <div
-        className={`min-h-screen transition-all duration-300 ${
-          sidebarOpen && !isMobile ? "ml-64" : "ml-0"
-        }`}
+        className={`min-h-screen transition-all duration-300 ${sidebarOpen && !isMobile ? "ml-64" : "ml-0"
+          }`}
       >
         {/* Header */}
-<div className="sticky top-0 z-30 bg-[#e0e5ec] px-5 md:px-6 py-3 md:py-4 rounded-b-2xl"
-          style={{
-            boxShadow: '0 8px 16px rgba(163,177,198,0.4)'
-          }}
+        <div className="sticky top-0 z-30 bg-main-light dark:bg-main-dark px-5 md:px-6 py-3 md:py-4 rounded-b-2xl shadow-neu-flat dark:shadow-neu-flat-dark"
         >
           <div className="flex flex-wrap justify-between items-center gap-3 md:gap-4">
-<h1 className="text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 min-h-[1.5em] pl-12 sm:pl-0">
-  {activeView === "projects" && (
-    <TypingTextFixed key="projects" icon="📦" text="My Projects" />
-  )}
-  {activeView === "infoairdrops" && (
-    <TypingTextFixed key="infoairdrops" icon="📢" text="Info Airdrops Channel" />
-  )}
-  {activeView === "trading" && (
-    <TypingTextFixed key="trading" icon="⚡" text="DeDoo Trading Platform" />
-  )}
-  {activeView === "analytics" && (
-    <TypingTextFixed key="analytics" icon="📊" text="Analytics Dashboard" />
-  )}
-  {activeView === "gas" && (
-    <TypingTextFixed key="gas" icon="⛽" text="Gas Tracker" />
-  )}
-  {activeView === "roi" && (
-    <TypingTextFixed key="roi" icon="💹" text="ROI Calculator" />
-  )}
-  {activeView === "news" && (
-    <TypingTextFixed key="news" icon="📰" text="News Feed" />
-  )}
-  {activeView === "balance" && (
-    <TypingTextFixed key="balance" icon="💰" text="Balance Checker" />
-  )}
-  {activeView === "keygen" && (
-    <TypingTextFixed key="keygen" icon="🔐" text="EVM Private Key Generator" />
-  )}
-  {activeView === "multisend" && (
-    <TypingTextFixed key="multisend" icon="🚀" text="Multisend Native & Tokens" />
-  )}
-  {activeView === "dexlist" && (
-    <TypingTextFixed key="dexlist" icon="🔄" text="List DEX & Bridge - All Chains" />
-  )}
-</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 min-h-[1.5em] pl-12 sm:pl-0">
+              {activeView === "projects" && (
+                <TypingTextFixed key="projects" icon="📦" text="My Projects" />
+              )}
+              {activeView === "infoairdrops" && (
+                <TypingTextFixed key="infoairdrops" icon="📢" text="Info Airdrops Channel" />
+              )}
+              {activeView === "trading" && (
+                <TypingTextFixed key="trading" icon="⚡" text="DeDoo Trading Platform" />
+              )}
+              {activeView === "analytics" && (
+                <TypingTextFixed key="analytics" icon="📊" text="Analytics Dashboard" />
+              )}
+              {activeView === "gas" && (
+                <TypingTextFixed key="gas" icon="⛽" text="Gas Tracker" />
+              )}
+              {activeView === "roi" && (
+                <TypingTextFixed key="roi" icon="💹" text="ROI Calculator" />
+              )}
+              {activeView === "news" && (
+                <TypingTextFixed key="news" icon="📰" text="News Feed" />
+              )}
+              {activeView === "balance" && (
+                <TypingTextFixed key="balance" icon="💰" text="Balance Checker" />
+              )}
+              {activeView === "keygen" && (
+                <TypingTextFixed key="keygen" icon="🔐" text="EVM Private Key Generator" />
+              )}
+              {activeView === "multisend" && (
+                <TypingTextFixed key="multisend" icon="🚀" text="Multisend Native & Tokens" />
+              )}
+              {activeView === "dexlist" && (
+                <TypingTextFixed key="dexlist" icon="🔄" text="List DEX & Bridge - All Chains" />
+              )}
+            </h1>
 
 
 
@@ -625,24 +606,21 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
               {activeView === "projects" && (
                 <>
                   <div className="relative">
-                    <button className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 rounded-xl transition text-xs md:text-sm text-gray-700"
-                      style={{
-                        boxShadow: '4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)'
-                      }}
+                    <button className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 rounded-xl transition text-xs md:text-sm text-gray-700 dark:text-gray-300 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
                     >
                       <Tag size={14} />
                       <select
                         value={filterTag}
                         onChange={(e) => setFilterTag(e.target.value)}
-                        className="bg-transparent text-gray-800 outline-none cursor-pointer border-none appearance-none pr-2 font-medium"
+                        className="bg-transparent text-gray-800 dark:text-gray-200 outline-none cursor-pointer border-none appearance-none pr-2 font-medium"
                         style={{
                           WebkitAppearance: 'none',
                           MozAppearance: 'none'
                         }}
                       >
-                        <option value="all" className="bg-white text-gray-800">All Tags</option>
+                        <option value="all" className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">All Tags</option>
                         {AVAILABLE_TAGS.map((tag) => (
-                          <option key={tag.id} value={tag.id} className="bg-white text-gray-800">
+                          <option key={tag.id} value={tag.id} className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
                             {tag.label}
                           </option>
                         ))}
@@ -651,24 +629,21 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                   </div>
 
                   <div className="relative">
-                    <button className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 rounded-xl transition text-xs md:text-sm text-gray-700"
-                      style={{
-                        boxShadow: '4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)'
-                      }}
+                    <button className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 rounded-xl transition text-xs md:text-sm text-gray-700 dark:text-gray-300 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
                     >
                       <CheckSquare size={14} />
                       <select
                         value={filterDaily}
                         onChange={(e) => setFilterDaily(e.target.value)}
-                        className="bg-transparent text-gray-800 outline-none cursor-pointer border-none appearance-none pr-2 font-medium"
+                        className="bg-transparent text-gray-800 dark:text-gray-200 outline-none cursor-pointer border-none appearance-none pr-2 font-medium"
                         style={{
                           WebkitAppearance: 'none',
                           MozAppearance: 'none'
                         }}
                       >
-                        <option value="all" className="bg-white text-gray-800">All Projects</option>
-                        <option value="checked" className="bg-white text-gray-800">✅ Daily Checked</option>
-                        <option value="unchecked" className="bg-white text-gray-800">⬜ Ongoing Projects</option>
+                        <option value="all" className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">All Projects</option>
+                        <option value="checked" className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">✅ Daily Checked</option>
+                        <option value="unchecked" className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">⬜ Ongoing Projects</option>
                       </select>
                     </button>
                   </div>
@@ -678,18 +653,12 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                     placeholder="🔍 Search..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="px-2 md:px-3 py-1.5 md:py-2 rounded-xl bg-[#e0e5ec] text-gray-800 w-28 md:w-48 text-xs md:text-sm"
-                    style={{
-                      boxShadow: 'inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5)'
-                    }}
+                    className="px-2 md:px-3 py-1.5 md:py-2 rounded-xl bg-main-light dark:bg-main-dark text-gray-800 dark:text-gray-200 w-28 md:w-48 text-xs md:text-sm shadow-neu-pressed dark:shadow-neu-pressed-dark"
                   />
 
                   <button
                     onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-                    className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1.5 md:py-2 rounded-xl text-xs md:text-sm text-gray-700"
-                    style={{
-                      boxShadow: '4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)'
-                    }}
+                    className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1.5 md:py-2 rounded-xl text-xs md:text-sm text-gray-700 dark:text-gray-300 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
                   >
                     <ArrowUpDown size={14} />
                     <span className="hidden sm:inline">{sortOrder === "asc" ? "A-Z" : "Z-A"}</span>
@@ -697,10 +666,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
 
                   <button
                     onClick={() => setHideData(!hideData)}
-                    className="px-2 md:px-3 py-1.5 md:py-2 rounded-xl flex items-center gap-1 md:gap-2 text-xs md:text-sm text-gray-700"
-                    style={{
-                      boxShadow: '4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)'
-                    }}
+                    className="px-2 md:px-3 py-1.5 md:py-2 rounded-xl flex items-center gap-1 md:gap-2 text-xs md:text-sm text-gray-700 dark:text-gray-300 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
                   >
                     {hideData ? <Eye size={16} /> : <EyeOff size={16} />}
                   </button>
@@ -715,11 +681,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
 
           {activeView === "projects" && (
             <div className="space-y-8">
-              <div className="p-4 md:p-6 rounded-2xl"
-                style={{
-                  background: '#e0e5ec',
-                  boxShadow: '10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)'
-                }}
+              <div className="p-4 md:p-6 rounded-2xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark"
               >
                 <h2 className="text-lg md:text-xl font-semibold mb-4 text-blue-700">
                   ➕ Add New Project
@@ -735,10 +697,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                         onChange={(e) =>
                           setFormData({ ...formData, [field]: e.target.value })
                         }
-                        className="p-2 md:p-3 text-sm md:text-base rounded-lg bg-[#e0e5ec] text-gray-800 w-full"
-                        style={{
-                          boxShadow: 'inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5)'
-                        }}
+                        className="p-2 md:p-3 text-sm md:text-base rounded-lg bg-main-light dark:bg-main-dark text-gray-800 dark:text-gray-200 w-full shadow-neu-pressed dark:shadow-neu-pressed-dark placeholder-gray-400 dark:placeholder-gray-600"
                       />
                     )
                   )}
@@ -753,10 +712,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                     placeholder="Add notes..."
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    className="w-full p-2 rounded-lg bg-[#e0e5ec] text-gray-800 resize-none"
-                    style={{
-                      boxShadow: 'inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5)'
-                    }}
+                    className="w-full p-2 rounded-lg bg-main-light dark:bg-main-dark text-gray-800 dark:text-gray-200 resize-none shadow-neu-pressed dark:shadow-neu-pressed-dark placeholder-gray-400 dark:placeholder-gray-600"
                     rows="2"
                   ></textarea>
                 </div>
@@ -772,20 +728,10 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                         key={tag.id}
                         type="button"
                         onClick={() => toggleTag(tag.id)}
-                        className={`px-3 py-1 rounded-full text-xs font-semibold transition ${
-                          selectedTags.includes(tag.id) || (formData.tags && formData.tags.includes(tag.id))
-                            ? `${tag.color} text-gray-800 shadow-inner`
-                            : "text-gray-600"
-                        }`}
-                        style={
-                          selectedTags.includes(tag.id) || (formData.tags && formData.tags.includes(tag.id))
-                            ? {
-                                boxShadow: 'inset 3px 3px 6px rgba(163,177,198,0.5), inset -3px -3px 6px rgba(255,255,255,0.3)'
-                              }
-                            : {
-                                boxShadow: '4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)'
-                              }
-                        }
+                        className={`px-3 py-1 rounded-full text-xs font-semibold transition ${selectedTags.includes(tag.id) || (formData.tags && formData.tags.includes(tag.id))
+                          ? `${tag.color} text-gray-800 shadow-neu-pressed dark:shadow-neu-pressed-dark`
+                          : "text-gray-600 dark:text-gray-400 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
+                          }`}
                       >
                         {tag.label}
                       </button>
@@ -796,16 +742,10 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                 <button
                   onClick={addProject}
                   disabled={loading}
-                  className={`mt-4 px-6 py-2 rounded-lg font-semibold transition-all ${
-                    loading
-                      ? "text-gray-500 cursor-not-allowed"
-                      : "text-green-700 hover:text-green-800"
-                  }`}
-                  style={{
-                    boxShadow: loading 
-                      ? 'inset 4px 4px 8px rgba(163,177,198,0.4)' 
-                      : '6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)'
-                  }}
+                  className={`mt-4 px-6 py-2 rounded-lg font-semibold transition-all ${loading
+                    ? "text-gray-500 cursor-not-allowed shadow-neu-pressed dark:shadow-neu-pressed-dark"
+                    : "text-green-700 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
+                    }`}
                 >
                   {loading ? "Loading..." : "+ Add Project"}
                 </button>
@@ -818,139 +758,121 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                 animate="visible"
               >
                 <AnimatePresence>
-                {displayedProjects.map((p, i) => (
-                  <motion.div
-                    key={i}
-                    custom={i}
-                    variants={cardVariants}
-                    whileHover="hover"
-                    className="group relative p-5 sm:p-6 w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-sm rounded-2xl"
-                    style={{
-                      background: 'linear-gradient(145deg, #d1d6dd, #ecf0f3)',
-                      boxShadow:
-                        '10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)',
-                    }}
-                  >
-  <div className="flex justify-between items-start mb-3">
-    <h3 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 pr-10">
-      {p.name}
-    </h3>
-    <div className="flex gap-2">
-      <button
-        onClick={() => toggleDaily(p.name, p.daily)}
-        className={`p-2 rounded-lg transition-all duration-200 ${
-          p.daily === 'CHECKED' ? 'text-blue-600' : 'text-gray-500'
-        }`}
-        style={{
-          boxShadow:
-            p.daily === 'CHECKED'
-              ? 'inset 3px 3px 6px rgba(163,177,198,0.5)'
-              : '3px 3px 6px rgba(163,177,198,0.4), -3px -3px 6px rgba(255,255,255,0.6)',
-        }}
-      >
-        {p.daily === 'CHECKED' ? <CheckSquare size={16} /> : <Square size={16} />}
-      </button>
-      <button
-        onClick={() => deleteProject(p.name)}
-        className="p-2 rounded-lg text-red-600 hover:text-red-700 transition-all duration-200"
-        style={{
-          boxShadow:
-            '3px 3px 6px rgba(163,177,198,0.4), -3px -3px 6px rgba(255,255,255,0.6)',
-        }}
-      >
-        <Trash2 size={16} />
-      </button>
-    </div>
-  </div>
-
-  {p.tags?.length > 0 && (
-    <div className="flex flex-wrap gap-2 mb-3">
-      {p.tags.map((tagId) => {
-        const tag = AVAILABLE_TAGS.find((t) => t.id === tagId);
-        return (
-          <span
-            key={tagId}
-            className={`${tag?.color || ''} text-gray-800 text-xs px-2.5 py-0.5 rounded-full font-semibold`}
-            style={{
-              boxShadow:
-                'inset 2px 2px 4px rgba(163,177,198,0.4), inset -2px -2px 4px rgba(255,255,255,0.5)',
-            }}
-          >
-            {tag?.label}
-          </span>
-        );
-      })}
-    </div>
-  )}
-
-  {p.notes && (
-    <div className="mb-3 p-3 rounded-xl bg-gradient-to-br from-yellow-100 to-orange-100 shadow-inner">
-      <p className="flex items-start gap-2 text-sm text-gray-700">
-        <StickyNote size={14} className="mt-0.5 text-yellow-700 flex-shrink-0" />
-        <span className="italic leading-relaxed">{p.notes}</span>
-      </p>
-    </div>
-  )}
-
-  <div className="space-y-1.5">
-    {p.twitter && (
-      <div className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white/30 transition-colors duration-150">
-        <Twitter size={14} className="text-blue-600" />
-        <span className="text-sm text-gray-700 font-mono truncate">{hideData ? '••••••' : p.twitter}</span>
-      </div>
-    )}
-    {p.discord && (
-      <div className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white/30 transition-colors duration-150">
-        <MessageCircle size={14} className="text-indigo-600" />
-        <span className="text-sm text-gray-700 font-mono truncate">{hideData ? '••••••' : p.discord}</span>
-      </div>
-    )}
-    {p.telegram && (
-      <div className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white/30 transition-colors duration-150">
-        <Send size={14} className="text-sky-600" />
-        <span className="text-sm text-gray-700 font-mono truncate">{hideData ? '••••••' : p.telegram}</span>
-      </div>
-    )}
-    {p.farcaster && (
-      <div className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white/30 transition-colors duration-150">
-        <Zap size={14} className="text-purple-600" />
-        <span className="text-sm text-gray-700 font-mono truncate">{hideData ? '••••••' : p.farcaster}</span>
-      </div>
-    )}
-    {p.wallet && (
-      <div className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white/30 transition-colors duration-150">
-        <Wallet size={14} className="text-yellow-700" />
-        <span className="text-xs text-gray-700 font-mono break-all">{hideData ? '••••••••••••••' : p.wallet}</span>
-      </div>
-    )}
-    {p.email && (
-      <div className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white/30 transition-colors duration-150">
-        <Mail size={14} className="text-pink-600" />
-        <span className="text-sm text-gray-700 font-mono truncate">{hideData ? '••••••' : p.email}</span>
-      </div>
-    )}
-    {p.website && (
-      <div className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white/30 transition-colors duration-150">
-        <Globe size={14} className="text-blue-600" />
-        <a
-          href={p.website}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sm text-blue-600 hover:text-blue-700 underline truncate transition-colors"
-        >
-          {p.website}
-        </a>
-      </div>
-    )}
-  </div>
-
-                    {/* Efek glowing lembut */}
+                  {displayedProjects.map((p, i) => (
                     <motion.div
-                      className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-lg pointer-events-none"
-                      style={{ background: 'radial-gradient(circle at center, rgba(147,197,253,0.25), transparent 70%)' }}
-                    ></motion.div>
-                  </motion.div>
-                ))}
+                      key={i}
+                      custom={i}
+                      variants={cardVariants}
+                      whileHover="hover"
+                      className="group relative p-5 sm:p-6 w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-sm rounded-2xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark"
+                    >
+                      <div className="flex justify-between items-start mb-3">
+                        <h3 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 pr-10">
+                          {p.name}
+                        </h3>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => toggleDaily(p.name, p.daily)}
+                            className={`p-2 rounded-lg transition-all duration-200 ${p.daily === 'CHECKED'
+                              ? 'text-blue-600 dark:text-blue-400 shadow-neu-pressed dark:shadow-neu-pressed-dark'
+                              : 'text-gray-500 dark:text-gray-400 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark'
+                              }`}
+                          >
+                            {p.daily === 'CHECKED' ? <CheckSquare size={16} /> : <Square size={16} />}
+                          </button>
+                          <button
+                            onClick={() => deleteProject(p.name)}
+                            className="p-2 rounded-lg text-red-600 hover:text-red-700 transition-all duration-200 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+
+                      {p.tags?.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {p.tags.map((tagId) => {
+                            const tag = AVAILABLE_TAGS.find((t) => t.id === tagId);
+                            return (
+                              <span
+                                key={tagId}
+                                className={`${tag?.color || ''} text-gray-800 text-xs px-2.5 py-0.5 rounded-full font-semibold shadow-neu-pressed dark:shadow-neu-pressed-dark`}
+                              >
+                                {tag?.label}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {p.notes && (
+                        <div className="mb-3 p-3 rounded-xl bg-gradient-to-br from-yellow-100 to-orange-100 shadow-inner">
+                          <p className="flex items-start gap-2 text-sm text-gray-700">
+                            <StickyNote size={14} className="mt-0.5 text-yellow-700 flex-shrink-0" />
+                            <span className="italic leading-relaxed">{p.notes}</span>
+                          </p>
+                        </div>
+                      )}
+
+                      <div className="space-y-1.5">
+                        {p.twitter && (
+                          <div className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white/30 transition-colors duration-150">
+                            <Twitter size={14} className="text-blue-600" />
+                            <span className="text-sm text-gray-700 font-mono truncate">{hideData ? '••••••' : p.twitter}</span>
+                          </div>
+                        )}
+                        {p.discord && (
+                          <div className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white/30 transition-colors duration-150">
+                            <MessageCircle size={14} className="text-indigo-600" />
+                            <span className="text-sm text-gray-700 font-mono truncate">{hideData ? '••••••' : p.discord}</span>
+                          </div>
+                        )}
+                        {p.telegram && (
+                          <div className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white/30 transition-colors duration-150">
+                            <Send size={14} className="text-sky-600" />
+                            <span className="text-sm text-gray-700 font-mono truncate">{hideData ? '••••••' : p.telegram}</span>
+                          </div>
+                        )}
+                        {p.farcaster && (
+                          <div className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white/30 transition-colors duration-150">
+                            <Zap size={14} className="text-purple-600" />
+                            <span className="text-sm text-gray-700 font-mono truncate">{hideData ? '••••••' : p.farcaster}</span>
+                          </div>
+                        )}
+                        {p.wallet && (
+                          <div className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white/30 transition-colors duration-150">
+                            <Wallet size={14} className="text-yellow-700" />
+                            <span className="text-xs text-gray-700 font-mono break-all">{hideData ? '••••••••••••••' : p.wallet}</span>
+                          </div>
+                        )}
+                        {p.email && (
+                          <div className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white/30 transition-colors duration-150">
+                            <Mail size={14} className="text-pink-600" />
+                            <span className="text-sm text-gray-700 font-mono truncate">{hideData ? '••••••' : p.email}</span>
+                          </div>
+                        )}
+                        {p.website && (
+                          <div className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white/30 transition-colors duration-150">
+                            <Globe size={14} className="text-blue-600" />
+                            <a
+                              href={p.website}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-blue-600 hover:text-blue-700 underline truncate transition-colors"
+                            >
+                              {p.website}
+                            </a>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Efek glowing lembut */}
+                      <motion.div
+                        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500 blur-lg pointer-events-none"
+                        style={{ background: 'radial-gradient(circle at center, rgba(147,197,253,0.25), transparent 70%)' }}
+                      ></motion.div>
+                    </motion.div>
+                  ))}
                 </AnimatePresence>
               </motion.div>
 
@@ -968,11 +890,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                 </div>
               )}
 
-              <div className="p-6 rounded-2xl"
-                style={{
-                  background: '#e0e5ec',
-                  boxShadow: '10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)'
-                }}
+              <div className="p-6 rounded-2xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark"
               >
                 <h2 className="text-2xl font-bold mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
                   📈 Live Crypto Market
@@ -982,11 +900,8 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                   <p className="text-gray-600 text-sm mb-2">
                     ⏱️ Auto-refresh in <span className="text-blue-700 font-semibold">{timer}s</span>
                   </p>
-                  <div className="w-64 mx-auto h-2 rounded-full overflow-hidden"
-                    style={{
-                      background: '#e0e5ec',
-                      boxShadow: 'inset 2px 2px 4px rgba(163,177,198,0.6), inset -2px -2px 4px rgba(255,255,255,0.5)'
-                    }}
+                  <div
+                    className="w-64 mx-auto h-2 rounded-full overflow-hidden bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark"
                   >
                     <div
                       className="h-full transition-all duration-1000 ease-linear rounded-full"
@@ -997,11 +912,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
 
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {coins.map((coin) => (
-                    <div key={coin.id} className="p-4 rounded-xl transition-all"
-                      style={{
-                        background: 'linear-gradient(145deg, #d1d6dd, #ecf0f3)',
-                        boxShadow: '8px 8px 16px rgba(163,177,198,0.6), -8px -8px 16px rgba(255,255,255,0.5)'
-                      }}
+                    <div key={coin.id} className="p-4 rounded-xl transition-all bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
                     >
                       <div className="flex justify-between items-center mb-2">
                         <div className="flex items-center gap-3">
@@ -1009,9 +920,8 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                           <span className="font-semibold text-gray-800">{coin.name}</span>
                         </div>
                         <span
-                          className={`text-sm font-bold ${
-                            coin.price_change_percentage_24h >= 0 ? "text-green-600" : "text-red-600"
-                          }`}
+                          className={`text-sm font-bold ${coin.price_change_percentage_24h >= 0 ? "text-green-600" : "text-red-600"
+                            }`}
                         >
                           {coin.price_change_percentage_24h.toFixed(2)}%
                         </span>
@@ -1036,11 +946,13 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                           <YAxis hide domain={["auto", "auto"]} />
                           <Tooltip
                             contentStyle={{
-                              background: "#e0e5ec",
+                              background: theme === 'dark' ? '#1e293b' : '#e0e5ec',
                               border: "none",
-                              color: "#1f2937",
+                              color: theme === 'dark' ? '#f3f4f6' : '#1f2937',
                               borderRadius: "8px",
-                              boxShadow: '4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)'
+                              boxShadow: theme === 'dark'
+                                ? '4px 4px 8px #0f172a, -4px -4px 8px #334155'
+                                : '4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)'
                             }}
                           />
                         </LineChart>
@@ -1107,17 +1019,19 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
               <InfoAirdrops />
             </div>
           )}
-          
+
         </div>
       </div>
 
-      {isMobile && sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/20 z-40"
-          onClick={() => setSidebarOpen(false)}
-        ></div>
-      )}
-    </div>
+      {
+        isMobile && sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/20 z-40"
+            onClick={() => setSidebarOpen(false)}
+          ></div>
+        )
+      }
+    </div >
   );
 }
 
