@@ -24,17 +24,10 @@ import {
   buttonHoverVariants,
 } from "../utils/animationVariants";
 
-// === NEUMORPHIC UTILITIES ===
-const neuOut =
-  "bg-[#e0e5ec] shadow-[9px_9px_16px_rgba(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)]";
-const neuInset =
-  "bg-[#e0e5ec] shadow-[inset_6px_6px_12px_rgba(163,177,198,0.6),inset_-6px_-6px_12px_rgba(255,255,255,0.5)]";
-const neuButton =
-  "bg-[#e0e5ec] rounded-full shadow-[6px_6px_12px_rgba(163,177,198,0.6),-6px_-6px_12px_rgba(255,255,255,0.5)] hover:shadow-[inset_4px_4px_8px_rgba(163,177,198,0.6),inset_-4px_-4px_8px_rgba(255,255,255,0.5)] transition";
-const neuInput =
-  "px-4 py-2 rounded-xl bg-[#e0e5ec] text-gray-700 shadow-[inset_5px_5px_10px_rgba(163,177,198,0.6),inset_-5px_-5px_10px_rgba(255,255,255,0.5)] focus:outline-none";
+import { useTheme } from "../contexts/ThemeContext";
 
 const NewsAggregator = () => {
+  const { theme } = useTheme();
   const [isExpanded, setIsExpanded] = useState(true);
   const [news, setNews] = useState([]);
   const [apiNews, setApiNews] = useState([]);
@@ -87,10 +80,10 @@ const NewsAggregator = () => {
               source: item.source || "CryptoCompare",
               category: detectCategory(
                 item.title +
-                  " " +
-                  (item.body || "") +
-                  " " +
-                  (item.categories || "")
+                " " +
+                (item.body || "") +
+                " " +
+                (item.categories || "")
               ),
               url: item.url || item.guid || "#",
               sentiment: analyzeSentiment(
@@ -939,7 +932,7 @@ const NewsAggregator = () => {
         variants={fadeInUpVariants}
       >
         <motion.div className="flex items-center gap-3" variants={itemVariants}>
-          <motion.h2 
+          <motion.h2
             className="text-2xl font-bold text-gray-700 flex items-center gap-2"
             variants={itemVariants}
           >
@@ -966,9 +959,9 @@ const NewsAggregator = () => {
             </motion.div>
           )}
 
-          <motion.button 
-            onClick={fetchCryptoNews} 
-            disabled={isLoading} 
+          <motion.button
+            onClick={fetchCryptoNews}
+            disabled={isLoading}
             className={neuButton + " px-4 py-2 text-gray-700"}
             variants={buttonHoverVariants}
             whileHover="hover"
@@ -1005,7 +998,7 @@ const NewsAggregator = () => {
       </motion.div>
 
       {error && (
-        <motion.div 
+        <motion.div
           className="p-4"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1018,7 +1011,7 @@ const NewsAggregator = () => {
       )}
 
       {isExpanded && (
-        <motion.div 
+        <motion.div
           className={`p-6 rounded-b-3xl space-y-6 ${neuInset}`}
           initial="hidden"
           animate="visible"
@@ -1146,8 +1139,8 @@ const NewsAggregator = () => {
                     onChange={(e) => setFormData({ ...formData, url: e.target.value })}
                     className={neuInput}
                   />
-                  <motion.button 
-                    type="submit" 
+                  <motion.button
+                    type="submit"
                     className={neuButton + " px-4 py-2 text-gray-700"}
                     variants={buttonHoverVariants}
                     whileHover="hover"
@@ -1162,9 +1155,9 @@ const NewsAggregator = () => {
 
           <motion.div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6" variants={containerVariants}>
             {[...news,
-              ...apiNews.filter(
-                (n) => filterCategory === "all" || n.category === filterCategory
-              ),
+            ...apiNews.filter(
+              (n) => filterCategory === "all" || n.category === filterCategory
+            ),
             ]
               .sort((a, b) => {
                 if (sortBy === "latest")
@@ -1185,9 +1178,8 @@ const NewsAggregator = () => {
                 >
                   <div className="flex justify-between items-start mb-3">
                     <span
-                      className={`px-2 py-1 rounded-full text-xs text-white ${
-                        categories.find((c) => c.id === item.category)?.color
-                      }`}
+                      className={`px-2 py-1 rounded-full text-xs text-white ${categories.find((c) => c.id === item.category)?.color
+                        }`}
                     >
                       {item.category.toUpperCase()}
                     </span>
