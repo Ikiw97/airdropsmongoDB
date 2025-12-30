@@ -295,7 +295,7 @@ const BalanceChecker = () => {
           variants={containerVariants}
         >
           {/* EVM Native & Tokens Balance Checker */}
-          <div className="p-6 rounded-2xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark">
+          <div className="p-6 rounded-2xl transition-all">
             <h2 className="text-2xl font-bold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
               🔷 EVM Native & Tokens Balance Checker
             </h2>
@@ -360,8 +360,8 @@ const BalanceChecker = () => {
                 onClick={checkEVMBalances}
                 disabled={evmBalanceLoading}
                 className={`w-full py-3 rounded-lg font-semibold text-lg transition ${evmBalanceLoading
-                    ? "text-gray-500 cursor-not-allowed bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark"
-                    : "text-blue-700 dark:text-blue-400 hover:text-blue-800 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark"
+                  ? "text-gray-500 cursor-not-allowed bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark"
+                  : "text-blue-700 dark:text-blue-400 hover:text-blue-800 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark"
                   }`}
               >
                 {evmBalanceLoading ? "⏳ Checking..." : "Check Balance"}
@@ -397,10 +397,10 @@ const BalanceChecker = () => {
                           <td className="p-2 text-gray-600 dark:text-gray-400">{i + 1}</td>
                           <td className="p-2 break-all font-mono text-xs text-gray-700 dark:text-gray-300">{b.address}</td>
                           <td className={`p-2 text-right font-semibold ${b.balance.includes('Error') || b.balance.includes('Invalid')
-                              ? 'text-red-600 dark:text-red-400'
-                              : parseFloat(b.balance) > 0
-                                ? 'text-green-600 dark:text-green-400'
-                                : 'text-gray-600 dark:text-gray-400'
+                            ? 'text-red-600 dark:text-red-400'
+                            : parseFloat(b.balance) > 0
+                              ? 'text-green-600 dark:text-green-400'
+                              : 'text-gray-600 dark:text-gray-400'
                             }`}>
                             {b.balance.includes('Error') || b.balance.includes('Invalid')
                               ? b.balance
@@ -435,7 +435,7 @@ const BalanceChecker = () => {
           </div>
 
           {/* Default Network Balance Checker */}
-          <div className="p-6 rounded-2xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark">
+          <div className="p-6 rounded-2xl transition-all">
             <h2 className="text-2xl font-bold mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600">
               💰 Quick Network Balance Checker
             </h2>
@@ -446,8 +446,8 @@ const BalanceChecker = () => {
                   key={net}
                   onClick={() => setSelectedNetwork(net)}
                   className={`px-4 py-2 rounded-lg text-sm md:text-base transition font-medium ${selectedNetwork === net
-                      ? "text-blue-700 dark:text-blue-400 bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark"
-                      : "text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark"
+                    ? "text-blue-700 dark:text-blue-400 bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark"
                     }`}
                 >
                   {net}
@@ -468,8 +468,8 @@ const BalanceChecker = () => {
                 onClick={checkBalances}
                 disabled={quickBalanceLoading}
                 className={`w-full sm:w-auto px-6 py-3 rounded-lg font-semibold transition ${quickBalanceLoading
-                    ? "text-gray-500 cursor-not-allowed bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark"
-                    : "text-green-700 dark:text-green-400 hover:text-green-800 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark"
+                  ? "text-gray-500 cursor-not-allowed bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark"
+                  : "text-green-700 dark:text-green-400 hover:text-green-800 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark"
                   }`}
               >
                 {quickBalanceLoading ? "⏳ Checking..." : "✅ Check Balance"}
@@ -507,10 +507,10 @@ const BalanceChecker = () => {
                           <td className="p-2 text-gray-600 dark:text-gray-400">{i + 1}</td>
                           <td className="p-2 break-all font-mono text-xs text-gray-700 dark:text-gray-300">{b.address}</td>
                           <td className={`p-2 text-right font-semibold ${b.balance.includes('Error') || b.balance.includes('Invalid')
-                              ? 'text-red-600 dark:text-red-400'
-                              : parseFloat(b.balance) > 0
-                                ? 'text-green-600 dark:text-green-400'
-                                : 'text-gray-600 dark:text-gray-400'
+                            ? 'text-red-600 dark:text-red-400'
+                            : parseFloat(b.balance) > 0
+                              ? 'text-green-600 dark:text-green-400'
+                              : 'text-gray-600 dark:text-gray-400'
                             }`}>
                             {b.balance.includes('Error') || b.balance.includes('Invalid')
                               ? b.balance
@@ -533,7 +533,7 @@ const BalanceChecker = () => {
           </div>
 
           {/* Auto Wallet Scanner */}
-          <div className="p-6 rounded-2xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark">
+          <div className="p-6 rounded-2xl transition-all">
             <h2 className="text-2xl font-bold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
               🪙 Auto Wallet Scanner
             </h2>
@@ -545,8 +545,8 @@ const BalanceChecker = () => {
                   key={c}
                   onClick={() => setScannerChain(c)}
                   className={`px-4 py-2 rounded-lg text-sm md:text-base transition font-medium ${scannerChain === c
-                      ? "text-white bg-gradient-to-r from-orange-400 to-pink-400 shadow-md"
-                      : "text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark"
+                    ? "text-white bg-gradient-to-r from-orange-400 to-pink-400 shadow-md"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark"
                     }`}
                 >
                   {c === "eth-mainnet"
@@ -569,8 +569,8 @@ const BalanceChecker = () => {
                 onClick={fetchTokens}
                 disabled={scannerLoading}
                 className={`px-6 py-3 rounded-lg font-semibold transition ${scannerLoading
-                    ? "text-gray-500 cursor-not-allowed bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark"
-                    : "text-white bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 shadow-neu-flat dark:shadow-neu-flat-dark"
+                  ? "text-gray-500 cursor-not-allowed bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark"
+                  : "text-white bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 shadow-neu-flat dark:shadow-neu-flat-dark"
                   }`}
               >
                 {scannerLoading ? "⏳ Scanning..." : "🔍 Scan"}
