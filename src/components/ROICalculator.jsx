@@ -59,18 +59,6 @@ const ROICalculator = () => {
   }, []);
 
   // =============================
-  //    NEUMORPHISM STYLE
-  // =============================
-  const neuContainer =
-    "bg-[#e0e5ec] rounded-3xl shadow-[9px_9px_16px_rgba(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)] p-6 transition hover:shadow-[inset_5px_5px_10px_rgba(163,177,198,0.6),inset_-5px_-5px_10px_rgba(255,255,255,0.5)]";
-
-  const neuButton =
-    "bg-[#e0e5ec] rounded-xl shadow-[3px_3px_6px_rgba(163,177,198,0.6),-3px_-3px_6px_rgba(255,255,255,0.5)] active:shadow-[inset_3px_3px_6px_rgba(163,177,198,0.6),inset_-3px_-3px_6px_rgba(255,255,255,0.5)] transition text-gray-700 font-semibold";
-
-  const neuInput =
-    "w-full bg-[#e0e5ec] rounded-xl px-4 py-3 shadow-[inset_3px_3px_6px_rgba(163,177,198,0.6),inset_-3px_-3px_6px_rgba(255,255,255,0.5)] text-gray-700 outline-none";
-
-  // =============================
   //       CALCULATE ROI
   // =============================
   const calculateROI = () => {
@@ -136,7 +124,7 @@ const ROICalculator = () => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="relative z-10 w-full mb-8"
       initial="hidden"
       animate="visible"
@@ -144,12 +132,12 @@ const ROICalculator = () => {
     >
 
       {/* HEADER */}
-      <motion.div 
-        className={`${neuContainer} flex justify-between items-center`}
+      <motion.div
+        className="bg-main-light dark:bg-main-dark rounded-3xl shadow-neu-flat dark:shadow-neu-flat-dark p-6 transition-all hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark flex justify-between items-center"
         variants={fadeInUpVariants}
       >
-        <motion.h2 
-          className="text-2xl font-bold flex items-center gap-2 text-gray-700"
+        <motion.h2
+          className="text-2xl font-bold flex items-center gap-2 text-gray-700 dark:text-gray-200"
           variants={itemVariants}
         >
           <Calculator size={26} className="text-cyan-500" /> ROI Calculator
@@ -157,7 +145,7 @@ const ROICalculator = () => {
 
         <motion.button
           onClick={() => setIsExpanded(!isExpanded)}
-          className={`${neuButton} px-4 py-2 flex items-center gap-2`}
+          className="bg-main-light dark:bg-main-dark rounded-xl shadow-neu-flat dark:shadow-neu-flat-dark active:shadow-neu-pressed dark:active:shadow-neu-pressed-dark transition text-gray-700 dark:text-gray-300 font-semibold px-4 py-2 flex items-center gap-2"
           variants={buttonHoverVariants}
           whileHover="hover"
           whileTap="tap"
@@ -169,8 +157,8 @@ const ROICalculator = () => {
 
       {/* BODY */}
       {isExpanded && (
-        <motion.div 
-          className={`${neuContainer} mt-4 space-y-6`}
+        <motion.div
+          className="bg-main-light dark:bg-main-dark rounded-3xl shadow-neu-flat dark:shadow-neu-flat-dark p-6 transition-all mt-4 space-y-6"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
@@ -178,11 +166,7 @@ const ROICalculator = () => {
 
           {/* INFO BANNER */}
           <motion.div
-            className="rounded-2xl p-4 flex items-start gap-3 text-gray-700"
-            style={{
-              boxShadow:
-                "inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)",
-            }}
+            className="rounded-2xl p-4 flex items-start gap-3 text-gray-700 dark:text-gray-300 shadow-neu-pressed dark:shadow-neu-pressed-dark"
             variants={fadeInUpVariants}
           >
             <Info className="text-cyan-500 mt-0.5" size={20} />
@@ -193,45 +177,45 @@ const ROICalculator = () => {
           </motion.div>
 
           {/* INPUT AREA */}
-          <motion.div 
+          <motion.div
             className="grid grid-cols-1 lg:grid-cols-2 gap-8"
             variants={containerVariants}
           >
 
             {/* LEFT INPUTS */}
-            <motion.div 
+            <motion.div
               className="space-y-4"
               variants={containerVariants}
             >
-              <h3 className="text-lg font-semibold text-gray-600">Input Data</h3>
+              <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300">Input Data</h3>
 
               <motion.div className="space-y-4">
-              {[
-                { label: "Project Name", key: "projectName", placeholder: "zkSync, LayerZero" },
-                { label: "💰 Gas Spent (USD)", key: "gasSpent", placeholder: "150" },
-                { label: "⏱️ Time Invested (Hours)", key: "timeInvested", placeholder: "5" },
-                { label: "🎯 Expected Airdrop Value (USD)", key: "expectedValue", placeholder: "3000" },
-              ].map((f, idx) => (
-                <motion.div key={f.key} variants={itemVariants}>
-                  <label className="block text-sm text-gray-500 mb-1">
-                    {f.label}
-                  </label>
-                  <input
-                    type="text"
-                    placeholder={f.placeholder}
-                    value={formData[f.key]}
-                    onChange={(e) =>
-                      setFormData({ ...formData, [f.key]: e.target.value })
-                    }
-                    className={neuInput}
-                  />
-                </motion.div>
-              ))}
+                {[
+                  { label: "Project Name", key: "projectName", placeholder: "zkSync, LayerZero" },
+                  { label: "💰 Gas Spent (USD)", key: "gasSpent", placeholder: "150" },
+                  { label: "⏱️ Time Invested (Hours)", key: "timeInvested", placeholder: "5" },
+                  { label: "🎯 Expected Airdrop Value (USD)", key: "expectedValue", placeholder: "3000" },
+                ].map((f, idx) => (
+                  <motion.div key={f.key} variants={itemVariants}>
+                    <label className="block text-sm text-gray-500 dark:text-gray-400 mb-1">
+                      {f.label}
+                    </label>
+                    <input
+                      type="text"
+                      placeholder={f.placeholder}
+                      value={formData[f.key]}
+                      onChange={(e) =>
+                        setFormData({ ...formData, [f.key]: e.target.value })
+                      }
+                      className="w-full bg-main-light dark:bg-main-dark rounded-xl px-4 py-3 shadow-neu-pressed dark:shadow-neu-pressed-dark text-gray-700 dark:text-gray-200 outline-none placeholder-gray-400 dark:placeholder-gray-600"
+                    />
+                  </motion.div>
+                ))}
               </motion.div>
 
               {/* PROBABILITY */}
               <motion.div variants={itemVariants}>
-                <label className="block text-sm text-gray-500 mb-2">
+                <label className="block text-sm text-gray-500 dark:text-gray-400 mb-2">
                   📊 Success Probability: {formData.probability}%
                 </label>
                 <input
@@ -250,7 +234,7 @@ const ROICalculator = () => {
               <motion.div className="flex gap-3" variants={containerVariants}>
                 <motion.button
                   onClick={calculateROI}
-                  className={`${neuButton} flex-1 py-3 flex items-center justify-center gap-2 text-cyan-600`}
+                  className="bg-main-light dark:bg-main-dark rounded-xl shadow-neu-flat dark:shadow-neu-flat-dark active:shadow-neu-pressed dark:active:shadow-neu-pressed-dark transition text-gray-700 dark:text-gray-300 font-semibold flex-1 py-3 flex items-center justify-center gap-2 text-cyan-600"
                   variants={buttonHoverVariants}
                   whileHover="hover"
                   whileTap="tap"
@@ -268,7 +252,7 @@ const ROICalculator = () => {
                       probability: "50",
                     })
                   }
-                  className={`${neuButton} px-6 py-3 text-gray-600`}
+                  className="bg-main-light dark:bg-main-dark rounded-xl shadow-neu-flat dark:shadow-neu-flat-dark active:shadow-neu-pressed dark:active:shadow-neu-pressed-dark transition text-gray-700 dark:text-gray-300 font-semibold px-6 py-3"
                   variants={buttonHoverVariants}
                   whileHover="hover"
                   whileTap="tap"
@@ -280,20 +264,16 @@ const ROICalculator = () => {
 
             {/* RIGHT SIDE – HISTORICAL TABLE */}
             <motion.div
-              className="rounded-3xl p-4 overflow-y-auto"
-              style={{
-                boxShadow:
-                  "inset 4px 4px 8px rgba(163,177,198,0.6), inset -4px -4px 8px rgba(255,255,255,0.5)",
-              }}
+              className="rounded-3xl p-4 overflow-y-auto shadow-neu-pressed dark:shadow-neu-pressed-dark"
+              variants={fadeInUpVariants}
               initial="hidden"
               animate="visible"
-              variants={fadeInUpVariants}
             >
-              <h3 className="text-lg font-semibold text-gray-600 mb-2">
+              <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
                 Historical Airdrops
               </h3>
 
-              <table className="w-full text-sm text-gray-700">
+              <table className="w-full text-sm text-gray-700 dark:text-gray-300">
                 <thead>
                   <tr className="border-b border-gray-300 text-gray-500">
                     <th className="p-2 text-left">Project</th>
@@ -332,18 +312,18 @@ const ROICalculator = () => {
 
           {/* RESULTS */}
           {result && (
-            <motion.div 
+            <motion.div
               className="space-y-6"
               initial="hidden"
               animate="visible"
               variants={containerVariants}
             >
               <motion.div className="flex justify-between items-center" variants={itemVariants}>
-                <h3 className="text-xl font-bold text-gray-600">Results</h3>
+                <h3 className="text-xl font-bold text-gray-600 dark:text-gray-200">Results</h3>
 
                 <motion.button
                   onClick={saveCalculation}
-                  className={`${neuButton} px-5 py-2 flex items-center gap-2 text-cyan-600`}
+                  className="bg-main-light dark:bg-main-dark rounded-xl shadow-neu-flat dark:shadow-neu-flat-dark active:shadow-neu-pressed dark:active:shadow-neu-pressed-dark transition text-gray-700 dark:text-gray-300 font-semibold px-5 py-2 flex items-center gap-2 text-cyan-600"
                   variants={buttonHoverVariants}
                   whileHover="hover"
                   whileTap="tap"
@@ -370,19 +350,18 @@ const ROICalculator = () => {
                     color: parseFloat(result.roiPercentage) >= 0 ? "text-purple-500" : "text-red-500",
                   },
                 ].map((card, i) => (
-                  <motion.div key={i} className={`${neuContainer}`} variants={itemVariants}>
+                  <motion.div key={i} className="bg-main-light dark:bg-main-dark rounded-3xl shadow-neu-flat dark:shadow-neu-flat-dark p-6 transition-all hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark" variants={itemVariants}>
                     <div className="flex items-center gap-2">
                       <card.icon
                         size={26}
                         className={card.color || "text-cyan-500"}
                       />
-                      <p className="text-gray-500 text-sm">{card.label}</p>
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">{card.label}</p>
                     </div>
 
                     <p
-                      className={`text-2xl font-bold ${
-                        card.color || "text-gray-700"
-                      }`}
+                      className={`text-2xl font-bold ${card.color || "text-gray-700 dark:text-gray-200"
+                        }`}
                     >
                       {card.value}
                     </p>
@@ -391,7 +370,7 @@ const ROICalculator = () => {
               </motion.div>
 
               {/* RISK LEVEL */}
-              <motion.div className={`${neuContainer} flex items-center gap-3 text-gray-700`} variants={itemVariants}>
+              <motion.div className="bg-main-light dark:bg-main-dark rounded-3xl shadow-neu-flat dark:shadow-neu-flat-dark p-6 transition-all hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark flex items-center gap-3 text-gray-700 dark:text-gray-200" variants={itemVariants}>
                 <Info className={result.riskColor} size={24} />
                 <div>
                   <p className="font-semibold">
@@ -411,19 +390,19 @@ const ROICalculator = () => {
           {/* SAVED LIST */}
           {savedCalculations.length > 0 && (
             <motion.div variants={containerVariants} initial="hidden" animate="visible">
-              <h3 className="text-lg font-semibold text-gray-600 mb-3">
+              <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-3">
                 Saved Calculations
               </h3>
 
               <motion.div className="grid grid-cols-1 md:grid-cols-2 gap-4" variants={containerVariants}>
                 {savedCalculations.map((calc, i) => (
-                  <motion.div key={i} className={`${neuContainer}`} variants={itemVariants}>
+                  <motion.div key={i} className="bg-main-light dark:bg-main-dark rounded-3xl shadow-neu-flat dark:shadow-neu-flat-dark p-6 transition-all hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark" variants={itemVariants}>
                     <div className="flex justify-between items-start mb-2">
                       <div>
-                        <h4 className="font-semibold text-gray-700">
+                        <h4 className="font-semibold text-gray-700 dark:text-gray-200">
                           {calc.projectName}
                         </h4>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
                           {new Date(calc.timestamp).toLocaleString()}
                         </p>
                       </div>
@@ -438,10 +417,10 @@ const ROICalculator = () => {
                       </motion.button>
                     </div>
 
-                    <div className="text-sm space-y-1">
+                    <div className="text-sm space-y-1 text-gray-600 dark:text-gray-300">
                       <p>
                         Investment:{" "}
-                        <span className="font-semibold text-gray-700">
+                        <span className="font-semibold text-gray-700 dark:text-gray-200">
                           ${calc.totalInvestment}
                         </span>
                       </p>
@@ -449,11 +428,10 @@ const ROICalculator = () => {
                       <p>
                         ROI:{" "}
                         <span
-                          className={`font-semibold ${
-                            parseFloat(calc.roiPercentage) >= 0
-                              ? "text-green-500"
-                              : "text-red-500"
-                          }`}
+                          className={`font-semibold ${parseFloat(calc.roiPercentage) >= 0
+                            ? "text-green-500"
+                            : "text-red-500"
+                            }`}
                         >
                           {calc.roiPercentage}%
                         </span>
@@ -462,11 +440,10 @@ const ROICalculator = () => {
                       <p>
                         Profit:{" "}
                         <span
-                          className={`font-semibold ${
-                            parseFloat(calc.profit) >= 0
-                              ? "text-green-500"
-                              : "text-red-500"
-                          }`}
+                          className={`font-semibold ${parseFloat(calc.profit) >= 0
+                            ? "text-green-500"
+                            : "text-red-500"
+                            }`}
                         >
                           ${calc.profit}
                         </span>
@@ -478,8 +455,9 @@ const ROICalculator = () => {
             </motion.div>
           )}
         </motion.div>
-      )}
-    </motion.div>
+      )
+      }
+    </motion.div >
   );
 };
 
