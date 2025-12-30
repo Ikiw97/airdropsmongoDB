@@ -922,13 +922,13 @@ const NewsAggregator = () => {
 
   return (
     <motion.div
-      className={`relative z-10 w-full mb-8 p-0 rounded-3xl ${neuOut} transition-all duration-300`}
+      className={`relative z-10 w-full mb-8 p-0 rounded-3xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark transition-all duration-300`}
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
       <motion.div
-        className={`p-5 flex justify-between items-center flex-wrap gap-3 rounded-t-3xl ${neuInset}`}
+        className={`p-5 flex justify-between items-center flex-wrap gap-3 rounded-t-3xl bg-gray-100 dark:bg-gray-800 shadow-neu-inset dark:shadow-neu-inset-dark`}
         variants={fadeInUpVariants}
       >
         <motion.div className="flex items-center gap-3" variants={itemVariants}>
@@ -949,7 +949,7 @@ const NewsAggregator = () => {
         <motion.div className="flex items-center gap-3 flex-wrap" variants={containerVariants}>
           {lastUpdate && (
             <motion.div
-              className={`flex items-center gap-2 text-gray-600 text-sm px-3 py-1 rounded-full ${neuInset}`}
+              className={`flex items-center gap-2 text-gray-600 border border-gray-200 dark:border-gray-700 text-sm px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 shadow-neu-inset dark:shadow-neu-inset-dark`}
               variants={itemVariants}
             >
               <Clock size={16} />
@@ -962,7 +962,7 @@ const NewsAggregator = () => {
           <motion.button
             onClick={fetchCryptoNews}
             disabled={isLoading}
-            className={neuButton + " px-4 py-2 text-gray-700"}
+            className="bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark active:shadow-neu-inset dark:active:shadow-neu-inset-dark rounded-xl transition-all px-4 py-2 text-gray-700 dark:text-gray-200"
             variants={buttonHoverVariants}
             whileHover="hover"
             whileTap="tap"
@@ -976,7 +976,7 @@ const NewsAggregator = () => {
 
           <motion.button
             onClick={() => setAutoRefresh(!autoRefresh)}
-            className={`${neuButton} px-4 py-2 text-gray-700`}
+            className="bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark active:shadow-neu-inset dark:active:shadow-neu-inset-dark rounded-xl transition-all px-4 py-2 text-gray-700 dark:text-gray-200"
             variants={buttonHoverVariants}
             whileHover="hover"
             whileTap="tap"
@@ -986,7 +986,7 @@ const NewsAggregator = () => {
 
           <motion.button
             onClick={() => setIsExpanded(!isExpanded)}
-            className={`${neuButton} px-4 py-2 text-gray-700 flex items-center gap-2`}
+            className="bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark active:shadow-neu-inset dark:active:shadow-neu-inset-dark rounded-xl transition-all px-4 py-2 text-gray-700 dark:text-gray-200 flex items-center gap-2"
             variants={buttonHoverVariants}
             whileHover="hover"
             whileTap="tap"
@@ -1003,7 +1003,7 @@ const NewsAggregator = () => {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className={`p-3 text-gray-700 flex items-center gap-2 rounded-xl ${neuInset}`}>
+          <div className={`p-3 text-gray-700 dark:text-gray-300 flex items-center gap-2 rounded-xl bg-gray-100 dark:bg-gray-800 shadow-neu-inset dark:shadow-neu-inset-dark`}>
             <AlertCircle size={18} className="text-yellow-600" />
             <span>{error}</span>
           </div>
@@ -1012,7 +1012,7 @@ const NewsAggregator = () => {
 
       {isExpanded && (
         <motion.div
-          className={`p-6 rounded-b-3xl space-y-6 ${neuInset}`}
+          className={`p-6 rounded-b-3xl space-y-6 bg-gray-100 dark:bg-gray-800 shadow-neu-inset dark:shadow-neu-inset-dark`}
           initial="hidden"
           animate="visible"
           variants={containerVariants}
@@ -1023,7 +1023,7 @@ const NewsAggregator = () => {
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
-                className={neuInput}
+                className="w-full px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 shadow-neu-inset dark:shadow-neu-inset-dark outline-none text-gray-700 dark:text-gray-200"
               >
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
@@ -1038,7 +1038,7 @@ const NewsAggregator = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className={neuInput}
+                className="w-full px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 shadow-neu-inset dark:shadow-neu-inset-dark outline-none text-gray-700 dark:text-gray-200"
               >
                 <option value="trending">Trending</option>
                 <option value="latest">Latest</option>
@@ -1048,7 +1048,7 @@ const NewsAggregator = () => {
 
             <motion.button
               onClick={() => setShowAddForm(!showAddForm)}
-              className={neuButton + " px-4 py-2 text-gray-700 ml-auto flex items-center gap-2"}
+              className="bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark active:shadow-neu-inset dark:active:shadow-neu-inset-dark rounded-xl transition-all px-4 py-2 text-gray-700 dark:text-gray-200 ml-auto flex items-center gap-2"
               variants={buttonHoverVariants}
               whileHover="hover"
               whileTap="tap"
@@ -1071,7 +1071,7 @@ const NewsAggregator = () => {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className={`rounded-2xl p-5 ${neuInset}`}
+                className={`rounded-2xl p-5 bg-gray-100 dark:bg-gray-800 shadow-neu-inset dark:shadow-neu-inset-dark`}
               >
                 <form
                   onSubmit={(e) => {
@@ -1106,24 +1106,24 @@ const NewsAggregator = () => {
                     placeholder="Title"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className={neuInput}
+                    className="w-full px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 shadow-neu-inset dark:shadow-neu-inset-dark outline-none text-gray-700 dark:text-gray-200"
                   />
                   <textarea
                     placeholder="Description"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className={neuInput}
+                    className="w-full px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 shadow-neu-inset dark:shadow-neu-inset-dark outline-none text-gray-700 dark:text-gray-200"
                   />
                   <input
                     placeholder="Source"
                     value={formData.source}
                     onChange={(e) => setFormData({ ...formData, source: e.target.value })}
-                    className={neuInput}
+                    className="w-full px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 shadow-neu-inset dark:shadow-neu-inset-dark outline-none text-gray-700 dark:text-gray-200"
                   />
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className={neuInput}
+                    className="w-full px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 shadow-neu-inset dark:shadow-neu-inset-dark outline-none text-gray-700 dark:text-gray-200"
                   >
                     {categories
                       .filter((c) => c.id !== "all")
@@ -1137,11 +1137,11 @@ const NewsAggregator = () => {
                     placeholder="URL"
                     value={formData.url}
                     onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                    className={neuInput}
+                    className="w-full px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 shadow-neu-inset dark:shadow-neu-inset-dark outline-none text-gray-700 dark:text-gray-200"
                   />
                   <motion.button
                     type="submit"
-                    className={neuButton + " px-4 py-2 text-gray-700"}
+                    className="bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark active:shadow-neu-inset dark:active:shadow-neu-inset-dark rounded-xl transition-all px-4 py-2 text-gray-700 dark:text-gray-200"
                     variants={buttonHoverVariants}
                     whileHover="hover"
                     whileTap="tap"
@@ -1173,7 +1173,7 @@ const NewsAggregator = () => {
                 <motion.div
                   key={item.id}
                   whileHover={{ y: -5 }}
-                  className={`rounded-3xl p-5 ${neuOut} transition`}
+                  className={`rounded-3xl p-5 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark transition`}
                   variants={itemVariants}
                 >
                   <div className="flex justify-between items-start mb-3">
