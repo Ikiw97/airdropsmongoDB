@@ -342,7 +342,7 @@ export default function DexBridgePanel() {
 
   return (
     <motion.div
-      className="min-h-screen p-6 space-y-6 bg-gray-200 dark:bg-gray-900 transition-colors"
+      className="min-h-screen p-6 space-y-6 transition-colors"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
@@ -350,7 +350,7 @@ export default function DexBridgePanel() {
 
       {/* SEARCH BAR */}
       <motion.div
-        className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark"
+        className="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all"
         variants={fadeInUpVariants}
       >
         <Search size={20} className="text-gray-500 dark:text-gray-400" />
@@ -365,7 +365,7 @@ export default function DexBridgePanel() {
 
 
       {/* ======================= DEX LIST ====================== */}
-      <motion.div className="rounded-3xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark transition-all" variants={fadeInUpVariants}>
+      <motion.div className="rounded-3xl transition-all" variants={fadeInUpVariants}>
         <button
           className="w-full flex justify-between items-center p-5 text-lg font-semibold text-gray-600 dark:text-gray-300"
           onClick={() => toggleCategory('dex')}
@@ -458,7 +458,7 @@ export default function DexBridgePanel() {
 
 
       {/* ======================= BRIDGE LIST ====================== */}
-      <motion.div className="rounded-3xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark transition-all" variants={fadeInUpVariants}>
+      <motion.div className="rounded-3xl transition-all" variants={fadeInUpVariants}>
         <button
           className="w-full flex justify-between items-center p-5 text-lg font-semibold text-gray-600 dark:text-gray-300"
           onClick={() => toggleCategory('bridge')}
