@@ -24,14 +24,16 @@ import {
   secureSensitiveFields,
 } from "../utils/securityUtils";
 import { useSecurityContext } from "../contexts/SecurityContext";
-import { 
-  containerVariants, 
-  fadeInUpVariants, 
-  itemVariants, 
-  buttonHoverVariants 
+import {
+  containerVariants,
+  fadeInUpVariants,
+  itemVariants,
+  buttonHoverVariants
 } from "../utils/animationVariants";
+import { useTheme } from "../contexts/ThemeContext";
 
 const PrivateKeyGeneratorSecure = () => {
+  const { theme } = useTheme();
   const [isExpanded, setIsExpanded] = useState(true);
   const [generatedKeys, setGeneratedKeys] = useState([]);
   const [hideKeys, setHideKeys] = useState(true);
@@ -252,7 +254,7 @@ const PrivateKeyGeneratorSecure = () => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="w-full mb-8"
       initial="hidden"
       animate="visible"
@@ -261,15 +263,11 @@ const PrivateKeyGeneratorSecure = () => {
       {/* Session Status Bar */}
       <AnimatePresence>
         {sessionStatus && (
-          <motion.div 
-            className={`p-3 rounded-lg mb-4 flex justify-between items-center text-sm font-semibold ${
-              sessionStatus.isValid
-                ? "bg-green-100 text-green-700"
-                : "bg-red-100 text-red-700"
-            }`}
-            style={{
-              boxShadow: "4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)"
-            }}
+          <motion.div
+            className={`p-3 rounded-lg mb-4 flex justify-between items-center text-sm font-semibold shadow-neu-pressed dark:shadow-neu-pressed-dark ${sessionStatus.isValid
+                ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
+              }`}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -279,7 +277,7 @@ const PrivateKeyGeneratorSecure = () => {
               Session Time: {formatTime(sessionStatus.timeRemaining)}
             </div>
             {sessionStatus.warning && (
-              <motion.span 
+              <motion.span
                 className="animate-pulse"
                 animate={{ opacity: [1, 0.5, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
@@ -293,17 +291,14 @@ const PrivateKeyGeneratorSecure = () => {
 
       {/* Header */}
       <motion.div
-        className={`rounded-3xl p-6 flex justify-between items-center bg-gradient-to-r from-[#e0e5ec] to-[#f1f4f8] cursor-pointer mb-4`}
+        className="rounded-3xl p-6 flex justify-between items-center bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark cursor-pointer mb-4"
         onClick={() => setIsExpanded(!isExpanded)}
-        style={{
-          boxShadow: "9px 9px 16px #b8b9be, -9px -9px 16px #ffffff",
-        }}
         variants={fadeInUpVariants}
         whileHover={{ y: -2 }}
       >
         <motion.div className="flex items-center gap-3" variants={itemVariants}>
-          <motion.h2 
-            className="text-2xl font-bold flex items-center gap-2 text-gray-700"
+          <motion.h2
+            className="text-2xl font-bold flex items-center gap-2 text-gray-700 dark:text-gray-200"
             variants={itemVariants}
           >
             🔐 EVM Private Key Generator
@@ -314,7 +309,7 @@ const PrivateKeyGeneratorSecure = () => {
           >
             <Shield size={24} className="text-red-600" />
           </motion.div>
-          <motion.span 
+          <motion.span
             className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded"
             animate={{ scale: [1, 1.05, 1] }}
             transition={{ duration: 1.5, repeat: Infinity }}
@@ -323,10 +318,7 @@ const PrivateKeyGeneratorSecure = () => {
           </motion.span>
         </motion.div>
         <motion.button
-          className={`rounded-xl px-4 py-2 flex items-center gap-2 text-gray-700 font-semibold transition`}
-          style={{
-            boxShadow: "3px 3px 6px #b8b9be, -3px -3px 6px #ffffff",
-          }}
+          className="rounded-xl px-4 py-2 flex items-center gap-2 text-gray-700 dark:text-gray-300 font-semibold transition shadow-neu-flat dark:shadow-neu-flat-dark"
           variants={buttonHoverVariants}
           whileHover="hover"
           whileTap="tap"
@@ -336,7 +328,7 @@ const PrivateKeyGeneratorSecure = () => {
       </motion.div>
 
       {isExpanded && (
-        <motion.div 
+        <motion.div
           className="max-w-7xl mx-auto space-y-6"
           initial="hidden"
           animate="visible"
@@ -344,12 +336,7 @@ const PrivateKeyGeneratorSecure = () => {
         >
           {/* Security Warning */}
           <motion.div
-            className="p-6 rounded-2xl border-2 border-red-300 flex gap-4"
-            style={{
-              background: "rgba(254, 226, 226, 0.5)",
-              boxShadow:
-                "10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)",
-            }}
+            className="p-6 rounded-2xl border-2 border-red-300 dark:border-red-900 flex gap-4 bg-red-50 dark:bg-red-900/10 shadow-neu-flat dark:shadow-neu-flat-dark"
             variants={fadeInUpVariants}
           >
             <motion.div
@@ -365,7 +352,12 @@ const PrivateKeyGeneratorSecure = () => {
               <h3 className="font-bold text-red-700 mb-2">
                 ⚠️ Maximum Security Mode - Critical Guidelines
               </h3>
-              <ul className="text-sm text-red-600 space-y-1 list-disc list-inside">
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <h3 className="font-bold text-red-700 dark:text-red-400 mb-2">
+                ⚠️ Maximum Security Mode - Critical Guidelines
+              </h3>
+              <ul className="text-sm text-red-600 dark:text-red-400 space-y-1 list-disc list-inside">
                 <li>✅ Keys are generated locally in your browser - NEVER sent to servers</li>
                 <li>✅ This session is monitored - 30-minute auto-timeout for security</li>
                 <li>✅ DevTools and screenshots are blocked to prevent key extraction</li>
@@ -380,15 +372,10 @@ const PrivateKeyGeneratorSecure = () => {
 
           {/* Generator Section */}
           <motion.div
-            className="p-6 rounded-2xl"
-            style={{
-              background: "#e0e5ec",
-              boxShadow:
-                "10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)",
-            }}
+            className="p-6 rounded-2xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark"
             variants={fadeInUpVariants}
           >
-            <motion.h2 
+            <motion.h2
               className="text-2xl font-bold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600"
               variants={itemVariants}
             >
@@ -397,7 +384,7 @@ const PrivateKeyGeneratorSecure = () => {
 
             <motion.div className="space-y-4" variants={containerVariants}>
               <motion.div variants={itemVariants}>
-                <label className="block text-sm text-gray-600 mb-2 font-medium">
+                <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">
                   Number of Keys to Generate (1-100)
                 </label>
                 <input
@@ -406,25 +393,17 @@ const PrivateKeyGeneratorSecure = () => {
                   max="100"
                   value={quantityToGenerate}
                   onChange={(e) => setQuantityToGenerate(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl text-gray-700"
-                  style={{
-                    background: "#f1f4f8",
-                    boxShadow: "inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5)"
-                  }}
+                  className="w-full px-4 py-3 rounded-xl text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 shadow-neu-pressed dark:shadow-neu-pressed-dark outline-none"
                 />
               </motion.div>
 
               <motion.button
                 onClick={handleGenerateKeys}
                 disabled={isGenerating}
-                className={`w-full px-6 py-3 rounded-xl font-semibold transition text-white ${
-                  isGenerating
+                className={`w-full px-6 py-3 rounded-xl font-semibold transition text-white shadow-neu-flat dark:shadow-neu-flat-dark ${isGenerating
                     ? "opacity-50 cursor-not-allowed"
                     : "bg-gradient-to-r from-blue-600 to-purple-600"
-                }`}
-                style={{
-                  boxShadow: "6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)"
-                }}
+                  }`}
                 variants={buttonHoverVariants}
                 whileHover="hover"
                 whileTap="tap"
@@ -449,23 +428,16 @@ const PrivateKeyGeneratorSecure = () => {
           {/* Generated Keys Display */}
           {generatedKeys.length > 0 && (
             <motion.div
-              className="p-6 rounded-2xl"
-              style={{
-                background: "#e0e5ec",
-                boxShadow: "10px 10px 20px rgba(163,177,198,0.6), -10px -10px 20px rgba(255,255,255,0.5)"
-              }}
+              className="p-6 rounded-2xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark"
               initial="hidden"
               animate="visible"
               variants={containerVariants}
             >
               <motion.div className="flex justify-between items-center mb-4" variants={itemVariants}>
-                <h3 className="text-xl font-bold text-gray-700">Generated Keys ({generatedKeys.length})</h3>
+                <h3 className="text-xl font-bold text-gray-700 dark:text-gray-200">Generated Keys ({generatedKeys.length})</h3>
                 <motion.button
                   onClick={() => setHideKeys(!hideKeys)}
-                  className="px-4 py-2 rounded-lg text-gray-700 font-semibold"
-                  style={{
-                    boxShadow: "3px 3px 6px rgba(163,177,198,0.6), -3px -3px 6px rgba(255,255,255,0.5)"
-                  }}
+                  className="px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 font-semibold shadow-neu-flat dark:shadow-neu-flat-dark bg-main-light dark:bg-main-dark"
                   variants={buttonHoverVariants}
                   whileHover="hover"
                   whileTap="tap"
@@ -474,26 +446,23 @@ const PrivateKeyGeneratorSecure = () => {
                 </motion.button>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 className="space-y-3 max-h-[400px] overflow-y-auto"
                 variants={containerVariants}
               >
                 {generatedKeys.map((key, index) => (
                   <motion.div
                     key={key.id}
-                    className="p-4 rounded-lg bg-white"
-                    style={{
-                      boxShadow: "inset 3px 3px 6px rgba(163,177,198,0.4), inset -3px -3px 6px rgba(255,255,255,0.5)"
-                    }}
+                    className="p-4 rounded-lg bg-white dark:bg-gray-800 shadow-neu-pressed dark:shadow-neu-pressed-dark"
                     variants={itemVariants}
                     whileHover={{ x: 5 }}
                   >
-                    <div className="text-sm font-mono text-gray-700 mb-2">
+                    <div className="text-sm font-mono text-gray-700 dark:text-gray-300 mb-2">
                       <p className="mb-1">
                         <strong>Address:</strong> {hideKeys ? "••••••" : key.address}
                         <motion.button
                           onClick={() => copyToClipboard(key.address, index, "address")}
-                          className="ml-2 text-blue-600 hover:text-blue-700"
+                          className="ml-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.95 }}
                         >
@@ -509,10 +478,7 @@ const PrivateKeyGeneratorSecure = () => {
               <motion.div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6" variants={containerVariants}>
                 <motion.button
                   onClick={() => setShowExportPassword(!showExportPassword)}
-                  className="px-4 py-3 rounded-lg font-semibold bg-gradient-to-r from-green-500 to-emerald-600 text-white"
-                  style={{
-                    boxShadow: "6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)"
-                  }}
+                  className="px-4 py-3 rounded-lg font-semibold bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-neu-flat dark:shadow-neu-flat-dark"
                   variants={buttonHoverVariants}
                   whileHover="hover"
                   whileTap="tap"
@@ -521,10 +487,7 @@ const PrivateKeyGeneratorSecure = () => {
                 </motion.button>
                 <motion.button
                   onClick={downloadPlainCSV}
-                  className="px-4 py-3 rounded-lg font-semibold bg-gradient-to-r from-orange-500 to-red-600 text-white"
-                  style={{
-                    boxShadow: "6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)"
-                  }}
+                  className="px-4 py-3 rounded-lg font-semibold bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-neu-flat dark:shadow-neu-flat-dark"
                   variants={buttonHoverVariants}
                   whileHover="hover"
                   whileTap="tap"
@@ -537,28 +500,20 @@ const PrivateKeyGeneratorSecure = () => {
               <AnimatePresence>
                 {showExportPassword && (
                   <motion.div
-                    className="mt-4 p-4 rounded-lg"
-                    style={{
-                      background: "#f1f4f8",
-                      boxShadow: "inset 3px 3px 6px rgba(163,177,198,0.4)"
-                    }}
+                    className="mt-4 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow-neu-inset dark:shadow-neu-inset-dark"
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
                   >
                     <motion.div variants={itemVariants}>
-                      <label className="block text-sm text-gray-600 mb-2 font-medium">
+                      <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">
                         Encryption Password (min 8 chars)
                       </label>
                       <input
                         type={showExportPassword ? "text" : "password"}
                         value={exportPassword}
                         onChange={(e) => setExportPassword(e.target.value)}
-                        className="w-full px-4 py-2 rounded-lg text-gray-700 mb-3"
-                        style={{
-                          background: "#e0e5ec",
-                          boxShadow: "inset 3px 3px 6px rgba(163,177,198,0.6)"
-                        }}
+                        className="w-full px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 mb-3 bg-main-light dark:bg-main-dark shadow-neu-pressed dark:shadow-neu-pressed-dark outline-none"
                         placeholder="Enter strong password"
                       />
                       <motion.button
@@ -579,10 +534,7 @@ const PrivateKeyGeneratorSecure = () => {
               {/* Clear Button */}
               <motion.button
                 onClick={clearAllKeys}
-                className="w-full mt-4 px-4 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700"
-                style={{
-                  boxShadow: "6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)"
-                }}
+                className="w-full mt-4 px-4 py-2 rounded-lg font-semibold text-white bg-red-600 hover:bg-red-700 shadow-neu-flat dark:shadow-neu-flat-dark"
                 variants={buttonHoverVariants}
                 whileHover="hover"
                 whileTap="tap"
