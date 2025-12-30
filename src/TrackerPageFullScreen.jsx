@@ -151,24 +151,20 @@ function SuccessPopup({ message, onClose }) {
       >
         <div className="flex items-center gap-4">
           <div
-            className="flex-shrink-0 p-3 rounded-full"
+            className="flex-shrink-0 p-3 rounded-full shadow-neu-flat dark:shadow-neu-flat-dark"
             style={{
               background: 'linear-gradient(145deg, #4ade80, #22c55e)',
-              boxShadow: '6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)'
             }}
           >
             <CheckCircle size={32} className="text-white" />
           </div>
           <div className="flex-1">
-            <h3 className="text-xl font-bold text-gray-800 mb-1">Sucess!</h3>
+            <h3 className="text-xl font-bold text-gray-800 mb-1">Success!</h3>
             <p className="text-gray-600 font-medium">{message}</p>
           </div>
           <button
             onClick={onClose}
-            className="flex-shrink-0 p-2 rounded-lg text-gray-600 hover:text-gray-800 transition"
-            style={{
-              boxShadow: '4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)'
-            }}
+            className="flex-shrink-0 p-2 rounded-lg text-gray-600 hover:text-gray-800 transition shadow-neu-flat dark:shadow-neu-flat-dark"
           >
             <X size={20} />
           </button>
@@ -176,10 +172,9 @@ function SuccessPopup({ message, onClose }) {
 
         {/* Progress bar */}
         <div
-          className="mt-4 h-1 rounded-full overflow-hidden"
+          className="mt-4 h-1 rounded-full overflow-hidden shadow-neu-inset dark:shadow-neu-inset-dark"
           style={{
             background: '#e0e5ec',
-            boxShadow: 'inset 2px 2px 4px rgba(163,177,198,0.6)'
           }}
         >
           <div
@@ -479,10 +474,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
               </h2>
               <button
                 onClick={() => setSidebarOpen(false)}
-                className="text-gray-600 hover:text-gray-800 transition lg:hidden rounded-lg p-2"
-                style={{
-                  boxShadow: '4px 4px 8px rgba(163,177,198,0.6), -4px -4px 8px rgba(255,255,255,0.5)'
-                }}
+                className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition lg:hidden rounded-lg p-2 shadow-neu-flat dark:shadow-neu-flat-dark"
               >
                 <ChevronLeft size={20} />
               </button>
@@ -514,10 +506,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
               {user?.is_admin && (
                 <button
                   onClick={onShowAdmin}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold transition text-cyan-700 hover:text-cyan-800"
-                  style={{
-                    boxShadow: '6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)'
-                  }}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold transition text-cyan-700 dark:text-cyan-400 hover:text-cyan-800 dark:hover:text-cyan-300 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
                 >
                   <Shield size={18} />
                   Admin Panel
@@ -525,10 +514,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
               )}
               <button
                 onClick={onLogout}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold transition text-red-700 hover:text-red-800"
-                style={{
-                  boxShadow: '6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)'
-                }}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold transition text-red-700 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
               >
                 <LogOut size={18} />
                 Logout
@@ -541,11 +527,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
       {!sidebarOpen && (
         <button
           onClick={() => setSidebarOpen(true)}
-          className="fixed top-3 left-3 z-50 flex items-center justify-center w-10 h-10 rounded-full transition text-gray-700 hover:text-gray-900"
-          style={{
-            background: 'linear-gradient(145deg, #d1d6dd, #ecf0f3)',
-            boxShadow: '6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.6)'
-          }}
+          className="fixed top-3 left-3 z-50 flex items-center justify-center w-10 h-10 rounded-full transition text-gray-700 dark:text-gray-300 hover:text-gray-900 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
         >
           <Menu size={22} />
         </button>
@@ -880,10 +862,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                 <div className="text-center">
                   <button
                     onClick={() => setShowAll(!showAll)}
-                    className="px-6 py-2 rounded-lg font-semibold transition text-blue-700 hover:text-blue-800"
-                    style={{
-                      boxShadow: '6px 6px 12px rgba(163,177,198,0.6), -6px -6px 12px rgba(255,255,255,0.5)'
-                    }}
+                    className="px-6 py-2 rounded-lg font-semibold transition text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
                   >
                     {showAll ? "⬆️ Show Less" : "⬇️ Show More"}
                   </button>
