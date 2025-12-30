@@ -324,14 +324,14 @@ function MultisendTool() {
 
   return (
     <motion.div
-      className="min-h-screen flex items-center justify-center px-4 md:px-0 bg-gray-200 dark:bg-gray-900 transition-colors"
+      className="min-h-screen flex items-center justify-center px-4 md:px-0 transition-colors"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
 
       <motion.div
-        className="w-full max-w-5xl p-5 md:p-8 rounded-3xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark transition-all"
+        className="w-full max-w-5xl p-5 md:p-8 rounded-3xl transition-all"
         variants={fadeInUpVariants}
       >
         {/* Header */}
@@ -419,8 +419,8 @@ function MultisendTool() {
               <button
                 onClick={() => setSendType("native")}
                 className={`flex-1 py-3 rounded-2xl font-semibold text-sm transition-all ${sendType === "native"
-                    ? "bg-main-light dark:bg-main-dark text-gray-900 dark:text-gray-100 shadow-neu-pressed dark:shadow-neu-pressed-dark"
-                    : "bg-main-light dark:bg-main-dark text-gray-600 dark:text-gray-400 shadow-neu-flat dark:shadow-neu-flat-dark"
+                  ? "bg-main-light dark:bg-main-dark text-gray-900 dark:text-gray-100 shadow-neu-pressed dark:shadow-neu-pressed-dark"
+                  : "bg-main-light dark:bg-main-dark text-gray-600 dark:text-gray-400 shadow-neu-flat dark:shadow-neu-flat-dark"
                   }`}
                 data-testid="send-native-btn"
               >
@@ -429,8 +429,8 @@ function MultisendTool() {
               <button
                 onClick={() => setSendType("token")}
                 className={`flex-1 py-3 rounded-2xl font-semibold text-sm transition-all ${sendType === "token"
-                    ? "bg-main-light dark:bg-main-dark text-gray-900 dark:text-gray-100 shadow-neu-pressed dark:shadow-neu-pressed-dark"
-                    : "bg-main-light dark:bg-main-dark text-gray-600 dark:text-gray-400 shadow-neu-flat dark:shadow-neu-flat-dark"
+                  ? "bg-main-light dark:bg-main-dark text-gray-900 dark:text-gray-100 shadow-neu-pressed dark:shadow-neu-pressed-dark"
+                  : "bg-main-light dark:bg-main-dark text-gray-600 dark:text-gray-400 shadow-neu-flat dark:shadow-neu-flat-dark"
                   }`}
                 data-testid="send-token-btn"
               >
@@ -532,8 +532,8 @@ function MultisendTool() {
             onClick={executeMultisend}
             disabled={loading || parseRecipients().length === 0}
             className={`w-full py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-all ${loading || parseRecipients().length === 0
-                ? "bg-main-light dark:bg-main-dark text-gray-400 shadow-neu-pressed dark:shadow-neu-pressed-dark"
-                : "bg-main-light dark:bg-main-dark text-green-700 dark:text-green-400 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark"
+              ? "bg-main-light dark:bg-main-dark text-gray-400 shadow-neu-pressed dark:shadow-neu-pressed-dark"
+              : "bg-main-light dark:bg-main-dark text-green-700 dark:text-green-400 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark"
               }`}
             data-testid="send-multisend-btn"
           >
