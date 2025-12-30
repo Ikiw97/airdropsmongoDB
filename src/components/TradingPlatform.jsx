@@ -26,7 +26,7 @@ export default function TradingPlatform() {
   ];
 
   return (
-    <motion.div 
+    <motion.div
       className="max-w-6xl mx-auto space-y-8 px-4 md:px-6"
       initial="hidden"
       animate="visible"
@@ -34,15 +34,10 @@ export default function TradingPlatform() {
     >
       {/* HEADER */}
       <motion.div
-        className="text-center py-6 md:py-8 rounded-2xl shadow-inner"
-        style={{
-          background: "#e3e7ee",
-          boxShadow:
-            "6px 6px 12px rgba(163,177,198,0.4), -6px -6px 12px rgba(255,255,255,0.7)",
-        }}
+        className="text-center py-6 md:py-8 rounded-2xl shadow-neu-pressed dark:shadow-neu-pressed-dark bg-main-light dark:bg-main-dark"
         variants={fadeInUpVariants}
       >
-        <motion.div 
+        <motion.div
           className="flex items-center justify-center gap-2 md:gap-3 mb-1"
           variants={itemVariants}
         >
@@ -56,8 +51,8 @@ export default function TradingPlatform() {
             DeDoo Trading Platform
           </h2>
         </motion.div>
-        <motion.p 
-          className="text-gray-600 text-sm md:text-base"
+        <motion.p
+          className="text-gray-600 dark:text-gray-400 text-sm md:text-base"
           variants={fadeInUpVariants}
         >
           Trade crypto with lightning speed & zero fees
@@ -65,29 +60,21 @@ export default function TradingPlatform() {
       </motion.div>
 
       {/* FEATURE CARDS */}
-      <motion.div 
+      <motion.div
         className="grid grid-cols-1 md:grid-cols-3 gap-5"
         variants={containerVariants}
       >
         {features.map((f, i) => (
           <motion.div
             key={i}
-            className="p-5 md:p-6 rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
-            style={{
-              background: "#e3e7ee",
-              boxShadow:
-                "4px 4px 8px rgba(163,177,198,0.5), -4px -4px 8px rgba(255,255,255,0.6)",
-            }}
+            className="p-5 md:p-6 rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark"
             variants={itemVariants}
-            whileHover={{ y: -5, boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)" }}
+            whileHover={{ y: -5 }}
             transition={{ duration: 0.3 }}
           >
             <motion.div
-              className="flex justify-center items-center mx-auto mb-3 w-12 h-12 rounded-xl"
-              style={{
-                boxShadow:
-                  "inset 2px 2px 4px rgba(163,177,198,0.4), inset -2px -2px 4px rgba(255,255,255,0.5)",
-              }}
+              className="flex justify-center items-center mx-auto mb-3 w-12 h-12 rounded-xl shadow-neu-pressed dark:shadow-neu-pressed-dark"
+              style={{ background: 'transparent' }}
               whileHover={{ scale: 1.1 }}
               transition={{ duration: 0.3 }}
             >
@@ -99,8 +86,8 @@ export default function TradingPlatform() {
             >
               {f.title}
             </motion.h3>
-            <motion.p 
-              className="text-gray-700 text-sm leading-snug max-w-xs mx-auto"
+            <motion.p
+              className="text-gray-700 dark:text-gray-300 text-sm leading-snug max-w-xs mx-auto"
               variants={itemVariants}
             >
               {f.desc}
@@ -111,12 +98,7 @@ export default function TradingPlatform() {
 
       {/* IFRAME CONTAINER */}
       <motion.div
-        className="rounded-2xl overflow-hidden"
-        style={{
-          background: "#e3e7ee",
-          boxShadow:
-            "6px 6px 12px rgba(163,177,198,0.5), -6px -6px 12px rgba(255,255,255,0.6)",
-        }}
+        className="rounded-2xl overflow-hidden bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark"
         variants={fadeInUpVariants}
       >
         <iframe
@@ -129,7 +111,7 @@ export default function TradingPlatform() {
       </motion.div>
 
       {/* OPEN IN NEW TAB BUTTON */}
-      <motion.div 
+      <motion.div
         className="flex justify-center"
         variants={itemVariants}
       >
@@ -137,11 +119,9 @@ export default function TradingPlatform() {
           href="https://trade.dedoo.xyz/"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium text-white text-sm md:text-base transition-transform hover:scale-105"
+          className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium text-white text-sm md:text-base transition-transform hover:scale-105 shadow-neu-flat dark:shadow-neu-flat-dark"
           style={{
             background: "linear-gradient(145deg, #3b82f6, #8b5cf6)",
-            boxShadow:
-              "6px 6px 12px rgba(163,177,198,0.5), -6px -6px 12px rgba(255,255,255,0.6)",
           }}
           variants={buttonHoverVariants}
           whileHover="hover"
