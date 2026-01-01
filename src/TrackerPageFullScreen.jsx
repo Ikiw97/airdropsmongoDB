@@ -234,6 +234,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeView, setActiveView] = useState("projects");
   const [isMobile, setIsMobile] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -683,75 +684,105 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
 
           {activeView === "projects" && (
             <div className="space-y-8">
-              <div className="p-4 md:p-6 rounded-2xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark"
-              >
-                <h2 className="text-lg md:text-xl font-semibold mb-4 text-blue-700">
+
+              {/* Add Project Toggle Button */}
+              {!showAddForm && (
+                <button
+                  onClick={() => setShowAddForm(true)}
+                  className="w-full md:w-auto px-6 py-3 rounded-2xl font-bold transition-all text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark flex items-center justify-center gap-2"
+                >
                   ➕ Add New Project
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {["name", "twitter", "discord", "telegram", "farcaster", "wallet", "email", "github", "website"].map(
-                    (field) => (
-                      <input
-                        key={field}
-                        type="text"
-                        placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                        value={formData[field]}
-                        onChange={(e) =>
-                          setFormData({ ...formData, [field]: e.target.value })
-                        }
-                        className="p-2 md:p-3 text-sm md:text-base rounded-lg bg-main-light dark:bg-main-dark text-gray-800 dark:text-gray-200 w-full shadow-neu-pressed dark:shadow-neu-pressed-dark placeholder-gray-400 dark:placeholder-gray-600"
-                      />
-                    )
-                  )}
-                </div>
+                </button>
+              )}
 
-                <div className="mt-3">
-                  <label className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                    <StickyNote size={16} />
-                    Notes
-                  </label>
-                  <textarea
-                    placeholder="Add notes..."
-                    value={formData.notes}
-                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    className="w-full p-2 rounded-lg bg-main-light dark:bg-main-dark text-gray-800 dark:text-gray-200 resize-none shadow-neu-pressed dark:shadow-neu-pressed-dark placeholder-gray-400 dark:placeholder-gray-600"
-                    rows="2"
-                  ></textarea>
-                </div>
-
-                <div className="mt-3">
-                  <label className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                    <Tag size={16} />
-                    Select Tags
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {AVAILABLE_TAGS.map((tag) => (
+              {/* Add Project Form - Collapsible */}
+              <AnimatePresence>
+                {showAddForm && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0, overflow: "hidden" }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="p-4 md:p-6 rounded-2xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark relative">
                       <button
-                        key={tag.id}
-                        type="button"
-                        onClick={() => toggleTag(tag.id)}
-                        className={`px-3 py-1 rounded-full text-xs font-semibold transition ${selectedTags.includes(tag.id) || (formData.tags && formData.tags.includes(tag.id))
-                          ? `${tag.color} text-gray-800 shadow-neu-pressed dark:shadow-neu-pressed-dark`
-                          : "text-gray-600 dark:text-gray-400 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
+                        onClick={() => setShowAddForm(false)}
+                        className="absolute top-4 right-4 p-2 rounded-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-pressed dark:hover:shadow-neu-pressed-dark"
+                      >
+                        <X size={20} />
+                      </button>
+
+                      <h2 className="text-lg md:text-xl font-semibold mb-4 text-blue-700 flex items-center gap-2">
+                        ➕ Add New Project Details
+                      </h2>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {["name", "twitter", "discord", "telegram", "farcaster", "wallet", "email", "github", "website"].map(
+                          (field) => (
+                            <input
+                              key={field}
+                              type="text"
+                              placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                              value={formData[field]}
+                              onChange={(e) =>
+                                setFormData({ ...formData, [field]: e.target.value })
+                              }
+                              className="p-2 md:p-3 text-sm md:text-base rounded-lg bg-main-light dark:bg-main-dark text-gray-800 dark:text-gray-200 w-full shadow-neu-pressed dark:shadow-neu-pressed-dark placeholder-gray-400 dark:placeholder-gray-600"
+                            />
+                          )
+                        )}
+                      </div>
+
+                      <div className="mt-3">
+                        <label className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                          <StickyNote size={16} />
+                          Notes
+                        </label>
+                        <textarea
+                          placeholder="Add notes..."
+                          value={formData.notes}
+                          onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                          className="w-full p-2 rounded-lg bg-main-light dark:bg-main-dark text-gray-800 dark:text-gray-200 resize-none shadow-neu-pressed dark:shadow-neu-pressed-dark placeholder-gray-400 dark:placeholder-gray-600"
+                          rows="2"
+                        ></textarea>
+                      </div>
+
+                      <div className="mt-3">
+                        <label className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                          <Tag size={16} />
+                          Select Tags
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                          {AVAILABLE_TAGS.map((tag) => (
+                            <button
+                              key={tag.id}
+                              type="button"
+                              onClick={() => toggleTag(tag.id)}
+                              className={`px-3 py-1 rounded-full text-xs font-semibold transition ${selectedTags.includes(tag.id) || (formData.tags && formData.tags.includes(tag.id))
+                                ? `${tag.color} text-gray-800 shadow-neu-pressed dark:shadow-neu-pressed-dark`
+                                : "text-gray-600 dark:text-gray-400 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
+                                }`}
+                            >
+                              {tag.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={addProject}
+                        disabled={loading}
+                        className={`mt-4 px-6 py-2 rounded-lg font-semibold transition-all ${loading
+                          ? "text-gray-500 cursor-not-allowed shadow-neu-pressed dark:shadow-neu-pressed-dark"
+                          : "text-green-700 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
                           }`}
                       >
-                        {tag.label}
+                        {loading ? "Loading..." : "+ Add Project"}
                       </button>
-                    ))}
-                  </div>
-                </div>
-
-                <button
-                  onClick={addProject}
-                  disabled={loading}
-                  className={`mt-4 px-6 py-2 rounded-lg font-semibold transition-all ${loading
-                    ? "text-gray-500 cursor-not-allowed shadow-neu-pressed dark:shadow-neu-pressed-dark"
-                    : "text-green-700 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
-                    }`}
-                >
-                  {loading ? "Loading..." : "+ Add Project"}
-                </button>
-              </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <motion.div
                 className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto"
