@@ -473,7 +473,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
   ];
 
   return (
-    <div className="min-h-screen text-gray-800 dark:text-gray-100 relative overflow-hidden bg-main-light dark:bg-main-dark transition-colors duration-300">
+    <div className="h-screen overflow-y-auto text-gray-800 dark:text-gray-100 relative overflow-x-hidden bg-main-light dark:bg-main-dark transition-colors duration-300">
       {/* Success Popup */}
       {showSuccessPopup && (
         <SuccessPopup
@@ -605,17 +605,20 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
 
 
 
-            <div className="flex items-center gap-2 md:gap-3 flex-wrap">
+            <div
+              className="flex items-center gap-1 md:gap-3 flex-nowrap overflow-x-auto w-full md:w-auto pb-1"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
               {activeView === "projects" && (
                 <>
-                  <div className="relative">
-                    <button className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 rounded-xl transition text-xs md:text-sm text-gray-700 dark:text-gray-300 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
+                  <div className="relative flex-shrink-0">
+                    <button className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1 md:py-2 rounded-xl transition text-[10px] md:text-sm text-gray-700 dark:text-gray-300 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
                     >
                       <Tag size={14} />
                       <select
                         value={filterTag}
                         onChange={(e) => setFilterTag(e.target.value)}
-                        className="bg-transparent text-gray-800 dark:text-gray-200 outline-none cursor-pointer border-none appearance-none pr-2 font-medium"
+                        className="bg-transparent text-gray-800 dark:text-gray-200 outline-none cursor-pointer border-none appearance-none pr-1 md:pr-2 font-medium"
                         style={{
                           WebkitAppearance: 'none',
                           MozAppearance: 'none'
@@ -631,14 +634,14 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                     </button>
                   </div>
 
-                  <div className="relative">
-                    <button className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 rounded-xl transition text-xs md:text-sm text-gray-700 dark:text-gray-300 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
+                  <div className="relative flex-shrink-0">
+                    <button className="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1 md:py-2 rounded-xl transition text-[10px] md:text-sm text-gray-700 dark:text-gray-300 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
                     >
                       <CheckSquare size={14} />
                       <select
                         value={filterDaily}
                         onChange={(e) => setFilterDaily(e.target.value)}
-                        className="bg-transparent text-gray-800 dark:text-gray-200 outline-none cursor-pointer border-none appearance-none pr-2 font-medium"
+                        className="bg-transparent text-gray-800 dark:text-gray-200 outline-none cursor-pointer border-none appearance-none pr-1 md:pr-2 font-medium"
                         style={{
                           WebkitAppearance: 'none',
                           MozAppearance: 'none'
@@ -656,12 +659,12 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                     placeholder="🔍 Search..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="px-2 md:px-3 py-1.5 md:py-2 rounded-xl bg-main-light dark:bg-main-dark text-gray-800 dark:text-gray-200 w-28 md:w-48 text-xs md:text-sm shadow-neu-pressed dark:shadow-neu-pressed-dark"
+                    className="flex-shrink-0 px-2 md:px-3 py-1 md:py-2 rounded-xl bg-main-light dark:bg-main-dark text-gray-800 dark:text-gray-200 w-20 md:w-48 text-[10px] md:text-sm shadow-neu-pressed dark:shadow-neu-pressed-dark"
                   />
 
                   <button
                     onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-                    className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1.5 md:py-2 rounded-xl text-xs md:text-sm text-gray-700 dark:text-gray-300 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
+                    className="flex-shrink-0 flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1 md:py-2 rounded-xl text-[10px] md:text-sm text-gray-700 dark:text-gray-300 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
                   >
                     <ArrowUpDown size={14} />
                     <span className="hidden sm:inline">{sortOrder === "asc" ? "A-Z" : "Z-A"}</span>
@@ -669,7 +672,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
 
                   <button
                     onClick={() => setHideData(!hideData)}
-                    className="px-2 md:px-3 py-1.5 md:py-2 rounded-xl flex items-center gap-1 md:gap-2 text-xs md:text-sm text-gray-700 dark:text-gray-300 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
+                    className="flex-shrink-0 px-2 md:px-3 py-1 md:py-2 rounded-xl flex items-center gap-1 md:gap-2 text-[10px] md:text-sm text-gray-700 dark:text-gray-300 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
                   >
                     {hideData ? <Eye size={16} /> : <EyeOff size={16} />}
                   </button>
