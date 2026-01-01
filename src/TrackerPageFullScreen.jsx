@@ -828,7 +828,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                         <div className="mb-3 p-3 rounded-xl bg-gradient-to-br from-yellow-100 to-orange-100 shadow-inner">
                           <p className="flex items-start gap-2 text-sm text-gray-700">
                             <StickyNote size={14} className="mt-0.5 text-yellow-700 flex-shrink-0" />
-                            <span className="italic leading-relaxed">{p.notes}</span>
+                            <span className="italic leading-relaxed break-all">{p.notes}</span>
                           </p>
                         </div>
                       )}
@@ -860,8 +860,8 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                         )}
                         {p.wallet && (
                           <div className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white/30 transition-colors duration-150">
-                            <Wallet size={14} className="text-yellow-700" />
-                            <span className="text-xs text-gray-700 font-mono break-all">{hideData ? '••••••••••••••' : p.wallet}</span>
+                            <Wallet size={14} className="text-yellow-700 flex-shrink-0" />
+                            <span className="text-xs text-gray-700 font-mono break-all min-w-0">{hideData ? '••••••••••••••' : p.wallet}</span>
                           </div>
                         )}
                         {p.email && (
