@@ -31,7 +31,7 @@ import {
   CheckCircle,
   Repeat,
   Radio,
-  PieChart,
+  Gift,
 } from "lucide-react";
 import {
   LineChart,
@@ -340,6 +340,25 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
     } catch (err) {
       secureLogger.logError('UPDATE_DAILY_ERROR', err, { name });
       alert("❌ Gagal update daily status!");
+    }
+  };
+
+
+
+  const toggleDistributed = async (name, current) => {
+    const next = !current; // Toggle boolean
+    try {
+      await apiService.updateDistributed(name, next);
+
+      if (next) {
+        setSuccessMessage(`Project "${name}" marked as distributed! 🎁`);
+        setShowSuccessPopup(true);
+      }
+
+      fetchProjects();
+    } catch (err) {
+      secureLogger.logError('UPDATE_DISTRIBUTED_ERROR', err, { name });
+      alert("❌ Gagal update status distributed!");
     }
   };
 
@@ -747,19 +766,29 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                       custom={i}
                       variants={cardVariants}
                       whileHover="hover"
-                      className="group relative p-5 sm:p-6 w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-sm rounded-2xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark"
+                      className={`group relative p-5 sm:p-6 w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-sm rounded-2xl bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark ${p.distributed ? 'border-2 border-yellow-400/50' : ''}`}
                     >
+                      {p.distributed && (
+                        <div className="absolute top-0 right-0 transform translate-x-2 -translate-y-2">
+                          <span className="bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full shadow-lg flex items-center gap-1">
+                            <Gift size={12} /> DISTRIBUTED
+                          </span>
+                        </div>
+                      )}
                       <div className="flex justify-between items-start mb-3">
                         <h3 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 pr-10">
                           {p.name}
                         </h3>
                         <div className="flex gap-2">
                           <button
-                            onClick={() => setActiveView("analytics")}
-                            className="p-2 rounded-lg text-purple-600 hover:text-purple-700 transition-all duration-200 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
-                            title="View Distribution"
+                            onClick={() => toggleDistributed(p.name, p.distributed)}
+                            className={`p-2 rounded-lg transition-all duration-200 ${p.distributed
+                              ? 'text-yellow-600 dark:text-yellow-400 shadow-neu-pressed dark:shadow-neu-pressed-dark'
+                              : 'text-gray-500 dark:text-gray-400 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark'
+                              }`}
+                            title={p.distributed ? "Unmark Distributed" : "Mark as Distributed"}
                           >
-                            <PieChart size={16} />
+                            <Gift size={16} />
                           </button>
                           <button
                             onClick={() => toggleDaily(p.name, p.daily)}
