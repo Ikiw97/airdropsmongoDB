@@ -99,6 +99,11 @@ export const apiService = {
     return response.data;
   },
 
+  async updateDistributed(name, value) {
+    const response = await api.post("/api/projects/update-distributed", { name, value });
+    return response.data;
+  },
+
   async deleteProject(projectName) {
     const response = await api.delete(`/api/projects/${encodeURIComponent(projectName)}`);
     return response.data;
