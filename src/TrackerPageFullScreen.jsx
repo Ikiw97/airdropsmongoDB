@@ -31,6 +31,7 @@ import {
   CheckCircle,
   Repeat,
   Radio,
+  PieChart,
 } from "lucide-react";
 import {
   LineChart,
@@ -753,6 +754,13 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                           {p.name}
                         </h3>
                         <div className="flex gap-2">
+                          <button
+                            onClick={() => setActiveView("analytics")}
+                            className="p-2 rounded-lg text-purple-600 hover:text-purple-700 transition-all duration-200 shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
+                            title="View Distribution"
+                          >
+                            <PieChart size={16} />
+                          </button>
                           <button
                             onClick={() => toggleDaily(p.name, p.daily)}
                             className={`p-2 rounded-lg transition-all duration-200 ${p.daily === 'CHECKED'
