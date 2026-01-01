@@ -473,7 +473,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
   ];
 
   return (
-    <div className="min-h-screen text-gray-800 dark:text-gray-100 relative overflow-hidden bg-main-light dark:bg-main-dark transition-colors duration-300">
+    <div className="min-h-screen text-gray-800 dark:text-gray-100 relative overflow-x-hidden bg-main-light dark:bg-main-dark transition-colors duration-300">
       {/* Success Popup */}
       {showSuccessPopup && (
         <SuccessPopup
