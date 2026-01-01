@@ -9,9 +9,9 @@ const ThemeToggle = () => {
     return (
         <motion.button
             onClick={toggleTheme}
-            className={`relative p-3 rounded-xl transition-all duration-300 ${theme === 'dark'
-                    ? 'bg-gray-800 shadow-[4px_4px_8px_#111827,-4px_-4px_8px_#374151] text-amber-400'
-                    : 'bg-[#e0e5ec] shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff] text-amber-500'
+            className={`relative p-2 rounded-full transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/10 ${theme === 'dark'
+                ? 'text-amber-400'
+                : 'text-amber-500'
                 }`}
             whileTap={{ scale: 0.95 }}
             initial={false}
