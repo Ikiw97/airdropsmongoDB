@@ -612,7 +612,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
               {activeView === "projects" && (
                 <>
                   <div className="relative flex-shrink-0">
-                    <button className="flex items-center gap-1 md:gap-2 px-1.5 md:px-4 py-1 md:py-2 rounded-xl transition text-[10px] md:text-sm text-gray-700 dark:text-gray-300 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
+                    <button className="flex items-center gap-1 md:gap-2 px-1.5 md:px-4 py-1 md:py-2 rounded-xl transition text-[10px] md:text-sm text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10"
                     >
                       <Tag size={14} />
                       <select
@@ -635,7 +635,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
                   </div>
 
                   <div className="relative flex-shrink-0">
-                    <button className="flex items-center gap-1 md:gap-2 px-1.5 md:px-4 py-1 md:py-2 rounded-xl transition text-[10px] md:text-sm text-gray-700 dark:text-gray-300 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
+                    <button className="flex items-center gap-1 md:gap-2 px-1.5 md:px-4 py-1 md:py-2 rounded-xl transition text-[10px] md:text-sm text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10"
                     >
                       <CheckSquare size={14} />
                       <select
@@ -664,7 +664,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
 
                   <button
                     onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-                    className="flex-shrink-0 flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1 md:py-2 rounded-xl text-[10px] md:text-sm text-gray-700 dark:text-gray-300 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
+                    className="flex-shrink-0 flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1 md:py-2 rounded-xl text-[10px] md:text-sm text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10"
                   >
                     <ArrowUpDown size={14} />
                     <span className="hidden sm:inline">{sortOrder === "asc" ? "A-Z" : "Z-A"}</span>
@@ -672,7 +672,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
 
                   <button
                     onClick={() => setHideData(!hideData)}
-                    className="flex-shrink-0 px-2 md:px-3 py-1 md:py-2 rounded-xl flex items-center gap-1 md:gap-2 text-[10px] md:text-sm text-gray-700 dark:text-gray-300 bg-main-light dark:bg-main-dark shadow-neu-flat dark:shadow-neu-flat-dark hover:shadow-neu-icon dark:hover:shadow-neu-icon-dark"
+                    className="flex-shrink-0 px-2 md:px-3 py-1 md:py-2 rounded-xl flex items-center gap-1 md:gap-2 text-[10px] md:text-sm text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10"
                   >
                     {hideData ? <Eye size={16} /> : <EyeOff size={16} />}
                   </button>
