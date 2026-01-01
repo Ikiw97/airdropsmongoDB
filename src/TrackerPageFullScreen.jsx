@@ -605,7 +605,10 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
 
 
 
-            <div className="flex items-center gap-2 md:gap-3 flex-wrap">
+            <div
+              className="flex items-center gap-1.5 md:gap-3 flex-nowrap overflow-x-auto w-full md:w-auto pb-1"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
               {activeView === "projects" && (
                 <>
                   <div className="relative">
