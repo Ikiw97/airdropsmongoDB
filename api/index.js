@@ -71,7 +71,7 @@ let projectsCollection;
 // Initialize MongoDB Connection
 async function initDB() {
   if (db) return;
-  
+
   try {
     const client = new MongoClient(MONGO_URL);
     await client.connect();
@@ -126,17 +126,17 @@ async function getCurrentUser(token) {
   try {
     const payload = jwt.verify(token, JWT_SECRET_KEY, { algorithms: [JWT_ALGORITHM] });
     const userId = payload.sub;
-    
+
     if (!userId) {
       return null;
     }
-    
+
     const user = await usersCollection.findOne({ "_id": userId });
-    
+
     if (!user || !user.is_approved) {
       return null;
     }
-    
+
     return user;
   } catch (error) {
     return null;
@@ -145,11 +145,11 @@ async function getCurrentUser(token) {
 
 async function getCurrentAdmin(token) {
   const user = await getCurrentUser(token);
-  
+
   if (!user || !user.is_admin) {
     return null;
   }
-  
+
   return user;
 }
 
@@ -171,29 +171,29 @@ app.get("/", (req, res) => {
 app.post("/api/auth/register", async (req, res) => {
   try {
     await initDB();
-    
+
     const { username, email, password } = req.body;
-    
+
     if (!username || !email || !password) {
       return res.status(400).json({ detail: "Missing required fields" });
     }
-    
+
     const existingUser = await usersCollection.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ detail: "Username already exists" });
     }
-    
+
     const existingEmail = await usersCollection.findOne({ email });
     if (existingEmail) {
       return res.status(400).json({ detail: "Email already registered" });
     }
-    
+
     const userCount = await usersCollection.countDocuments({});
     const isFirstUser = userCount === 0;
-    
+
     const userId = uuidv4();
     const hashedPassword = await getPasswordHash(password);
-    
+
     const user = {
       "_id": userId,
       username,
@@ -203,9 +203,9 @@ app.post("/api/auth/register", async (req, res) => {
       is_admin: isFirstUser,
       created_at: new Date().toISOString()
     };
-    
+
     await usersCollection.insertOne(user);
-    
+
     if (isFirstUser) {
       return res.json({
         message: "Admin account created successfully",
@@ -228,25 +228,25 @@ app.post("/api/auth/register", async (req, res) => {
 app.post("/api/auth/login", async (req, res) => {
   try {
     await initDB();
-    
+
     const { username, password } = req.body;
-    
+
     if (!username || !password) {
       return res.status(400).json({ detail: "Missing username or password" });
     }
-    
+
     const user = await usersCollection.findOne({ username });
 
     if (!user || !(await verifyPassword(password, user.password_hash))) {
       return res.status(401).json({ detail: "Incorrect username or password" });
     }
-    
+
     if (!user.is_approved) {
       return res.status(403).json({ detail: "Your account is pending admin approval. Please wait for approval." });
     }
-    
+
     const accessToken = createAccessToken({ sub: user._id });
-    
+
     return res.json({
       access_token: accessToken,
       token_type: "bearer",
@@ -266,17 +266,17 @@ app.post("/api/auth/login", async (req, res) => {
 app.get("/api/auth/me", async (req, res) => {
   try {
     await initDB();
-    
+
     const token = extractToken(req);
     if (!token) {
       return res.status(401).json({ detail: "Not authenticated" });
     }
-    
+
     const user = await getCurrentUser(token);
     if (!user) {
       return res.status(401).json({ detail: "Could not validate credentials" });
     }
-    
+
     return res.json({
       id: user._id,
       username: user.username,
@@ -293,22 +293,22 @@ app.get("/api/auth/me", async (req, res) => {
 app.get("/api/admin/users", async (req, res) => {
   try {
     await initDB();
-    
+
     const token = extractToken(req);
     if (!token) {
       return res.status(401).json({ detail: "Not authenticated" });
     }
-    
+
     const admin = await getCurrentAdmin(token);
     if (!admin) {
       return res.status(403).json({ detail: "Admin access required" });
     }
-    
+
     const allUsers = await usersCollection.find(
       {},
       { projection: { password_hash: 0 } }
     ).toArray();
-    
+
     return res.json(allUsers);
   } catch (error) {
     console.error("Get all users error:", error);
@@ -319,22 +319,22 @@ app.get("/api/admin/users", async (req, res) => {
 app.get("/api/admin/pending-users", async (req, res) => {
   try {
     await initDB();
-    
+
     const token = extractToken(req);
     if (!token) {
       return res.status(401).json({ detail: "Not authenticated" });
     }
-    
+
     const admin = await getCurrentAdmin(token);
     if (!admin) {
       return res.status(403).json({ detail: "Admin access required" });
     }
-    
+
     const pendingUsers = await usersCollection.find(
       { is_approved: false },
       { projection: { password_hash: 0 } }
     ).toArray();
-    
+
     return res.json(pendingUsers);
   } catch (error) {
     console.error("Get pending users error:", error);
@@ -345,28 +345,28 @@ app.get("/api/admin/pending-users", async (req, res) => {
 app.post("/api/admin/approve-user", async (req, res) => {
   try {
     await initDB();
-    
+
     const token = extractToken(req);
     if (!token) {
       return res.status(401).json({ detail: "Not authenticated" });
     }
-    
+
     const admin = await getCurrentAdmin(token);
     if (!admin) {
       return res.status(403).json({ detail: "Admin access required" });
     }
-    
+
     const { user_id } = req.body;
-    
+
     const result = await usersCollection.updateOne(
       { "_id": user_id },
       { $set: { is_approved: true } }
     );
-    
+
     if (result.modifiedCount === 0) {
       return res.status(404).json({ detail: "User not found" });
     }
-    
+
     return res.json({ message: "User approved successfully" });
   } catch (error) {
     console.error("Approve user error:", error);
@@ -377,30 +377,30 @@ app.post("/api/admin/approve-user", async (req, res) => {
 app.delete("/api/admin/reject-user/:user_id", async (req, res) => {
   try {
     await initDB();
-    
+
     const token = extractToken(req);
     if (!token) {
       return res.status(401).json({ detail: "Not authenticated" });
     }
-    
+
     const admin = await getCurrentAdmin(token);
     if (!admin) {
       return res.status(403).json({ detail: "Admin access required" });
     }
-    
+
     const { user_id } = req.params;
-    
+
     const user = await usersCollection.findOne({ "_id": user_id });
     if (user && user.is_admin) {
       return res.status(400).json({ detail: "Cannot delete admin user" });
     }
-    
+
     const result = await usersCollection.deleteOne({ "_id": user_id });
-    
+
     if (result.deletedCount === 0) {
       return res.status(404).json({ detail: "User not found" });
     }
-    
+
     return res.json({ message: "User rejected and deleted" });
   } catch (error) {
     console.error("Reject user error:", error);
@@ -411,35 +411,35 @@ app.delete("/api/admin/reject-user/:user_id", async (req, res) => {
 app.delete("/api/admin/delete-user/:user_id", async (req, res) => {
   try {
     await initDB();
-    
+
     const token = extractToken(req);
     if (!token) {
       return res.status(401).json({ detail: "Not authenticated" });
     }
-    
+
     const admin = await getCurrentAdmin(token);
     if (!admin) {
       return res.status(403).json({ detail: "Admin access required" });
     }
-    
+
     const { user_id } = req.params;
-    
+
     const user = await usersCollection.findOne({ "_id": user_id });
     if (!user) {
       return res.status(404).json({ detail: "User not found" });
     }
-    
+
     if (user.is_admin) {
       return res.status(400).json({ detail: "Cannot delete admin user" });
     }
-    
+
     await projectsCollection.deleteMany({ user_id });
     const result = await usersCollection.deleteOne({ "_id": user_id });
-    
+
     if (result.deletedCount === 0) {
       return res.status(404).json({ detail: "User not found" });
     }
-    
+
     return res.json({ message: "User and their projects deleted successfully" });
   } catch (error) {
     console.error("Delete user error:", error);
@@ -451,22 +451,22 @@ app.delete("/api/admin/delete-user/:user_id", async (req, res) => {
 app.get("/api/projects", async (req, res) => {
   try {
     await initDB();
-    
+
     const token = extractToken(req);
     if (!token) {
       return res.status(401).json({ detail: "Not authenticated" });
     }
-    
+
     const user = await getCurrentUser(token);
     if (!user) {
       return res.status(401).json({ detail: "Could not validate credentials" });
     }
-    
+
     const projects = await projectsCollection.find(
       { user_id: user._id },
       { projection: { "_id": 0 } }
     ).toArray();
-    
+
     return res.json(projects);
   } catch (error) {
     console.error("Get projects error:", error);
@@ -477,32 +477,32 @@ app.get("/api/projects", async (req, res) => {
 app.post("/api/projects", async (req, res) => {
   try {
     await initDB();
-    
+
     const token = extractToken(req);
     if (!token) {
       return res.status(401).json({ detail: "Not authenticated" });
     }
-    
+
     const user = await getCurrentUser(token);
     if (!user) {
       return res.status(401).json({ detail: "Could not validate credentials" });
     }
-    
+
     const { name, twitter, discord, telegram, farcaster, wallet, email, github, website, notes, tags } = req.body;
 
     if (!name) {
       return res.status(400).json({ detail: "Project name is required" });
     }
-    
+
     const existing = await projectsCollection.findOne({
       user_id: user._id,
       name
     });
-    
+
     if (existing) {
       return res.status(400).json({ detail: "Project name already exists" });
     }
-    
+
     const projectData = {
       "_id": uuidv4(),
       user_id: user._id,
@@ -520,7 +520,7 @@ app.post("/api/projects", async (req, res) => {
       daily: "UNCHECKED",
       lastupdate: new Date().toISOString()
     };
-    
+
     await projectsCollection.insertOne(projectData);
     return res.json({ message: "Project created successfully" });
   } catch (error) {
@@ -532,23 +532,23 @@ app.post("/api/projects", async (req, res) => {
 app.post("/api/projects/update-daily", async (req, res) => {
   try {
     await initDB();
-    
+
     const token = extractToken(req);
     if (!token) {
       return res.status(401).json({ detail: "Not authenticated" });
     }
-    
+
     const user = await getCurrentUser(token);
     if (!user) {
       return res.status(401).json({ detail: "Could not validate credentials" });
     }
-    
+
     const { name, value } = req.body;
-    
+
     if (!name || !value) {
       return res.status(400).json({ detail: "Missing name or value" });
     }
-    
+
     const result = await projectsCollection.updateOne(
       {
         user_id: user._id,
@@ -561,11 +561,11 @@ app.post("/api/projects/update-daily", async (req, res) => {
         }
       }
     );
-    
+
     if (result.modifiedCount === 0) {
       return res.status(404).json({ detail: "Project not found" });
     }
-    
+
     return res.json({ message: "Daily status updated" });
   } catch (error) {
     console.error("Update daily error:", error);
@@ -573,32 +573,79 @@ app.post("/api/projects/update-daily", async (req, res) => {
   }
 });
 
-app.delete("/api/projects/:project_name", async (req, res) => {
+app.post("/api/projects/update-distributed", async (req, res) => {
   try {
     await initDB();
-    
+
     const token = extractToken(req);
     if (!token) {
       return res.status(401).json({ detail: "Not authenticated" });
     }
-    
+
     const user = await getCurrentUser(token);
     if (!user) {
       return res.status(401).json({ detail: "Could not validate credentials" });
     }
-    
+
+    const { name, value } = req.body;
+
+    if (!name || value === undefined) {
+      return res.status(400).json({ detail: "Missing name or value" });
+    }
+
+    // Explicitly cast value to boolean if passed as string, though frontend sends boolean
+    // But safely handle it.
+
+    const result = await projectsCollection.updateOne(
+      {
+        user_id: user._id,
+        name
+      },
+      {
+        $set: {
+          distributed: value,
+          lastupdate: new Date().toISOString()
+        }
+      }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ detail: "Project not found" });
+    }
+
+    return res.json({ message: "Distributed status updated" });
+  } catch (error) {
+    console.error("Update distributed error:", error);
+    res.status(500).json({ detail: "Internal server error" });
+  }
+});
+
+app.delete("/api/projects/:project_name", async (req, res) => {
+  try {
+    await initDB();
+
+    const token = extractToken(req);
+    if (!token) {
+      return res.status(401).json({ detail: "Not authenticated" });
+    }
+
+    const user = await getCurrentUser(token);
+    if (!user) {
+      return res.status(401).json({ detail: "Could not validate credentials" });
+    }
+
     const { project_name } = req.params;
     const decodedName = decodeURIComponent(project_name);
-    
+
     const result = await projectsCollection.deleteOne({
       user_id: user._id,
       name: decodedName
     });
-    
+
     if (result.deletedCount === 0) {
       return res.status(404).json({ detail: "Project not found" });
     }
-    
+
     return res.json({ message: "Project deleted successfully" });
   } catch (error) {
     console.error("Delete project error:", error);
