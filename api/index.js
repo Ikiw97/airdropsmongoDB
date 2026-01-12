@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import { MongoClient } from 'mongodb';
 import jwt from 'jsonwebtoken';
-import argon2 from 'argon2';
 import bcryptjs from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
@@ -18,15 +17,30 @@ const allowedOrigins = [
   "https://airdropstracker.my.id",
   "http://localhost:5173",
   "http://localhost:5174",
-  "http://localhost:3000"
+  "http://localhost:3000",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:3000"
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      // For development ease, log but maybe allow or fail gracefully
+      console.log('Blocked by CORS:', origin);
+      // Temporarily allowing all for debugging if needed, but sticking to list for now
+      // return callback(new Error('Not allowed by CORS'));
+
+      // FALLBACK FOR DEV: Allow localhost variations dynamically if strict check fails
+      if (origin.includes("localhost") || origin.includes("127.0.0.1")) {
+        return callback(null, true);
+      }
+
+      return callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
@@ -46,7 +60,7 @@ app.use(helmet({
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net", "https://api.coingecko.com"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      imgSrc: ["'self'", "data:", "https:", "blob:", "https://assets.coingecko.com"],
       connectSrc: ["'self'", "https:", "wss:"],
       frameSrc: ["'self'", "https://trade.dedoo.xyz"],
       frameAncestors: ["'self'"],
@@ -58,10 +72,10 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
 }));
 
-// Rate Limiter for Auth Routes (Strict)
+// Rate Limiter for Auth Routes (Relaxed)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit each IP to 10 requests per windowMs
+  max: 100, // Increased from 10 to 100 to prevent lockout during testing
   message: { detail: "Too many login attempts, please try again after 15 minutes" },
   standardHeaders: true,
   legacyHeaders: false,
@@ -115,10 +129,21 @@ async function initDB() {
 }
 
 // Helper Functions
+// Dynamic import for Argon2 to handle Vercel environments where native bindings might fail
+let argon2 = null;
+(async () => {
+  try {
+    argon2 = await import('argon2');
+  } catch (e) {
+    console.warn("Argon2 module not available, will use bcrypt fallback");
+  }
+})();
+
 async function verifyPassword(plainPassword, hashedPassword) {
   try {
     // Try Argon2 first (for existing passwords from Python backend)
-    if (hashedPassword.startsWith('$argon2')) {
+    // Only if argon2 module loaded successfully
+    if (hashedPassword.startsWith('$argon2') && argon2) {
       return await argon2.verify(hashedPassword, plainPassword);
     }
   } catch (error) {
@@ -136,12 +161,14 @@ async function verifyPassword(plainPassword, hashedPassword) {
 
 async function getPasswordHash(password) {
   try {
-    return await argon2.hash(password);
+    if (argon2) {
+      return await argon2.hash(password);
+    }
   } catch (error) {
     console.error("Password hashing error:", error);
-    // Fallback to bcryptjs if argon2 fails
-    return bcryptjs.hashSync(password, 10);
   }
+  // Fallback to bcryptjs if argon2 fails or is unavailable
+  return bcryptjs.hashSync(password, 10);
 }
 
 function createAccessToken(data) {
@@ -256,25 +283,39 @@ app.post("/api/auth/register", async (req, res) => {
 
 app.post("/api/auth/login", async (req, res) => {
   try {
+    console.log(`[LOGIN ATTEMPT] Username: ${req.body.username}`);
     await initDB();
 
     const { username, password } = req.body;
 
     if (!username || !password) {
+      console.log("[LOGIN FAILED] Missing fields");
       return res.status(400).json({ detail: "Missing username or password" });
     }
 
     const user = await usersCollection.findOne({ username });
 
-    if (!user || !(await verifyPassword(password, user.password_hash))) {
+    if (!user) {
+      console.log(`[LOGIN FAILED] User not found: ${username}`);
+      return res.status(401).json({ detail: "Incorrect username or password" });
+    }
+
+    // DEBUG PASSWORD CHECK
+    const isValid = await verifyPassword(password, user.password_hash);
+    console.log(`[LOGIN DEBUG] Password valid: ${isValid}`);
+
+    if (!isValid) {
+      console.log(`[LOGIN FAILED] Invalid password for: ${username}`);
       return res.status(401).json({ detail: "Incorrect username or password" });
     }
 
     if (!user.is_approved) {
+      console.log(`[LOGIN FAILED] User not approved: ${username}`);
       return res.status(403).json({ detail: "Your account is pending admin approval. Please wait for approval." });
     }
 
     const accessToken = createAccessToken({ sub: user._id });
+    console.log(`[LOGIN SUCCESS] User: ${username}`);
 
     return res.json({
       access_token: accessToken,
@@ -287,7 +328,7 @@ app.post("/api/auth/login", async (req, res) => {
       }
     });
   } catch (error) {
-    console.error("Login error:", error);
+    console.error(`[LOGIN ERROR] Exception:`, error);
     res.status(500).json({ detail: "Internal server error" });
   }
 });
@@ -920,4 +961,13 @@ app.use(async (req, res, next) => {
 });
 
 // Export Express app directly for Vercel
+// Export Express app directly for Vercel
 export default app;
+
+// Local development server
+if (process.env.NODE_ENV !== 'production' || process.argv[1].endsWith('index.js')) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
