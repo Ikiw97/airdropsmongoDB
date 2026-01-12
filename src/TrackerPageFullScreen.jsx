@@ -299,8 +299,9 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
       >
         {/* Left - Logo */}
         <div className="flex items-center gap-3">
-          <span className="text-2xl">🚀</span>
-          <h1 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Airdrop Tracker</h1>
+          <h1 className="flex items-center gap-2 text-2xl md:text-3xl font-black tracking-wider glitch-effect text-transparent bg-clip-text bg-gradient-to-r from-[#00ff88] via-[#0da5aa] to-[#ec4899] hover:brightness-125 transition-all duration-300 cursor-default select-none" style={{ fontFamily: '"Orbitron", sans-serif' }}>
+            Airdrop Tracker
+          </h1>
         </div>
 
         {/* Center - Search (hidden on mobile) */}
