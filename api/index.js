@@ -1,4 +1,5 @@
 import express from 'express';
+console.log("Loading api/index.js...");
 import cors from 'cors';
 import { MongoClient } from 'mongodb';
 import jwt from 'jsonwebtoken';
@@ -96,20 +97,28 @@ const JWT_ACCESS_TOKEN_EXPIRE_MINUTES = parseInt(process.env.JWT_ACCESS_TOKEN_EX
 let db;
 let usersCollection;
 let projectsCollection;
+let connectionPromise;
 
 // Initialize MongoDB Connection
 async function initDB() {
   if (db) return;
 
   try {
-    const client = new MongoClient(MONGO_URL);
-    await client.connect();
+    if (!connectionPromise) {
+      const client = new MongoClient(MONGO_URL);
+      connectionPromise = client.connect().then(c => {
+        console.log("Connected to MongoDB");
+        return c;
+      });
+    }
+
+    const client = await connectionPromise;
     db = client.db(MONGO_DB_NAME);
     usersCollection = db.collection("users");
     projectsCollection = db.collection("projects");
-    console.log("Connected to MongoDB");
   } catch (error) {
     console.error("MongoDB connection error:", error);
+    connectionPromise = null; // Reset promise on failure so we can retry
     throw error;
   }
 }
@@ -918,6 +927,24 @@ app.use(async (req, res, next) => {
   }
   next();
 });
+
+// Start server if running locally
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const currentFile = fileURLToPath(import.meta.url);
+const executedFile = process.argv[1];
+
+// Normalize paths for comparison (handle Windows backslashes and casing)
+const normalize = (p) => p ? path.resolve(p).toLowerCase() : '';
+
+if (normalize(currentFile) === normalize(executedFile)) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Local environment: ${process.env.NODE_ENV || 'development'}`);
+  });
+}
 
 // Export Express app directly for Vercel
 export default app;
