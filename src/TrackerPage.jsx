@@ -104,12 +104,12 @@ function TrackerPage({ onLogout }) {
       const res = await fetch(GOOGLE_SCRIPT_URL + "?action=read");
       const data = await res.json();
       console.log("Raw data from Google Sheets:", data);
-      
+
       if (Array.isArray(data)) {
         // Parse tags from JSON string back to array with better error handling
         const parsedData = data.map(project => {
           let parsedTags = [];
-          
+
           // Handle tags parsing
           if (project.tags) {
             if (typeof project.tags === 'string') {
@@ -132,14 +132,14 @@ function TrackerPage({ onLogout }) {
               parsedTags = project.tags;
             }
           }
-          
+
           return {
             ...project,
             tags: parsedTags,
             notes: project.notes || ""
           };
         });
-        
+
         console.log("Parsed data with tags:", parsedData);
         setProjects(parsedData);
       }
@@ -217,7 +217,7 @@ function TrackerPage({ onLogout }) {
   const deleteProject = async (name) => {
     const confirmDelete = window.confirm(`Apakah Anda yakin ingin menghapus project "${name}"?`);
     if (!confirmDelete) return;
-    
+
     try {
       setLoading(true);
       const res = await fetch(GOOGLE_SCRIPT_URL, {
@@ -286,18 +286,18 @@ function TrackerPage({ onLogout }) {
       const matchesSearch = (p.name || "")
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
-      
+
       // Debug logging for tag filtering
       const hasTags = p.tags && Array.isArray(p.tags);
       const matchesTags =
         filterTag === "all" ||
         (hasTags && p.tags.includes(filterTag));
-      
+
       // Log when filtering by specific tag
       if (filterTag !== "all") {
         console.log(`Project: ${p.name}, Tags: ${JSON.stringify(p.tags)}, FilterTag: ${filterTag}, Matches: ${matchesTags}`);
       }
-      
+
       return matchesSearch && matchesTags;
     })
     .sort((a, b) => {
@@ -316,13 +316,13 @@ function TrackerPage({ onLogout }) {
       const newTags = prev.includes(tagId)
         ? prev.filter((t) => t !== tagId)
         : [...prev, tagId];
-      
+
       // Update formData with the new tags
       setFormData((prevForm) => ({
         ...prevForm,
         tags: newTags,
       }));
-      
+
       return newTags;
     });
   };
@@ -331,38 +331,38 @@ function TrackerPage({ onLogout }) {
   const checkBalances = async () => {
     const list = addresses.split(/[\n,\s]+/).filter(Boolean);
     if (list.length === 0) return alert("Masukkan address wallet!");
-    
+
     setBalanceLoading(true);
     setBalances([]);
     const result = [];
-    
+
     try {
       const provider = new ethers.JsonRpcProvider(NETWORKS[selectedNetwork].rpc);
-      
+
       for (const addr of list) {
         try {
           // Validate and normalize address
           if (!ethers.isAddress(addr)) {
-            result.push({ 
-              address: addr, 
-              balance: "❌ Invalid Address" 
+            result.push({
+              address: addr,
+              balance: "❌ Invalid Address"
             });
             continue;
           }
-          
+
           const checksumAddr = ethers.getAddress(addr);
           const bal = await provider.getBalance(checksumAddr);
           const formattedBalance = parseFloat(ethers.formatEther(bal)).toFixed(6);
-          
-          result.push({ 
-            address: checksumAddr, 
-            balance: formattedBalance 
+
+          result.push({
+            address: checksumAddr,
+            balance: formattedBalance
           });
         } catch (err) {
           console.error(`Error checking ${addr}:`, err);
-          result.push({ 
-            address: addr, 
-            balance: "❌ Error" 
+          result.push({
+            address: addr,
+            balance: "❌ Error"
           });
         }
       }
@@ -381,8 +381,8 @@ function TrackerPage({ onLogout }) {
 
       {/* HEADER */}
       <div className="relative z-50 p-6 flex flex-col md:flex-row justify-between items-center gap-4">
-        <h1 className="flex items-center gap-2 text-3xl font-bold bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-          🚀 Airdrop Tracker
+        <h1 className="flex items-center gap-2 text-3xl md:text-5xl font-black tracking-wider glitch-effect text-transparent bg-clip-text bg-gradient-to-r from-[#00ff88] via-[#0da5aa] to-[#ec4899] hover:brightness-125 transition-all duration-300 cursor-default select-none" style={{ fontFamily: '"Orbitron", sans-serif' }}>
+          Airdrop Tracker
         </h1>
 
         <div className="flex flex-wrap justify-center md:justify-end items-center gap-3 relative z-50">
@@ -471,8 +471,8 @@ function TrackerPage({ onLogout }) {
 
       {/* ===== ANALYTICS DASHBOARD ===== */}
       <div className="px-6">
-        <AnalyticsDashboard 
-          projects={projects} 
+        <AnalyticsDashboard
+          projects={projects}
           balances={balances}
           selectedNetwork={selectedNetwork}
         />
@@ -492,7 +492,7 @@ function TrackerPage({ onLogout }) {
       <div className="px-6">
         <NewsAggregator />
       </div>
-      
+
       {/* FORM INPUT */}
       <div className="relative z-10 bg-gray-900/60 p-6 rounded-2xl max-w-5xl mx-auto mb-8 shadow-lg w-[90%] md:w-auto">
         <h2 className="text-xl font-semibold mb-4 text-cyan-300 text-center md:text-left">
@@ -542,11 +542,10 @@ function TrackerPage({ onLogout }) {
                 key={tag.id}
                 type="button"
                 onClick={() => toggleTag(tag.id)}
-                className={`px-3 py-1 rounded-full text-xs font-semibold transition ${
-                  selectedTags.includes(tag.id) || (formData.tags && formData.tags.includes(tag.id))
-                    ? `${tag.color} text-white`
-                    : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                }`}
+                className={`px-3 py-1 rounded-full text-xs font-semibold transition ${selectedTags.includes(tag.id) || (formData.tags && formData.tags.includes(tag.id))
+                  ? `${tag.color} text-white`
+                  : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                  }`}
               >
                 {tag.label}
               </button>
@@ -557,11 +556,10 @@ function TrackerPage({ onLogout }) {
         <button
           onClick={addProject}
           disabled={loading}
-          className={`mt-4 px-6 py-2 rounded-lg shadow-md transition-all ${
-            loading
-              ? "bg-gray-600 cursor-not-allowed"
-              : "bg-green-600 hover:bg-green-700"
-          }`}
+          className={`mt-4 px-6 py-2 rounded-lg shadow-md transition-all ${loading
+            ? "bg-gray-600 cursor-not-allowed"
+            : "bg-green-600 hover:bg-green-700"
+            }`}
         >
           {loading ? "Loading..." : "+ Tambah Project"}
         </button>
@@ -620,15 +618,15 @@ function TrackerPage({ onLogout }) {
               </div>
             )}
 
-            {p.twitter && <p className="flex items-center gap-2 text-blue-400"><Twitter size={18}/><span>{hideData?"••••":p.twitter}</span></p>}
-            {p.discord && <p className="flex items-center gap-2 text-indigo-400"><MessageCircle size={18}/><span>{hideData?"••••":p.discord}</span></p>}
-            {p.telegram && <p className="flex items-center gap-2 text-sky-400"><Send size={18}/><span>{hideData?"••••":p.telegram}</span></p>}
-            {p.wallet && <p className="flex items-center gap-2 text-yellow-400 break-all"><Wallet size={18}/><span>{hideData?"••••":p.wallet}</span></p>}
-            {p.email && <p className="flex items-center gap-2 text-pink-400"><Mail size={18}/><span>{hideData?"••••":p.email}</span></p>}
-            {p.github && <p className="flex items-center gap-2 text-gray-300"><Github size={18}/><span>{hideData?"••••":p.github}</span></p>}
+            {p.twitter && <p className="flex items-center gap-2 text-blue-400"><Twitter size={18} /><span>{hideData ? "••••" : p.twitter}</span></p>}
+            {p.discord && <p className="flex items-center gap-2 text-indigo-400"><MessageCircle size={18} /><span>{hideData ? "••••" : p.discord}</span></p>}
+            {p.telegram && <p className="flex items-center gap-2 text-sky-400"><Send size={18} /><span>{hideData ? "••••" : p.telegram}</span></p>}
+            {p.wallet && <p className="flex items-center gap-2 text-yellow-400 break-all"><Wallet size={18} /><span>{hideData ? "••••" : p.wallet}</span></p>}
+            {p.email && <p className="flex items-center gap-2 text-pink-400"><Mail size={18} /><span>{hideData ? "••••" : p.email}</span></p>}
+            {p.github && <p className="flex items-center gap-2 text-gray-300"><Github size={18} /><span>{hideData ? "••••" : p.github}</span></p>}
             {p.website && (
               <p className="flex items-center gap-2 text-blue-400">
-                <Globe size={18}/>
+                <Globe size={18} />
                 <a href={p.website} target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300 break-all">
                   {p.website}
                 </a>
@@ -682,9 +680,8 @@ function TrackerPage({ onLogout }) {
                   <span className="font-semibold">{coin.name}</span>
                 </div>
                 <span
-                  className={`text-sm font-bold ${
-                    coin.price_change_percentage_24h >= 0 ? "text-green-400" : "text-red-400"
-                  }`}
+                  className={`text-sm font-bold ${coin.price_change_percentage_24h >= 0 ? "text-green-400" : "text-red-400"
+                    }`}
                 >
                   {coin.price_change_percentage_24h.toFixed(2)}%
                 </span>
@@ -733,11 +730,10 @@ function TrackerPage({ onLogout }) {
               <button
                 key={net}
                 onClick={() => setSelectedNetwork(net)}
-                className={`px-4 py-2 rounded-lg ${
-                  selectedNetwork === net
-                    ? "bg-cyan-600"
-                    : "bg-gray-800 hover:bg-gray-700"
-                }`}
+                className={`px-4 py-2 rounded-lg ${selectedNetwork === net
+                  ? "bg-cyan-600"
+                  : "bg-gray-800 hover:bg-gray-700"
+                  }`}
               >
                 {net}
               </button>
@@ -756,11 +752,10 @@ function TrackerPage({ onLogout }) {
             <button
               onClick={checkBalances}
               disabled={balanceLoading}
-              className={`px-6 py-2 rounded-lg font-semibold transition ${
-                balanceLoading
-                  ? "bg-gray-600 cursor-not-allowed"
-                  : "bg-green-600 hover:bg-green-700"
-              }`}
+              className={`px-6 py-2 rounded-lg font-semibold transition ${balanceLoading
+                ? "bg-gray-600 cursor-not-allowed"
+                : "bg-green-600 hover:bg-green-700"
+                }`}
             >
               {balanceLoading ? "⏳ Checking..." : "✅ Cek Saldo"}
             </button>
@@ -795,15 +790,14 @@ function TrackerPage({ onLogout }) {
                     <tr key={i} className="border-b border-gray-700 hover:bg-gray-700/30">
                       <td className="p-2 text-gray-400">{i + 1}</td>
                       <td className="p-2 break-all font-mono text-xs">{b.address}</td>
-                      <td className={`p-2 text-right font-semibold ${
-                        b.balance.includes('Error') || b.balance.includes('Invalid') 
-                          ? 'text-red-400' 
-                          : parseFloat(b.balance) > 0 
-                          ? 'text-green-400' 
+                      <td className={`p-2 text-right font-semibold ${b.balance.includes('Error') || b.balance.includes('Invalid')
+                        ? 'text-red-400'
+                        : parseFloat(b.balance) > 0
+                          ? 'text-green-400'
                           : 'text-gray-400'
-                      }`}>
-                        {b.balance.includes('Error') || b.balance.includes('Invalid') 
-                          ? b.balance 
+                        }`}>
+                        {b.balance.includes('Error') || b.balance.includes('Invalid')
+                          ? b.balance
                           : `${b.balance} ${selectedNetwork === 'BSC' ? 'BNB' : selectedNetwork === 'Polygon' ? 'MATIC' : 'ETH'}`
                         }
                       </td>
