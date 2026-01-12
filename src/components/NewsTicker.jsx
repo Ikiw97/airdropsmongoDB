@@ -21,8 +21,18 @@ const NewsTicker = () => {
                 if (!data || !Array.isArray(data) || data.length === 0) {
                     throw new Error("Invalid or empty data");
                 }
+                // Sort by 24h change to match Gainer/Loser list
+                const sorted = [...data].sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h);
+                
+                // Get Top 5 Gainers and Top 5 Losers
+                const topGainers = sorted.slice(0, 5);
+                const topLosers = sorted.slice(-5).reverse();
+                
+                // Combine for ticker
+                const tickerData = [...topGainers, ...topLosers];
+
                 // Map CoinGecko data to our ticker format
-                const mappedData = data.slice(0, 15).map(coin => ({
+                const mappedData = tickerData.map(coin => ({
                     symbol: coin.symbol.toUpperCase(),
                     price: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(coin.current_price),
                     change: (coin.price_change_percentage_24h > 0 ? "+" : "") + coin.price_change_percentage_24h.toFixed(2) + "%",
