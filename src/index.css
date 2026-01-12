@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==================== CSS CUSTOM PROPERTIES ==================== */
+:root {
+  /* Light Theme Defaults */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border-primary: rgba(0, 0, 0, 0.1);
+  --card-bg: #ffffff;
+
+  --neon-green: #10b981;
+  --neon-blue: #0ea5e9;
+  --neon-purple: #8b5cf6;
+  --neon-pink: #ec4899;
+  --neon-cyan: #06b6d4;
+
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.08);
+}
+
+.dark {
+  /* Dark Theme Overrides */
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-tertiary: #010409;
+  --text-primary: #f1f5f9;
+  --text-secondary: #8b949e;
+  --border-primary: rgba(240, 246, 252, 0.1);
+  --card-bg: #161b22;
+
+  --neon-green: #00ff88;
+  --neon-blue: #0da5aa;
+  --neon-purple: #a855f7;
+  --neon-pink: #ec4899;
+  --neon-cyan: #0da5aa;
+
+  --glass-bg: rgba(18, 18, 26, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+/* ==================== BASE STYLES ==================== */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  margin: 0;
+}
+
+/* Base background logic */
+.dark body {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-primary) 100%);
+}
+
+body {
+  background: var(--bg-primary);
+}
+
+/* ==================== SMOOTH TRANSITIONS ==================== */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* ==================== SCROLLBAR STYLING ==================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--neon-green) 0%, var(--neon-blue) 100%);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #39ff14 0%, #0b8c91 100%);
+}
+
+/* ==================== GRADIENT TEXT UTILITIES ==================== */
+.gradient-text {
+  background: linear-gradient(135deg, #00ff88 0%, #0da5aa 50%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-gold {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ==================== GLASSMORPHISM UTILITIES ==================== */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-primary);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.glass-card:hover {
+  border-color: var(--neon-green);
+  box-shadow: 0 12px 48px rgba(0, 255, 136, 0.1);
+}
+
+/* ==================== NEON BORDER UTILITIES ==================== */
+.neon-border {
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  box-shadow: inset 0 0 20px rgba(0, 255, 136, 0.05);
+}
+
+.neon-border-blue {
+  border: 1px solid rgba(13, 165, 170, 0.3);
+  box-shadow: inset 0 0 20px rgba(13, 165, 170, 0.05);
+}
+
+.neon-border-purple {
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  box-shadow: inset 0 0 20px rgba(168, 85, 247, 0.05);
+}
+
+/* ==================== FOCUS STATES ==================== */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: rgba(0, 255, 136, 0.5) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.2), inset 0 0 10px rgba(0, 255, 136, 0.05) !important;
+}
+
+/* ==================== SELECTION ==================== */
+::selection {
+  background: rgba(0, 255, 136, 0.3);
+  color: #fff;
+}
