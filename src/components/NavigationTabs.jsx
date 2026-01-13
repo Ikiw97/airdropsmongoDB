@@ -56,7 +56,7 @@ const NavigationTabs = ({ activeView, setActiveView, isMobile = false, className
             {/* Left scroll button */}
             <button
                 onClick={() => scroll('left')}
-                className="hidden md:flex absolute left-0 z-10 h-full px-2 items-center"
+                className="flex absolute left-0 z-10 h-full px-2 items-center"
                 style={{ background: 'linear-gradient(to right, var(--bg-secondary), transparent)' }}
             >
                 <ChevronLeft size={16} className="text-gray-500 hover:text-current transition" />
@@ -65,7 +65,7 @@ const NavigationTabs = ({ activeView, setActiveView, isMobile = false, className
             {/* Tabs container */}
             <div
                 ref={scrollRef}
-                className="flex items-center gap-1 px-4 py-2 overflow-x-auto scrollbar-hide md:px-10"
+                className="flex items-center gap-1 px-8 py-2 overflow-x-auto scrollbar-hide md:px-10"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
                 {menuItems.map((item) => {
@@ -104,7 +104,7 @@ const NavigationTabs = ({ activeView, setActiveView, isMobile = false, className
             {/* Right scroll button */}
             <button
                 onClick={() => scroll('right')}
-                className="hidden md:flex absolute right-0 z-10 h-full px-2 items-center"
+                className="flex absolute right-0 z-10 h-full px-2 items-center"
                 style={{ background: 'linear-gradient(to left, var(--bg-secondary), transparent)' }}
             >
                 <ChevronRight size={16} className="text-gray-500 hover:text-current transition" />
