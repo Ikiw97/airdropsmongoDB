@@ -74,21 +74,72 @@ const BubbleMap = ({ data, width = 800, height = 600 }) => {
         // Adjust scale to make bubbles larger and easier to read like the screenshot
         const radiusScale = d3.scaleSqrt()
             .domain([minCap, maxCap])
-            .range([25, 90]); // Larger min radius
+            .range([30, 110]); // Larger bubbles
 
-        const nodes = processedData.map(d => ({
-            ...d,
-            r: radiusScale(d.market_cap),
-            x: Math.random() * width, // Randomize start position X
-            y: Math.random() * height // Randomize start position Y
-        }));
+        // Distribute bubbles - mostly center with some in corners
+        const nodes = processedData.map((d, i) => {
+            const r = radiusScale(d.market_cap);
+            let x, y;
+
+            // Place some bubbles (small ones) in corners
+            if (i >= processedData.length - 12) {
+                // Last 12 bubbles go to corners and edges
+                const cornerIndex = i - (processedData.length - 12);
+                const corners = [
+                    { x: 80, y: 80 },           // top-left
+                    { x: width - 80, y: 80 },    // top-right
+                    { x: 80, y: height - 80 },   // bottom-left
+                    { x: width - 80, y: height - 80 }, // bottom-right
+                    { x: width / 4, y: 60 },     // top-left-middle
+                    { x: width * 0.75, y: 60 },  // top-right-middle
+                    { x: width / 4, y: height - 60 },  // bottom-left-middle
+                    { x: width * 0.75, y: height - 60 }, // bottom-right-middle
+                    { x: 60, y: height / 3 },    // left-top
+                    { x: 60, y: height * 0.66 }, // left-bottom
+                    { x: width - 60, y: height / 3 },  // right-top
+                    { x: width - 60, y: height * 0.66 } // right-bottom
+                ];
+                const corner = corners[cornerIndex % corners.length];
+                x = corner.x + (Math.random() - 0.5) * 40;
+                y = corner.y + (Math.random() - 0.5) * 40;
+            } else {
+                // Rest of bubbles around center with spread
+                const angle = (i / (processedData.length - 12)) * Math.PI * 2 + Math.random() * 0.5;
+                const distance = 50 + Math.random() * Math.min(width, height) * 0.3;
+                x = width / 2 + Math.cos(angle) * distance + (Math.random() - 0.5) * 80;
+                y = height / 2 + Math.sin(angle) * distance + (Math.random() - 0.5) * 80;
+            }
+
+            return { ...d, r, x, y };
+        });
 
         // --- Simulation ---
         const simulation = d3.forceSimulation(nodes)
-            .force("charge", d3.forceManyBody().strength(-20)) // Negative charge (repulsion) to spread them out
-            .force("collide", d3.forceCollide().radius(d => d.r + 5).strength(0.6).iterations(3)) // Looser collision
-            .force("x", d3.forceX(width / 2).strength(0.015)) // Very weak center pull
-            .force("y", d3.forceY(height / 2).strength(0.015)) // Very weak center pull
+            .velocityDecay(0.3) // Moderate friction
+            .alphaMin(0.001) // Very low minimum so simulation keeps running
+            .alphaDecay(0.001) // Very slow decay - keeps bubbles moving
+            .force("charge", d3.forceManyBody().strength(5))
+            .force("collide", d3.forceCollide().radius(d => d.r + 8).strength(0.95).iterations(3))
+            // Gentle centering
+            .force("x", d3.forceX(width / 2).strength(0.02))
+            .force("y", d3.forceY(height / 2).strength(0.02))
+            // Random jiggle force to keep bubbles moving
+            .force("jiggle", () => {
+                nodes.forEach(d => {
+                    d.vx += (Math.random() - 0.5) * 0.3;
+                    d.vy += (Math.random() - 0.5) * 0.3;
+                });
+            })
+            // Keep bubbles in bounds
+            .force("bounds", () => {
+                nodes.forEach(d => {
+                    const pad = d.r + 10;
+                    if (d.x < pad) d.x = pad;
+                    if (d.x > width - pad) d.x = width - pad;
+                    if (d.y < pad) d.y = pad;
+                    if (d.y > height - pad) d.y = height - pad;
+                });
+            })
             .on("tick", ticked);
 
         const g = svg.append("g");
@@ -99,6 +150,8 @@ const BubbleMap = ({ data, width = 800, height = 600 }) => {
             .join("g")
             .attr("class", "bubble")
             .style("cursor", "grab")
+            .style("transition", "none") // No CSS transition - instant movement
+            .style("will-change", "transform") // Optimize for transform changes
             .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
@@ -147,11 +200,13 @@ const BubbleMap = ({ data, width = 800, height = 600 }) => {
             .style("fill", "#ffffff")
             .style("font-size", d => {
                 const len = d.symbol.length;
-                const sizeFromRadius = d.r / 3;
-                // Reduce font size for long symbols to fit within the bubble width (~1.6 * r)
-                // Roughly: fontSize * 0.6 * len = width. So fontSize = width / (0.6 * len)
-                const sizeFromLength = (1.5 * d.r) / (0.6 * Math.max(len, 3));
-                return `${Math.min(sizeFromRadius, sizeFromLength)}px`;
+                // More aggressive scaling for smaller bubbles
+                const baseSize = d.r * 0.35;
+                // Reduce for longer symbols
+                const sizeFromLength = (d.r * 1.4) / (0.6 * Math.max(len, 3));
+                // Clamp between min and calculated size
+                const finalSize = Math.max(8, Math.min(baseSize, sizeFromLength));
+                return `${finalSize}px`;
             })
             .style("pointer-events", "none")
             .style("text-shadow", "0 2px 4px rgba(0,0,0,0.3)"); // Subtle shadow for readability
@@ -166,7 +221,7 @@ const BubbleMap = ({ data, width = 800, height = 600 }) => {
             })
             .style("font-family", "'Inter', system-ui, sans-serif")
             .style("font-weight", "600")
-            .style("font-size", d => `${d.r / 4}px`) // Proportional sizing
+            .style("font-size", d => `${Math.max(6, d.r * 0.22)}px`) // Proportional sizing with min
             .style("fill", "#ffffff")
             .style("opacity", 0.9)
             .style("pointer-events", "none");
@@ -181,19 +236,25 @@ const BubbleMap = ({ data, width = 800, height = 600 }) => {
         }
 
         function dragstarted(event, d) {
-            if (!event.active) simulation.alphaTarget(0.3).restart();
+            // Keep simulation running but with high alpha for collision
+            simulation.alphaTarget(1).restart();
             d.fx = d.x;
             d.fy = d.y;
             d3.select(this).style("cursor", "grabbing");
         }
 
         function dragged(event, d) {
+            // Set fixed position - simulation will handle collision
             d.fx = event.x;
             d.fy = event.y;
+            // Also directly update for instant visual feedback
+            d.x = event.x;
+            d.y = event.y;
+            d3.select(this).attr("transform", `translate(${event.x},${event.y})`);
         }
 
         function dragended(event, d) {
-            if (!event.active) simulation.alphaTarget(0);
+            simulation.alphaTarget(0);
             d.fx = null;
             d.fy = null;
             d3.select(this).style("cursor", "grab");
