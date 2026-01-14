@@ -21,6 +21,10 @@
 
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.08);
+
+  --chart-opacity: 0.15; /* More visible in light mode */
 }
 
 .dark {
@@ -41,6 +45,10 @@
 
   --glass-bg: rgba(18, 18, 26, 0.7);
   --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(18, 18, 26, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+
+  --chart-opacity: 0.1; /* Normal in dark mode */
 }
 
 /* ==================== BASE STYLES ==================== */
