@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Maximize2, RefreshCw } from 'lucide-react';
+import { X, Maximize2, RefreshCw, CircleDollarSign } from 'lucide-react';
 import BubbleMap from './BubbleMap';
 import apiService from '../../api/apiService';
 
@@ -42,48 +42,72 @@ const BubbleMapFeature = () => {
 
     return (
         <>
-            {/* Draggable Floating Button */}
-            {/* Draggable Floating Button */}
-            {/* Draggable Floating Button */}
-            <motion.div
-                drag
-                dragMomentum={false}
-                className="fixed bottom-10 right-10 z-[9999]"
-                style={{ touchAction: 'none' }} // Prevent scrolling on mobile while dragging
-            >
-                <motion.div
-                    animate={{
-                        y: [0, -10, 0], // Floating animation
-                    }}
-                    transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                    }}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => setIsOpen(true)}
-                    className="cursor-pointer"
-                >
-                    <div className="relative w-14 h-14 rounded-full flex flex-col items-center justify-center group">
-                        {/* Realistic Bubble Shell */}
-                        <div className="absolute inset-0 rounded-full border border-white/40 shadow-[0_0_10px_rgba(6,182,212,0.3),inset_0_0_10px_rgba(255,255,255,0.2)] bg-gradient-to-br from-cyan-400/10 to-blue-600/10 backdrop-blur-[1px]" />
-                        
-                        {/* Strong Top-Left Shine (The "Window" reflection) */}
-                        <div className="absolute top-[15%] left-[15%] w-[30%] h-[15%] bg-white/70 rounded-[100%] blur-[0.5px] transform -rotate-45" />
-                        
-                        {/* Secondary Bottom-Right Shine (Subtle) */}
-                        <div className="absolute bottom-[15%] right-[15%] w-[15%] h-[8%] bg-cyan-300/40 rounded-[100%] blur-[1px] transform -rotate-45" />
+            {/* Draggable Floating Button - Manual drag for instant response */}
+            <div
+                ref={constraintsRef}
+                className="fixed z-[9999] cursor-grab active:cursor-grabbing"
+                style={{
+                    touchAction: 'none',
+                    bottom: '40px',
+                    right: '40px',
+                    transition: 'none'
+                }}
+                onMouseDown={(e) => {
+                    e.preventDefault();
+                    const el = constraintsRef.current;
+                    const startX = e.clientX;
+                    const startY = e.clientY;
+                    const rect = el.getBoundingClientRect();
+                    const offsetX = startX - rect.left;
+                    const offsetY = startY - rect.top;
 
-                        {/* Content */}
-                        <div className="relative z-10 flex flex-col items-center justify-center text-center">
-                            <span className="text-[8px] font-black text-white uppercase tracking-wider leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
-                                Bubble<br />Map
-                            </span>
-                        </div>
-                    </div>
-                </motion.div>
-            </motion.div>
+                    el.style.cursor = 'grabbing';
+
+                    const onMouseMove = (moveEvent) => {
+                        const x = moveEvent.clientX - offsetX;
+                        const y = moveEvent.clientY - offsetY;
+                        el.style.left = `${x}px`;
+                        el.style.top = `${y}px`;
+                        el.style.right = 'auto';
+                        el.style.bottom = 'auto';
+                    };
+
+                    const onMouseUp = () => {
+                        el.style.cursor = 'grab';
+                        document.removeEventListener('mousemove', onMouseMove);
+                        document.removeEventListener('mouseup', onMouseUp);
+                    };
+
+                    document.addEventListener('mousemove', onMouseMove);
+                    document.addEventListener('mouseup', onMouseUp);
+                }}
+                onClick={() => setIsOpen(true)}
+            >
+                <div
+                    className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-700 via-gray-900 to-black shadow-[0_0_25px_rgba(0,0,0,0.5),0_0_10px_rgba(100,200,255,0.15)] flex flex-col items-center justify-center border border-gray-600/50 group relative overflow-hidden hover:scale-110 active:scale-90"
+                    style={{
+                        animation: 'bubbleFloat 4s ease-in-out infinite',
+                        transition: 'transform 0.15s ease'
+                    }}
+                >
+                    <style>{`
+                        @keyframes bubbleFloat {
+                            0%, 100% { transform: translateY(0) translateX(0); }
+                            25% { transform: translateY(-8px) translateX(2px); }
+                            50% { transform: translateY(0) translateX(0); }
+                            75% { transform: translateY(-4px) translateX(-2px); }
+                        }
+                    `}</style>
+                    {/* 3D light reflection effect - top left */}
+                    <div className="absolute top-2 left-2 w-8 h-8 bg-gradient-to-br from-white/40 via-white/10 to-transparent rounded-full blur-[2px]" />
+                    <div className="absolute top-3 left-3 w-4 h-4 bg-white/30 rounded-full blur-[1px]" />
+                    {/* Subtle rim light */}
+                    <div className="absolute inset-0 rounded-full border border-white/10" />
+                    <span className="text-[10px] font-bold text-white/90 uppercase tracking-wider text-center leading-tight z-10">
+                        Bubble<br />Map
+                    </span>
+                </div>
+            </div>
 
             {/* Fullscreen Popup Modal */}
             <AnimatePresence>
@@ -98,7 +122,7 @@ const BubbleMapFeature = () => {
                             initial={{ scale: 0.9, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="w-full max-w-[1200px] h-[85vh] bg-[#0a0b0d] rounded-2xl border border-gray-800 shadow-2xl overflow-hidden flex flex-col"
+                            className="w-full max-w-[950px] h-[85vh] bg-[#0a0b0d] rounded-2xl border border-gray-800 shadow-2xl overflow-hidden flex flex-col"
                         >
                             {/* Header */}
                             <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between bg-[#0f1114]">
@@ -141,7 +165,7 @@ const BubbleMapFeature = () => {
                                         <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
                                     </div>
                                 ) : (
-                                    <BubbleMap data={data} width={1150} height={700} />
+                                    <BubbleMap data={data} width={1100} height={700} />
                                 )}
                             </div>
 
