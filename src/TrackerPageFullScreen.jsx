@@ -301,16 +301,16 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
         className="flex flex-wrap md:flex-nowrap items-center justify-between px-4 py-3 gap-y-3 md:gap-y-0"
         style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-primary)' }}
       >
-        {/* Left - Logo */}
-        <div className="flex items-center gap-3 order-1">
+        {/* Left - Logo (always first on desktop) */}
+        <div className="flex items-center gap-3 order-2 md:order-1">
           <h1 className="flex items-center gap-2 text-2xl md:text-3xl font-black tracking-wider glitch-effect text-transparent bg-clip-text bg-gradient-to-r from-[#00ff88] via-[#0da5aa] to-[#ec4899] hover:brightness-125 transition-all duration-300 cursor-default select-none" style={{ fontFamily: '"Orbitron", sans-serif' }}>
             Airdrop Tracker
           </h1>
         </div>
 
 
-        {/* Center - Navigation (moved from below) */}
-        <div className="w-full md:w-auto md:flex-1 flex justify-center order-3 md:order-none mt-2 md:mt-0 md:mx-12 overflow-hidden">
+        {/* Center - Navigation */}
+        <div className="w-full md:w-auto md:flex-1 flex justify-center order-3 mt-2 md:mt-0 md:mx-12 overflow-hidden">
           <NavigationTabs
             activeView={activeView}
             setActiveView={setActiveView}
@@ -321,8 +321,8 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
         </div>
 
 
-        {/* Right - Actions */}
-        <div className="flex items-center gap-2 order-2">
+        {/* Right - Actions (always last on desktop) */}
+        <div className="flex items-center gap-2 order-1 md:order-3">
           {user?.is_admin && (
             <button
               onClick={onShowAdmin}
