@@ -38,11 +38,7 @@ const DonationModal = ({ isOpen, onClose }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const allocationData = [
-    { label: "Project & Server", percentage: 40 },
-    { label: "Social Donation", percentage: 30 },
-    { label: "Developer Support", percentage: 30 },
-  ];
+
 
   return (
     <AnimatePresence>
@@ -149,31 +145,7 @@ const DonationModal = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* Allocation Section */}
-              <div className="p-4 rounded-lg border" style={{ background: "var(--bg-secondary)", borderColor: "var(--border-primary)" }}>
-                <h3 className="text-sm font-bold mb-4" style={{ color: "var(--text-primary)" }}>Alokasi Donasi</h3>
-                <div className="grid grid-cols-3 gap-4">
-                  {allocationData.map((item, i) => (
-                    <div key={i} className="p-3 rounded-lg border" style={{ background: "var(--bg-tertiary)", borderColor: "var(--border-primary)" }}>
-                      <p className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>{item.percentage}%</p>
-                      <p className="text-xs text-gray-500">{item.label}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
 
-              {/* Log Section */}
-              <div className="p-4 rounded-lg border" style={{ background: "var(--bg-secondary)", borderColor: "var(--border-primary)" }}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>Donation & Spending Log</h3>
-                    <p className="text-xs text-gray-500">Log disimpan di MongoDB dan dipublikasikan per periode.</p>
-                  </div>
-                  <button className="py-1.5 px-3 rounded text-xs font-semibold border transition" style={{ borderColor: "var(--border-primary)", color: "var(--text-primary)" }}>
-                    Lihat log terbaru (JSON)
-                  </button>
-                </div>
-              </div>
             </div>
           </motion.div>
         </motion.div>
