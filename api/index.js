@@ -783,24 +783,41 @@ app.post("/api/upload/image", async (req, res) => {
     // Remove data:image/xxx;base64, prefix if present
     const cleanBase64 = image.replace(/^data:image\/\w+;base64,/, "");
 
+    // Log debug info (masked key)
+    const keyStatus = IMGBB_API_KEY ? `Present (${IMGBB_API_KEY.substring(0, 4)}...)` : "Missing";
+    console.log(`[Upload] Starting upload. Key: ${keyStatus}, Image Length: ${cleanBase64.length}`);
+
     const formData = new URLSearchParams();
     formData.append("image", cleanBase64);
 
-    const response = await axios.post(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, formData, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
-    });
+    try {
+      const response = await axios.post(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, formData, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      });
 
-    if (response.data && response.data.data && response.data.data.url) {
-      return res.json({ url: response.data.data.url });
-    } else {
-      throw new Error("Invalid response from ImgBB");
+      if (response.data && response.data.data && response.data.data.url) {
+        console.log("[Upload] Success:", response.data.data.url);
+        return res.json({ url: response.data.data.url });
+      } else {
+        throw new Error("Invalid response structure from ImgBB");
+      }
+    } catch (axiosError) {
+      // Menangkap error spesifik dari ImgBB response
+      const imgbbError = axiosError.response?.data?.error?.message || axiosError.message;
+      console.error("[Upload] ImgBB Fail:", axiosError.response?.data || axiosError.message);
+
+      // Kembalikan pesan error spesifik ke frontend agar bisa dibaca di console
+      return res.status(500).json({
+        detail: `ImgBB Upload Failed: ${imgbbError}`,
+        debug: { keyStatus, length: cleanBase64.length }
+      });
     }
 
   } catch (error) {
-    console.error("Image upload error:", error.message);
-    res.status(500).json({ detail: "Failed to upload image" });
+    console.error("Image upload error:", error);
+    res.status(500).json({ detail: "Failed to upload image: " + error.message });
   }
 });
 
