@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Send, Image, RefreshCw, MessageSquare, X, Upload, Smile } from "lucide-react";
+import { Send, Image, RefreshCw, MessageSquare, X, Upload, Smile, Reply } from "lucide-react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import EmojiPicker from "emoji-picker-react";
@@ -15,6 +15,7 @@ const CommunityChat = ({ user }) => {
     const [previewImage, setPreviewImage] = useState(null);
     const [imageUploadLoading, setImageUploadLoading] = useState(false);
     const [showEmoji, setShowEmoji] = useState(false);
+    const [replyingTo, setReplyingTo] = useState(null);
     const messagesEndRef = useRef(null);
     const fileInputRef = useRef(null);
 
@@ -109,17 +110,26 @@ const CommunityChat = ({ user }) => {
                 imageUrl = await uploadImage(selectedImage);
             }
 
+            const replyPayload = replyingTo ? {
+                id: replyingTo._id,
+                username: replyingTo.username,
+                message: replyingTo.message,
+                image_url: replyingTo.image_url
+            } : null;
+
             await axios.post(
                 `${API_URL}/api/community/messages`,
                 {
                     message: newMessage,
-                    image_url: imageUrl
+                    image_url: imageUrl,
+                    replyTo: replyPayload
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
             setNewMessage("");
             setSelectedImage(null);
+            setReplyingTo(null);
             if (fileInputRef.current) fileInputRef.current.value = "";
             fetchMessages();
         } catch (error) {
@@ -177,7 +187,7 @@ const CommunityChat = ({ user }) => {
                             key={msg._id}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+                            className={`flex ${isMe ? "justify-end" : "justify-start"} group`}
                         >
                             <div className={`max-w-[75%] md:max-w-[60%] flex flex-col ${isMe ? "items-end" : "items-start"}`}>
 
@@ -195,6 +205,14 @@ const CommunityChat = ({ user }) => {
                                         : "bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-bl-none border border-[var(--border-primary)]"
                                         }`}
                                 >
+                                    {/* Reply Context */}
+                                    {msg.replyTo && (
+                                        <div className={`mb-2 p-2 rounded text-xs border-l-2 ${isMe ? "bg-white/10 border-white/50" : "bg-black/20 border-indigo-500"}`}>
+                                            <p className={`font-bold ${isMe ? "text-white/80" : "text-indigo-400"}`}>{msg.replyTo.username}</p>
+                                            <p className="truncate opacity-80">{msg.replyTo.message || "📷 Image"}</p>
+                                        </div>
+                                    )}
+
                                     {/* Image */}
                                     {msg.image_url && (
                                         <div className="mb-2 rounded-lg overflow-hidden cursor-pointer" onClick={() => setPreviewImage(msg.image_url)}>
@@ -211,16 +229,50 @@ const CommunityChat = ({ user }) => {
                                     {msg.message && <p className="whitespace-pre-wrap break-words text-sm">{msg.message}</p>}
                                 </div>
 
-                                {/* Time */}
-                                <span className="text-[10px] text-gray-500 mt-1 px-1">
-                                    {formatTime(msg.created_at)}
-                                </span>
+                                {/* Time & Actions */}
+                                <div className={`flex items-center gap-2 mt-1 px-1 ${isMe ? "flex-row-reverse" : "flex-row"}`}>
+                                    <span className="text-[10px] text-gray-500">
+                                        {formatTime(msg.created_at)}
+                                    </span>
+                                    <button
+                                        onClick={() => setReplyingTo(msg)}
+                                        className="text-gray-500 hover:text-indigo-400 transition opacity-0 group-hover:opacity-100 focus:opacity-100"
+                                        title="Reply"
+                                    >
+                                        <Reply size={14} />
+                                    </button>
+                                </div>
                             </div>
                         </motion.div>
                     );
                 })}
                 <div ref={messagesEndRef} />
             </div>
+
+            {/* Reply Indicator */}
+            <AnimatePresence>
+                {replyingTo && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        className="px-4 py-2 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)] flex items-center justify-between"
+                    >
+                        <div className="flex flex-col text-sm border-l-2 border-indigo-500 pl-2">
+                            <span className="text-indigo-400 font-semibold">Replying to {replyingTo.username}</span>
+                            <span className="text-[var(--text-secondary)] truncate max-w-[200px]">
+                                {replyingTo.message || "📷 Image"}
+                            </span>
+                        </div>
+                        <button
+                            onClick={() => setReplyingTo(null)}
+                            className="p-1 hover:bg-red-500/20 text-red-400 rounded-full transition"
+                        >
+                            <X size={16} />
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Image Preview & Upload Indicator */}
             <AnimatePresence>
