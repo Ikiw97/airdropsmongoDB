@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { TrendingUp, Activity, Wallet, CheckCircle, BarChart2, Heart } from 'lucide-react';
+import { TrendingUp, Activity, Wallet, CheckCircle, BarChart2, Heart, MessageCircle } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import DonationModal from './DonationModal';
 
-const TopUtilityBar = ({ stats = {} }) => {
+const TopUtilityBar = ({ stats = {}, activeView, setActiveView }) => {
     const [donationOpen, setDonationOpen] = useState(false);
 
     const quickStats = [
@@ -36,6 +36,17 @@ const TopUtilityBar = ({ stats = {} }) => {
 
                 {/* Right - Actions */}
                 <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setActiveView && setActiveView('community')}
+                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full transition-all ${activeView === 'community'
+                                ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/50'
+                                : 'bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-500'
+                            }`}
+                        title="Community"
+                    >
+                        <MessageCircle size={14} />
+                        <span className="font-semibold hidden sm:inline">Community</span>
+                    </button>
                     <button
                         onClick={() => setDonationOpen(true)}
                         className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-pink-500/10 hover:bg-pink-500/20 text-pink-500"
