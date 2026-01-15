@@ -66,6 +66,7 @@ import InfoAirdrops from "./components/InfoAirdrops";
 import PrivateKeyGeneratorSecure from "./components/PrivateKeyGeneratorSecure";
 import MarketOverview from "./components/MarketOverview";
 import BubbleMap from "./components/BubbleMap/BubbleMap";
+import CommunityChat from "./components/CommunityChat";
 import apiService from "./api/apiService";
 import { secureLogger } from "./utils/dataSecurityUtils";
 
@@ -294,7 +295,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
       <NewsTicker />
 
       {/* Top Utility Bar */}
-      <TopUtilityBar stats={stats} />
+      <TopUtilityBar stats={stats} activeView={activeView} setActiveView={setActiveView} />
 
       {/* Main Header */}
       <header
@@ -370,6 +371,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
         {activeView === "multisend" && <MultisendTool />}
         {activeView === "infoairdrops" && <InfoAirdrops />}
         {activeView === "market-data" && <MarketOverview />}
+        {activeView === "community" && <div className="h-[calc(100vh-200px)]"><CommunityChat user={user} /></div>}
 
 
         {activeView === "projects" && (
