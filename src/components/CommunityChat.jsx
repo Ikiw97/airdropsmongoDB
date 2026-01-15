@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Send, Image, RefreshCw, MessageSquare, X, Upload } from "lucide-react";
+import { Send, Image, RefreshCw, MessageSquare, X, Upload, Smile } from "lucide-react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
+import EmojiPicker from "emoji-picker-react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8001";
 
@@ -13,6 +14,7 @@ const CommunityChat = ({ user }) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [previewImage, setPreviewImage] = useState(null);
     const [imageUploadLoading, setImageUploadLoading] = useState(false);
+    const [showEmoji, setShowEmoji] = useState(false);
     const messagesEndRef = useRef(null);
     const fileInputRef = useRef(null);
 
@@ -259,7 +261,31 @@ const CommunityChat = ({ user }) => {
             </AnimatePresence>
 
             {/* Input Area */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]/50">
+            <form onSubmit={handleSendMessage} className="p-4 border-t border-[var(--border-primary)] bg-[var(--bg-secondary)]/50 relative">
+                {/* Emoji Picker */}
+                <AnimatePresence>
+                    {showEmoji && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                            className="absolute bottom-20 left-4 z-50 shadow-2xl rounded-xl overflow-hidden border border-[var(--border-primary)]"
+                        >
+                            <EmojiPicker
+                                theme="dark"
+                                onEmojiClick={(emojiData) => {
+                                    setNewMessage(prev => prev + emojiData.emoji);
+                                    // setShowEmoji(false); 
+                                }}
+                                width={300}
+                                height={400}
+                                searchDisabled
+                                previewConfig={{ showPreview: false }}
+                            />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
                 <div className="flex items-end gap-2">
                     {/* Image Upload Button */}
                     <div className="relative">
@@ -280,6 +306,17 @@ const CommunityChat = ({ user }) => {
                             <Image size={20} />
                         </button>
                     </div>
+
+                    {/* Emoji Toggle Button */}
+                    <button
+                        type="button"
+                        onClick={() => setShowEmoji(!showEmoji)}
+                        className={`p-3 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border-primary)] transition ${showEmoji ? "text-yellow-400 border-yellow-400/50 bg-yellow-400/10" : "text-[var(--text-secondary)] hover:text-yellow-400 hover:bg-yellow-400/10"
+                            }`}
+                        disabled={isSending}
+                    >
+                        <Smile size={20} />
+                    </button>
 
                     {/* Text Input */}
                     <div className="flex-1 relative">
