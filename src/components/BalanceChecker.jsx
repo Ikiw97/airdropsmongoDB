@@ -6,11 +6,47 @@ import { secureLogger } from "../utils/dataSecurityUtils";
 import { alchemyProxyService } from "../utils/alchemyProxy";
 
 const NETWORKS = {
-  Ethereum: { rpc: "https://eth.llamarpc.com", color: "#58a6ff" },
-  BSC: { rpc: "https://bsc-dataseed.binance.org", color: "#f0b90b" },
-  Polygon: { rpc: "https://polygon-rpc.com", color: "#a855f7" },
-  Arbitrum: { rpc: "https://arb1.arbitrum.io/rpc", color: "#28a0f0" },
-  Base: { rpc: "https://mainnet.base.org", color: "#0052ff" },
+  Ethereum: {
+    rpc: "https://eth.llamarpc.com",
+    fallbackRpcs: [
+      "https://rpc.ankr.com/eth",
+      "https://ethereum.publicnode.com",
+      "https://eth.drpc.org",
+      "https://1rpc.io/eth"
+    ],
+    color: "#58a6ff"
+  },
+  BSC: {
+    rpc: "https://bsc-dataseed.binance.org",
+    fallbackRpcs: [
+      "https://bsc-dataseed1.binance.org",
+      "https://bsc-dataseed2.binance.org",
+      "https://rpc.ankr.com/bsc"
+    ],
+    color: "#f0b90b"
+  },
+  Polygon: {
+    rpc: "https://polygon-rpc.com",
+    fallbackRpcs: [
+      "https://rpc.ankr.com/polygon",
+      "https://polygon.drpc.org"
+    ],
+    color: "#a855f7"
+  },
+  Arbitrum: {
+    rpc: "https://arb1.arbitrum.io/rpc",
+    fallbackRpcs: [
+      "https://rpc.ankr.com/arbitrum"
+    ],
+    color: "#28a0f0"
+  },
+  Base: {
+    rpc: "https://mainnet.base.org",
+    fallbackRpcs: [
+      "https://rpc.ankr.com/base"
+    ],
+    color: "#0052ff"
+  },
 };
 
 const BalanceChecker = () => {
@@ -41,39 +77,92 @@ const BalanceChecker = () => {
   // === Balance Logic ===
   const checkBalances = async (isCustom = false) => {
     const addresses = isCustom ? customAddresses : quickAddresses;
-    const rpcUrl = isCustom ? customRpcUrl : NETWORKS[selectedNetwork].rpc;
+    const networkConfig = NETWORKS[selectedNetwork];
+    const primaryRpc = isCustom ? customRpcUrl : networkConfig.rpc;
+    const fallbackRpcs = isCustom ? [] : (networkConfig.fallbackRpcs || []);
+    const allRpcs = [primaryRpc, ...fallbackRpcs];
+
     const setBalances = isCustom ? setCustomBalances : setQuickBalances;
     const setLoading = isCustom ? setCustomLoading : setQuickBalanceLoading;
     const isTokenCheck = isCustom && customCheckType === 'token';
 
     const list = addresses.split(/[\n,\s]+/).filter(Boolean);
     if (list.length === 0) return;
-    if (isCustom && !rpcUrl) return alert("Please enter a valid RPC URL");
+    if (isCustom && !primaryRpc) return alert("Please enter a valid RPC URL");
     if (isTokenCheck && !customTokenAddress) return alert("Please enter a Token Contract Address");
 
     setLoading(true);
     setBalances([]);
     const result = [];
 
+    // Helper function to try balance check with multiple RPCs
+    const getBalanceWithFallback = async (address, isToken, tokenContract, tokenDecimals, tokenSymbol) => {
+      for (let i = 0; i < allRpcs.length; i++) {
+        const rpc = allRpcs[i];
+        try {
+          console.log(`[BalanceChecker] Trying RPC ${i + 1}/${allRpcs.length}: ${rpc} for address: ${address}`);
+
+          // Create provider without staticNetwork to auto-detect chain
+          const provider = new ethers.JsonRpcProvider(rpc);
+
+          // Set longer timeout for the request (20 seconds)
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Timeout after 20s')), 20000)
+          );
+
+          let rawBalance;
+          if (isToken && tokenContract) {
+            // For token, we need to recreate the contract with new provider
+            const contract = new ethers.Contract(customTokenAddress, [
+              "function balanceOf(address) view returns (uint256)"
+            ], provider);
+            rawBalance = await Promise.race([contract.balanceOf(address), timeoutPromise]);
+            console.log(`[BalanceChecker] Token raw balance for ${address}: ${rawBalance.toString()}`);
+            const formatted = ethers.formatUnits(rawBalance, tokenDecimals);
+            return {
+              balance: `${parseFloat(formatted).toFixed(6)} ${tokenSymbol}`,
+              status: "success"
+            };
+          } else {
+            rawBalance = await Promise.race([provider.getBalance(address), timeoutPromise]);
+            console.log(`[BalanceChecker] Native raw balance for ${address}: ${rawBalance.toString()}`);
+            // Use higher precision (6 decimals) to show small balances
+            const formatted = parseFloat(ethers.formatEther(rawBalance)).toFixed(6);
+            return { balance: formatted, status: "success" };
+          }
+        } catch (err) {
+          console.error(`[BalanceChecker] RPC ${i + 1} failed: ${rpc}`, err.message);
+          // Try next RPC
+          continue;
+        }
+      }
+      // All RPCs failed
+      console.error(`[BalanceChecker] All ${allRpcs.length} RPCs failed for address: ${address}`);
+      return { balance: "Error", status: "error" };
+    };
+
     try {
-      const provider = new ethers.JsonRpcProvider(rpcUrl);
-      let tokenContract = null;
       let tokenDecimals = 18;
       let tokenSymbol = "TOKEN";
+      let tokenContract = null;
 
-      // If Token Check, setup contract
+      // If Token Check, get token info from first working RPC
       if (isTokenCheck) {
-        try {
-          tokenContract = new ethers.Contract(customTokenAddress, [
-            "function balanceOf(address) view returns (uint256)",
-            "function decimals() view returns (uint8)",
-            "function symbol() view returns (string)"
-          ], provider);
-          tokenDecimals = await tokenContract.decimals();
-          tokenSymbol = await tokenContract.symbol();
-        } catch (e) {
-          console.error("Error fetching token info", e);
-          // Fallback if decimals/symbol fail
+        for (const rpc of allRpcs) {
+          try {
+            const provider = new ethers.JsonRpcProvider(rpc);
+            tokenContract = new ethers.Contract(customTokenAddress, [
+              "function balanceOf(address) view returns (uint256)",
+              "function decimals() view returns (uint8)",
+              "function symbol() view returns (string)"
+            ], provider);
+            tokenDecimals = await tokenContract.decimals();
+            tokenSymbol = await tokenContract.symbol();
+            break;
+          } catch (e) {
+            console.log("Token info fetch failed on", rpc);
+            continue;
+          }
         }
       }
 
@@ -84,30 +173,24 @@ const BalanceChecker = () => {
             continue;
           }
           const checksumAddr = ethers.getAddress(addr);
-          let rawBalance;
 
-          if (isTokenCheck && tokenContract) {
-            rawBalance = await tokenContract.balanceOf(checksumAddr);
-            // Format with correct decimals
-            const formatted = ethers.formatUnits(rawBalance, tokenDecimals);
-            result.push({
-              address: checksumAddr,
-              balance: `${parseFloat(formatted).toFixed(4)} ${tokenSymbol}`,
-              status: "success"
-            });
-          } else {
-            // Native Check
-            rawBalance = await provider.getBalance(checksumAddr);
-            const formatted = parseFloat(ethers.formatEther(rawBalance)).toFixed(4);
-            result.push({ address: checksumAddr, balance: formatted, status: "success" });
-          }
+          const balanceResult = await getBalanceWithFallback(
+            checksumAddr,
+            isTokenCheck,
+            tokenContract,
+            tokenDecimals,
+            tokenSymbol
+          );
+
+          result.push({ address: checksumAddr, ...balanceResult });
 
         } catch (err) {
           result.push({ address: addr, balance: "Error", status: "error" });
         }
       }
     } catch (err) {
-      alert("Network Error: Invalid RPC or Network unreachable");
+      console.error("Balance check error:", err);
+      alert("Network Error: All RPCs failed or Network unreachable. Please try again.");
     } finally {
       setBalances(result);
       setLoading(false);
@@ -253,7 +336,7 @@ const BalanceChecker = () => {
                           <tr>
                             <th className="p-3 border-b font-medium w-12" style={{ borderBottomColor: "var(--border-primary)" }}>#</th>
                             <th className="p-3 border-b font-medium" style={{ borderBottomColor: "var(--border-primary)" }}>Address</th>
-                            <th className="p-3 border-b font-medium text-right" style={{ borderBottomColor: "var(--border-primary)" }}>Balance ({selectedNetwork === 'BSC' ? 'BNB' : selectedNetwork === 'Polygon' ? 'MATIC' : 'ETH'})</th>
+                            <th className="p-3 border-b font-medium text-right" style={{ borderBottomColor: "var(--border-primary)" }}>Balance ({selectedNetwork === 'BSC' ? 'BNB' : selectedNetwork === 'Polygon' ? 'MATIC' : selectedNetwork === 'Arbitrum' ? 'ETH' : selectedNetwork === 'Base' ? 'ETH' : 'ETH'})</th>
                           </tr>
                         </thead>
                         <tbody className="transition-all duration-300" style={{ background: "var(--bg-primary)", color: "var(--text-primary)" }}>
