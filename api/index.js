@@ -737,7 +737,7 @@ app.post("/api/community/messages", async (req, res) => {
       return res.status(401).json({ detail: "Could not validate credentials" });
     }
 
-    const { message, image_url } = req.body;
+    const { message, image_url, replyTo } = req.body;
 
     if (!message && !image_url) {
       return res.status(400).json({ detail: "Message or image is required" });
@@ -749,6 +749,7 @@ app.post("/api/community/messages", async (req, res) => {
       username: user.username,
       message: message || "",
       image_url: image_url || null,
+      replyTo: replyTo || null, // Store reply context
       created_at: new Date().toISOString()
     };
 
