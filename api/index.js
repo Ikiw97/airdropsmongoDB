@@ -97,6 +97,7 @@ const JWT_ACCESS_TOKEN_EXPIRE_MINUTES = parseInt(process.env.JWT_ACCESS_TOKEN_EX
 let db;
 let usersCollection;
 let projectsCollection;
+let messagesCollection;
 let connectionPromise;
 
 // Initialize MongoDB Connection
@@ -116,6 +117,7 @@ async function initDB() {
     db = client.db(MONGO_DB_NAME);
     usersCollection = db.collection("users");
     projectsCollection = db.collection("projects");
+    messagesCollection = db.collection("messages");
   } catch (error) {
     console.error("MongoDB connection error:", error);
     connectionPromise = null; // Reset promise on failure so we can retry
@@ -691,6 +693,117 @@ app.delete("/api/projects/:project_name", async (req, res) => {
   }
 });
 
+// ==================== COMMUNITY CHAT ====================
+
+app.get("/api/community/messages", async (req, res) => {
+  try {
+    await initDB();
+
+    const token = extractToken(req);
+    if (!token) {
+      return res.status(401).json({ detail: "Not authenticated" });
+    }
+
+    const user = await getCurrentUser(token);
+    if (!user) {
+      return res.status(401).json({ detail: "Could not validate credentials" });
+    }
+
+    // Get last 100 messages
+    const messages = await messagesCollection.find({})
+      .sort({ created_at: -1 })
+      .limit(100)
+      .toArray();
+
+    return res.json(messages.reverse());
+  } catch (error) {
+    console.error("Get messages error:", error);
+    res.status(500).json({ detail: "Internal server error" });
+  }
+});
+
+app.post("/api/community/messages", async (req, res) => {
+  try {
+    await initDB();
+
+    const token = extractToken(req);
+    if (!token) {
+      return res.status(401).json({ detail: "Not authenticated" });
+    }
+
+    const user = await getCurrentUser(token);
+    if (!user) {
+      return res.status(401).json({ detail: "Could not validate credentials" });
+    }
+
+    const { message, image_url } = req.body;
+
+    if (!message && !image_url) {
+      return res.status(400).json({ detail: "Message or image is required" });
+    }
+
+    const newMessage = {
+      "_id": uuidv4(),
+      user_id: user._id,
+      username: user.username,
+      message: message || "",
+      image_url: image_url || null,
+      created_at: new Date().toISOString()
+    };
+
+    await messagesCollection.insertOne(newMessage);
+    return res.json(newMessage);
+  } catch (error) {
+    console.error("Post message error:", error);
+    res.status(500).json({ detail: "Internal server error" });
+  }
+});
+
+// ImgBB Upload Proxy
+app.post("/api/upload/image", async (req, res) => {
+  try {
+    await initDB();
+
+    const token = extractToken(req);
+    if (!token) {
+      return res.status(401).json({ detail: "Not authenticated" });
+    }
+
+    const { image } = req.body; // Base64 string
+    const IMGBB_API_KEY = process.env.IMGBB_API_KEY;
+
+    if (!IMGBB_API_KEY) {
+      return res.status(500).json({ detail: "Server ImgBB configuration missing" });
+    }
+
+    if (!image) {
+      return res.status(400).json({ detail: "Image data required" });
+    }
+
+    // Remove data:image/xxx;base64, prefix if present
+    const cleanBase64 = image.replace(/^data:image\/\w+;base64,/, "");
+
+    const formData = new URLSearchParams();
+    formData.append("image", cleanBase64);
+
+    const response = await axios.post(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, formData, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    });
+
+    if (response.data && response.data.data && response.data.data.url) {
+      return res.json({ url: response.data.data.url });
+    } else {
+      throw new Error("Invalid response from ImgBB");
+    }
+
+  } catch (error) {
+    console.error("Image upload error:", error.message);
+    res.status(500).json({ detail: "Failed to upload image" });
+  }
+});
+
 // ==================== ALCHEMY PROXY ====================
 // This endpoint proxies Alchemy requests to keep the API key secure
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
@@ -939,7 +1052,7 @@ const executedFile = process.argv[1];
 const normalize = (p) => p ? path.resolve(p).toLowerCase() : '';
 
 if (normalize(currentFile) === normalize(executedFile)) {
-  const PORT = process.env.PORT || 3000;
+  const PORT = process.env.PORT || 8001;
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Local environment: ${process.env.NODE_ENV || 'development'}`);
