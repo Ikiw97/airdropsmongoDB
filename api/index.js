@@ -295,7 +295,8 @@ app.post("/api/auth/login", async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
-        is_admin: user.is_admin || false
+        is_admin: user.is_admin || false,
+        photo_url: user.photo_url || null
       }
     });
   } catch (error) {
@@ -322,10 +323,67 @@ app.get("/api/auth/me", async (req, res) => {
       id: user._id,
       username: user.username,
       email: user.email,
-      is_admin: user.is_admin || false
+      is_admin: user.is_admin || false,
+      photo_url: user.photo_url || null
     });
   } catch (error) {
     console.error("Get me error:", error);
+    res.status(500).json({ detail: "Internal server error" });
+  }
+});
+
+app.put("/api/auth/update-profile", async (req, res) => {
+  try {
+    await initDB();
+
+    const token = extractToken(req);
+    if (!token) {
+      return res.status(401).json({ detail: "Not authenticated" });
+    }
+
+    const user = await getCurrentUser(token);
+    if (!user) {
+      return res.status(401).json({ detail: "Could not validate credentials" });
+    }
+
+    const { username, photo_url } = req.body;
+
+    if (!username || username.trim() === "") {
+      return res.status(400).json({ detail: "Username cannot be empty" });
+    }
+
+    // Check if username is taken (if changed)
+    if (username !== user.username) {
+      const existingUser = await usersCollection.findOne({ username });
+      if (existingUser) {
+        return res.status(400).json({ detail: "Username already taken" });
+      }
+    }
+
+    const updateFields = {
+      username: username,
+      photo_url: photo_url || null,
+      updated_at: new Date().toISOString()
+    };
+
+    await usersCollection.updateOne(
+      { "_id": user._id },
+      { $set: updateFields }
+    );
+
+    return res.json({
+      message: "Profile updated successfully",
+      user: {
+        id: user._id,
+        username: username,
+        email: user.email,
+        is_admin: user.is_admin || false,
+        photo_url: photo_url || null
+      }
+    });
+
+  } catch (error) {
+    console.error("Update profile error:", error);
     res.status(500).json({ detail: "Internal server error" });
   }
 });
@@ -747,6 +805,7 @@ app.post("/api/community/messages", async (req, res) => {
       "_id": uuidv4(),
       user_id: user._id,
       username: user.username,
+      user_photo: user.photo_url || null,
       message: message || "",
       image_url: image_url || null,
       replyTo: replyTo || null, // Store reply context
