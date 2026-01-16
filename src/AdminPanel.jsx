@@ -30,7 +30,34 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
 
   useEffect(() => {
     fetchAllUsers();
+
+    // Auto-refresh every 30 seconds to update online status
+    const interval = setInterval(fetchAllUsers, 30000);
+    return () => clearInterval(interval);
   }, []);
+
+  const getTimeAgo = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+
+    let interval = Math.floor(seconds / 31536000);
+    if (interval >= 1) return interval + " year" + (interval === 1 ? "" : "s") + " ago";
+
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) return interval + " month" + (interval === 1 ? "" : "s") + " ago";
+
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) return interval + " day" + (interval === 1 ? "" : "s") + " ago";
+
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) return interval + " hour" + (interval === 1 ? "" : "s") + " ago";
+
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) return interval + " min" + (interval === 1 ? "" : "s") + " ago";
+
+    return Math.floor(seconds) + " sec" + (Math.floor(seconds) === 1 ? "" : "s") + " ago";
+  };
 
   const handleApprove = async (userId) => {
     try {
@@ -144,7 +171,7 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
           </p>
           {userData.last_active_at && (
             <div className="text-xs ml-0 sm:ml-[3.5rem] mt-1 flex items-center gap-2">
-              {new Date(userData.last_active_at) > new Date(Date.now() - 5 * 60 * 1000) ? (
+              {new Date(userData.last_active_at) > new Date(Date.now() - 45 * 1000) ? (
                 <span className="flex items-center gap-1 text-green-500 font-bold">
                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                   Online
@@ -152,7 +179,7 @@ const AdminPanel = ({ onBack, onLogout, user }) => {
               ) : (
                 <span className="text-gray-500 flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-gray-400"></span>
-                  Last seen: {new Date(userData.last_active_at).toLocaleString()}
+                  Last seen: {getTimeAgo(userData.last_active_at)}
                 </span>
               )}
             </div>
