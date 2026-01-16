@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8001";
-const HEARTBEAT_INTERVAL = 2 * 60 * 1000; // 2 minutes
+const HEARTBEAT_INTERVAL = 30 * 1000; // 30 seconds
 
 const UserActivityTracker = ({ isLoggedIn }) => {
     useEffect(() => {
@@ -19,7 +19,7 @@ const UserActivityTracker = ({ isLoggedIn }) => {
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
             } catch (error) {
-                console.error("Heartbeat failed", error);
+                // console.error("Heartbeat failed", error);
             }
         };
 
@@ -29,10 +29,19 @@ const UserActivityTracker = ({ isLoggedIn }) => {
         // Set up interval
         const interval = setInterval(sendHeartbeat, HEARTBEAT_INTERVAL);
 
-        // Activity listeners to update status on user interaction
-        // (Optional: We could debounce this to only send if also > 5 min, but simple interval is robust enough for now)
+        // Send heartbeat when user comes back to tab
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                sendHeartbeat();
+            }
+        };
 
-        return () => clearInterval(interval);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            clearInterval(interval);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
     }, [isLoggedIn]);
 
     return null; // This component handles logic only, no UI
