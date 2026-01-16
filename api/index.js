@@ -78,7 +78,11 @@ const apiLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-app.use("/api/auth/", authLimiter);
+// Apply strict rate limiting only to login and register
+app.use("/api/auth/register", authLimiter);
+app.use("/api/auth/login", authLimiter);
+
+// General API Rate Limiting (Secondary layer for all API routes)
 app.use("/api/", apiLimiter);
 
 // Custom manually set headers (for double safety or specific needs)
