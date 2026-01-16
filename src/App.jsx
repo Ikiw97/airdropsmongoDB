@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import AuthPage from "./AuthPage";
 import TrackerPageFullScreen from "./TrackerPageFullScreen";
 import AdminPanel from "./AdminPanel";
+import EditProfileModal from "./components/EditProfileModal";
 import { SecurityProvider } from "./contexts/SecurityContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import ThemeToggle from "./components/ThemeToggle";
@@ -180,6 +181,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [showAdmin, setShowAdmin] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -254,8 +256,22 @@ function App() {
                 onLogout={handleLogout}
                 user={user}
                 onShowAdmin={() => setShowAdmin(true)}
+                onEditProfile={() => setIsProfileModalOpen(true)}
               />
             </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {isProfileModalOpen && (
+            <EditProfileModal
+              user={user}
+              onClose={() => setIsProfileModalOpen(false)}
+              onUpdateUser={(updatedUser) => {
+                setUser(updatedUser);
+                localStorage.setItem("user", JSON.stringify(updatedUser));
+              }}
+            />
           )}
         </AnimatePresence>
         <BubbleMapFeature />
