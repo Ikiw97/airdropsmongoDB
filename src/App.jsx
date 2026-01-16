@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import axios from "axios";
 import "./styles/animations.css";
 import BubbleMapFeature from "./components/BubbleMap/BubbleMapFeature";
+import UserActivityTracker from "./components/UserActivityTracker";
 
 // Animated Trading Chart Background Component
 const CryptoChartBackground = () => {
@@ -220,6 +221,7 @@ function App() {
   return (
     <SecurityProvider>
       <ThemeProvider>
+        <UserActivityTracker isLoggedIn={isLoggedIn} />
         {/* Chart Background - only show when logged in */}
         {isLoggedIn && <CryptoChartBackground />}
 
