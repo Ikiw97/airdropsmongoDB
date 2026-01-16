@@ -366,6 +366,7 @@ app.put("/api/auth/update-profile", async (req, res) => {
       updated_at: new Date().toISOString()
     };
 
+
     await usersCollection.updateOne(
       { "_id": user._id },
       { $set: updateFields }
@@ -385,6 +386,37 @@ app.put("/api/auth/update-profile", async (req, res) => {
   } catch (error) {
     console.error("Update profile error:", error);
     res.status(500).json({ detail: "Internal server error" });
+  }
+});
+
+app.post("/api/auth/heartbeat", async (req, res) => {
+  try {
+    await initDB();
+
+    const token = extractToken(req);
+    if (!token) {
+      return res.status(401).json({ detail: "Not authenticated" });
+    }
+
+    const payload = jwt.verify(token, JWT_SECRET_KEY, { algorithms: [JWT_ALGORITHM] });
+    const userId = payload.sub;
+
+    if (!userId) {
+      return res.status(401).json({ detail: "Invalid token" });
+    }
+
+    await usersCollection.updateOne(
+      { "_id": userId },
+      { $set: { last_active_at: new Date().toISOString() } }
+    );
+
+    return res.json({ status: "ok" });
+  } catch (error) {
+    // Silent fail for heartbeat to avoid cluttering logs unless it's critical
+    if (error.name !== 'JsonWebTokenError') {
+      console.error("Heartbeat error:", error);
+    }
+    res.status(500).json({ detail: "Error updating status" });
   }
 });
 
