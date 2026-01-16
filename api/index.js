@@ -820,6 +820,41 @@ app.post("/api/community/messages", async (req, res) => {
   }
 });
 
+app.delete("/api/community/messages/:message_id", async (req, res) => {
+  try {
+    await initDB();
+
+    const token = extractToken(req);
+    if (!token) {
+      return res.status(401).json({ detail: "Not authenticated" });
+    }
+
+    const user = await getCurrentUser(token);
+    if (!user) {
+      return res.status(401).json({ detail: "Could not validate credentials" });
+    }
+
+    const { message_id } = req.params;
+
+    const message = await messagesCollection.findOne({ "_id": message_id });
+    if (!message) {
+      return res.status(404).json({ detail: "Message not found" });
+    }
+
+    // Allow user to delete their own message OR admin to delete any
+    if (message.user_id !== user._id && !user.is_admin) {
+      return res.status(403).json({ detail: "Not authorized to delete this message" });
+    }
+
+    await messagesCollection.deleteOne({ "_id": message_id });
+    return res.json({ message: "Message deleted successfully" });
+
+  } catch (error) {
+    console.error("Delete message error:", error);
+    res.status(500).json({ detail: "Internal server error" });
+  }
+});
+
 // ImgBB Upload Proxy
 app.post("/api/upload/image", async (req, res) => {
   try {
