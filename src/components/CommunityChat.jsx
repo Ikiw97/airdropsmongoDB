@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Send, Image, RefreshCw, MessageSquare, X, Upload, Smile, Reply } from "lucide-react";
+import { Send, Image, RefreshCw, MessageSquare, X, Upload, Smile, Reply, Trash2 } from "lucide-react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import EmojiPicker from "emoji-picker-react";
@@ -141,6 +141,25 @@ const CommunityChat = ({ user }) => {
         }
     };
 
+    // Delete Message
+    const handleDeleteMessage = async (messageId) => {
+        if (!confirm("Are you sure you want to delete this message?")) return;
+
+        try {
+            const token = localStorage.getItem("token");
+            await axios.delete(`${API_URL}/api/community/messages/${messageId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            // Optimistic update
+            setMessages(prev => prev.filter(m => m._id !== messageId));
+
+        } catch (error) {
+            console.error("Failed to delete message", error);
+            alert("Failed to delete message");
+        }
+    };
+
     // Format Time
     const formatTime = (isoString) => {
         const date = new Date(isoString);
@@ -250,6 +269,15 @@ const CommunityChat = ({ user }) => {
                                     >
                                         <Reply size={14} />
                                     </button>
+                                    {isMe && (
+                                        <button
+                                            onClick={() => handleDeleteMessage(msg._id)}
+                                            className="text-gray-500 hover:text-red-400 transition opacity-0 group-hover:opacity-100 focus:opacity-100"
+                                            title="Delete"
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </motion.div>
