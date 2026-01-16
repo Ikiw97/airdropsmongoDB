@@ -191,11 +191,20 @@ const CommunityChat = ({ user }) => {
                         >
                             <div className={`max-w-[75%] md:max-w-[60%] flex flex-col ${isMe ? "items-end" : "items-start"}`}>
 
-                                {/* User Name */}
+                                {/* User Name & Avatar */}
                                 {!isMe && (
-                                    <span className="text-xs text-[var(--text-secondary)] mb-1 ml-1 font-semibold">
-                                        {msg.username}
-                                    </span>
+                                    <div className="flex items-center gap-2 mb-1 ml-1">
+                                        {msg.user_photo ? (
+                                            <img src={msg.user_photo} alt={msg.username} className="w-5 h-5 rounded-full object-cover" />
+                                        ) : (
+                                            <div className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                                <span className="text-[10px] text-indigo-400 font-bold">{msg.username.charAt(0).toUpperCase()}</span>
+                                            </div>
+                                        )}
+                                        <span className="text-xs text-[var(--text-secondary)] font-semibold">
+                                            {msg.username}
+                                        </span>
+                                    </div>
                                 )}
 
                                 {/* Message Bubble */}
