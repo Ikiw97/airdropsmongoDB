@@ -768,13 +768,40 @@ app.get("/api/community/messages", async (req, res) => {
       return res.status(401).json({ detail: "Could not validate credentials" });
     }
 
-    // Get last 100 messages
-    const messages = await messagesCollection.find({})
-      .sort({ created_at: -1 })
-      .limit(100)
-      .toArray();
+    // Use aggregation to join with users collection
+    const messages = await messagesCollection.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "userDetails"
+        }
+      },
+      {
+        $unwind: {
+          path: "$userDetails",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          user_id: 1,
+          message: 1,
+          image_url: 1,
+          replyTo: 1,
+          created_at: 1,
+          // Use current user details if available, fallback to stored values
+          username: { $ifNull: ["$userDetails.username", "$username"] },
+          user_photo: { $ifNull: ["$userDetails.photo_url", "$user_photo"] }
+        }
+      },
+      { $sort: { created_at: 1 } },
+      { $limit: 100 } // Safety limit
+    ]).toArray();
 
-    return res.json(messages.reverse());
+    return res.json(messages);
   } catch (error) {
     console.error("Get messages error:", error);
     res.status(500).json({ detail: "Internal server error" });
