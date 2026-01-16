@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Send, Image, RefreshCw, MessageSquare, X, Upload, Smile, Reply, Trash2 } from "lucide-react";
+import { Send, Image, RefreshCw, MessageSquare, X, Upload, Smile, Reply, Trash2, Search } from "lucide-react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import EmojiPicker from "emoji-picker-react";
@@ -16,7 +16,12 @@ const CommunityChat = ({ user }) => {
     const [imageUploadLoading, setImageUploadLoading] = useState(false);
     const [showEmoji, setShowEmoji] = useState(false);
     const [replyingTo, setReplyingTo] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [showSearch, setShowSearch] = useState(false);
+    const [highlightedMessageId, setHighlightedMessageId] = useState(null);
+    const [isAtBottom, setIsAtBottom] = useState(true);
     const messagesEndRef = useRef(null);
+    const scrollContainerRef = useRef(null);
     const fileInputRef = useRef(null);
 
     // Auto-scroll to bottom
@@ -49,8 +54,32 @@ const CommunityChat = ({ user }) => {
     }, []);
 
     useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
+        if (!highlightedMessageId && !searchTerm && isAtBottom) {
+            scrollToBottom();
+        }
+    }, [messages, highlightedMessageId, searchTerm, isAtBottom]);
+
+    // Handle scroll to detect if user is at bottom
+    const handleScroll = () => {
+        if (scrollContainerRef.current) {
+            const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+            // Check if user is near bottom (within 20px)
+            const isBottom = scrollHeight - scrollTop - clientHeight < 50;
+            setIsAtBottom(isBottom);
+        }
+    };
+
+    // Scroll to highlighted message
+    useEffect(() => {
+        if (highlightedMessageId) {
+            const element = document.getElementById(`msg-${highlightedMessageId}`);
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth", block: "center" });
+                // Clear highlight after animation
+                setTimeout(() => setHighlightedMessageId(null), 2000);
+            }
+        }
+    }, [highlightedMessageId, messages]);
 
     // Handle Image Selection
     const handleImageSelect = (e) => {
@@ -160,10 +189,21 @@ const CommunityChat = ({ user }) => {
         }
     };
 
-    // Format Time
     const formatTime = (isoString) => {
         const date = new Date(isoString);
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
+
+    // Filter messages
+    const filteredMessages = messages.filter(msg => {
+        if (!searchTerm) return true;
+        return msg.message && msg.message.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+
+    const handleJumpToMessage = (messageId) => {
+        setSearchTerm(""); // Clear search to show all messages
+        setShowSearch(false); // Close search bar
+        setHighlightedMessageId(messageId); // Set ID to scroll to
     };
 
     return (
@@ -181,17 +221,64 @@ const CommunityChat = ({ user }) => {
                         <p className="text-xs text-[var(--text-secondary)]">Discuss crypto & airdrops</p>
                     </div>
                 </div>
-                <button
-                    onClick={fetchMessages}
-                    className="p-2 rounded-full hover:bg-[var(--bg-tertiary)] transition text-[var(--text-secondary)]"
-                    title="Refresh Messages"
-                >
-                    <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} />
-                </button>
+                <div className="flex items-center gap-1">
+                    <button
+                        onClick={() => {
+                            setShowSearch(!showSearch);
+                            if (showSearch) setSearchTerm("");
+                        }}
+                        className={`p-2 rounded-full hover:bg-[var(--bg-tertiary)] transition ${showSearch ? 'text-indigo-400 bg-indigo-500/10' : 'text-[var(--text-secondary)]'}`}
+                        title="Search Messages"
+                    >
+                        <Search size={18} />
+                    </button>
+                    <button
+                        onClick={fetchMessages}
+                        className="p-2 rounded-full hover:bg-[var(--bg-tertiary)] transition text-[var(--text-secondary)]"
+                        title="Refresh Messages"
+                    >
+                        <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} />
+                    </button>
+                </div>
             </div>
 
+            {/* Search Bar */}
+            <AnimatePresence>
+                {showSearch && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden bg-[var(--bg-secondary)] border-b border-[var(--border-primary)]"
+                    >
+                        <div className="p-2">
+                            <div className="flex items-center gap-2 bg-[var(--bg-tertiary)] rounded-lg px-3 py-2 border border-[var(--border-primary)]">
+                                <Search size={14} className="text-gray-500" />
+                                <input
+                                    type="text"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    placeholder="Search messages..."
+                                    className="bg-transparent border-none outline-none text-sm w-full text-[var(--text-primary)] placeholder-gray-500"
+                                    autoFocus
+                                />
+                                {searchTerm && (
+                                    <button onClick={() => setSearchTerm("")} className="text-gray-500 hover:text-white">
+                                        <X size={14} />
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
+            <div
+                ref={scrollContainerRef}
+                onScroll={handleScroll}
+                className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent"
+            >
                 {messages.length === 0 && !isLoading && (
                     <div className="text-center text-gray-500 mt-10">
                         <p className="mb-2">No messages yet.</p>
@@ -199,14 +286,20 @@ const CommunityChat = ({ user }) => {
                     </div>
                 )}
 
-                {messages.map((msg) => {
+                {filteredMessages.map((msg) => {
                     const isMe = msg.user_id === user.id;
                     return (
                         <motion.div
                             key={msg._id}
+                            id={`msg-${msg._id}`}
                             initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className={`flex ${isMe ? "justify-end" : "justify-start"} group`}
+                            animate={{
+                                opacity: 1,
+                                y: 0,
+                                backgroundColor: highlightedMessageId === msg._id ? "rgba(99, 102, 241, 0.2)" : "transparent"
+                            }}
+                            className={`flex ${isMe ? "justify-end" : "justify-start"} group p-2 rounded-lg transition-colors duration-500 ${searchTerm ? 'cursor-pointer hover:bg-white/5' : ''}`}
+                            onClick={() => searchTerm && handleJumpToMessage(msg._id)}
                         >
                             <div className={`max-w-[75%] md:max-w-[60%] flex flex-col ${isMe ? "items-end" : "items-start"}`}>
 
