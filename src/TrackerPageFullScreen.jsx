@@ -387,7 +387,7 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin, onEditProfile }) {
         {activeView === "multisend" && <MultisendTool />}
         {activeView === "infoairdrops" && <InfoAirdrops />}
         {activeView === "market-data" && <MarketOverview />}
-        {activeView === "community" && <div className="h-[calc(100vh-200px)]"><CommunityChat user={user} /></div>}
+        {activeView === "community" && <div className="h-[calc(100vh-200px)] max-w-5xl mx-auto w-full"><CommunityChat user={user} /></div>}
 
 
         {activeView === "projects" && (
