@@ -128,7 +128,7 @@ function SuccessPopup({ message, onClose }) {
   );
 }
 
-function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
+function TrackerPageFullScreen({ onLogout, user, onShowAdmin, onEditProfile }) {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hideData, setHideData] = useState(false);
@@ -338,6 +338,22 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin }) {
               <span className="hidden sm:inline">Admin</span>
             </button>
           )}
+          <button
+            onClick={onEditProfile}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300"
+            style={{
+              background: 'rgba(99, 102, 241, 0.1)',
+              border: '1px solid rgba(99, 102, 241, 0.2)',
+              color: 'var(--text-primary)'
+            }}
+          >
+            {user?.photo_url ? (
+              <img src={user.photo_url} alt="Profile" className="w-5 h-5 rounded-full object-cover" />
+            ) : (
+              <User size={16} className="text-indigo-500" />
+            )}
+            <span className="hidden sm:inline">{user?.username || "Profile"}</span>
+          </button>
           <button
             onClick={onLogout}
             className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300"
