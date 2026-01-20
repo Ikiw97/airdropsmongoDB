@@ -13,8 +13,8 @@ const IndexGauges = () => {
         const fetchFearGreed = async () => {
             try {
                 const response = await apiService.getFearAndGreedIndex();
-                if (response && response.data && response.data.length > 0) {
-                    const data = response.data[0];
+                if (response && response.now) {
+                    const data = response.now;
                     setFearGreed({
                         value: parseInt(data.value),
                         classification: data.value_classification,
