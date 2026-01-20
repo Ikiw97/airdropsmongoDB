@@ -252,7 +252,7 @@ export const apiService = {
   // Fear & Greed Index
   async getFearAndGreedIndex() {
     try {
-      const response = await fetch("https://api.alternative.me/fng/?limit=1");
+      const response = await fetch("https://api.coin-stats.com/v2/fear-greed");
       if (!response.ok) throw new Error("Failed to fetch Fear & Greed Index");
       const data = await response.json();
       return data;
@@ -260,11 +260,11 @@ export const apiService = {
       console.error("Fear & Greed API Error:", error);
       // Fallback data if API fails
       return {
-        data: [{
-          value: "50",
+        now: {
+          value: 50,
           value_classification: "Neutral",
-          timestamp: Math.floor(Date.now() / 1000).toString()
-        }]
+          timestamp: Math.floor(Date.now() / 1000)
+        }
       };
     }
   },
