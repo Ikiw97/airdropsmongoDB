@@ -1,19 +1,76 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import apiService from '../api/apiService';
 
 const IndexGauges = () => {
+    const [fearGreed, setFearGreed] = useState({
+        value: 0,
+        classification: "Loading...",
+        timestamp: Date.now()
+    });
+
+    useEffect(() => {
+        const fetchFearGreed = async () => {
+            try {
+                const response = await apiService.getFearAndGreedIndex();
+                if (response && response.data && response.data.length > 0) {
+                    const data = response.data[0];
+                    setFearGreed({
+                        value: parseInt(data.value),
+                        classification: data.value_classification,
+                        timestamp: parseInt(data.timestamp) * 1000
+                    });
+                }
+            } catch (error) {
+                console.error("Failed to load Fear & Greed index", error);
+            }
+        };
+
+        fetchFearGreed();
+        // Update every 1 hour
+        const interval = setInterval(fetchFearGreed, 3600000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const getColor = (value) => {
+        if (value >= 75) return "text-green-500";
+        if (value >= 55) return "text-green-400";
+        if (value >= 45) return "text-yellow-500";
+        if (value >= 25) return "text-orange-500";
+        return "text-red-500";
+    };
+
+    const getEmoji = (value) => {
+        if (value >= 75) return "🤑"; // Extreme Greed
+        if (value >= 55) return "😊"; // Greed
+        if (value >= 45) return "😐"; // Neutral
+        if (value >= 25) return "😨"; // Fear
+        return "😱"; // Extreme Fear
+    };
+
+    const formatDate = (timestamp) => {
+        return new Date(timestamp).toLocaleString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    };
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Fear & Greed Index */}
             <div className="p-5 rounded-xl transition-all duration-300 shadow-xl relative overflow-hidden group" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)' }}>
                 <div className="flex items-center gap-2 mb-6">
-                    <span className="text-sm">😨</span>
+                    <span className="text-sm">{getEmoji(fearGreed.value)}</span>
                     <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Fear & Greed Index</h3>
                 </div>
 
                 <div className="flex flex-col items-center justify-center py-4">
                     <div className="relative w-32 h-32">
-                        {/* Circular Progress (Dotted or thin line as per image) */}
+                        {/* Circular Progress */}
                         <svg className="w-full h-full transform -rotate-90">
                             <circle
                                 cx="64"
@@ -33,19 +90,20 @@ const IndexGauges = () => {
                                 fill="transparent"
                                 strokeDasharray={364}
                                 initial={{ strokeDashoffset: 364 }}
-                                animate={{ strokeDashoffset: 364 - (364 * 29) / 100 }}
-                                className="text-orange-500"
+                                animate={{ strokeDashoffset: 364 - (364 * fearGreed.value) / 100 }}
+                                className={getColor(fearGreed.value).replace('text-', 'text-')}
+                                style={{ color: fearGreed.value < 25 ? '#ef4444' : fearGreed.value < 45 ? '#f97316' : fearGreed.value < 55 ? '#eab308' : '#22c55e' }}
                                 strokeLinecap="round"
                             />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className="text-2xl">😨</span>
-                            <span className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>29</span>
+                            <span className="text-2xl">{getEmoji(fearGreed.value)}</span>
+                            <span className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{fearGreed.value}</span>
                         </div>
                     </div>
                     <div className="mt-4 text-center">
-                        <h4 className="text-lg font-bold text-orange-400">Fear</h4>
-                        <p className="text-[8px] text-gray-600 mt-1 uppercase tracking-tighter">Updated: 11/01/2026, 07:00:00</p>
+                        <h4 className={`text-lg font-bold ${getColor(fearGreed.value)}`}>{fearGreed.classification}</h4>
+                        <p className="text-[8px] text-gray-600 mt-1 uppercase tracking-tighter">Updated: {formatDate(fearGreed.timestamp)}</p>
                     </div>
 
                     {/* Scale bar */}
@@ -64,7 +122,7 @@ const IndexGauges = () => {
                             <motion.div
                                 className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"
                                 initial={{ left: 0 }}
-                                animate={{ left: '29%' }}
+                                animate={{ left: `${fearGreed.value}%` }}
                                 transition={{ duration: 1, type: 'spring' }}
                             />
                         </div>
