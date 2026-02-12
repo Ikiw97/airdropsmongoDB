@@ -637,6 +637,24 @@ function TrackerPageFullScreen({ onLogout, user, onShowAdmin, onEditProfile }) {
                         <span className="truncate font-mono text-[10px]">{hideData ? '••••••••••' : p.wallet}</span>
                       </div>
                     )}
+                    {p.email && (
+                      <div className="flex items-center gap-2 text-gray-400">
+                        <Mail size={12} className="text-pink-400" />
+                        <span className="truncate">{hideData ? '••••••' : p.email}</span>
+                      </div>
+                    )}
+                    {p.telegram && (
+                      <div className="flex items-center gap-2 text-gray-400">
+                        <Send size={12} className="text-sky-400" />
+                        <span className="truncate">{hideData ? '••••••' : p.telegram}</span>
+                      </div>
+                    )}
+                    {p.github && (
+                      <div className="flex items-center gap-2 text-gray-400">
+                        <Github size={12} className="text-white" />
+                        <span className="truncate">{hideData ? '••••••' : p.github}</span>
+                      </div>
+                    )}
                     {p.website && (
                       <div className="flex items-center gap-2">
                         <Globe size={12} className="text-blue-400" />
